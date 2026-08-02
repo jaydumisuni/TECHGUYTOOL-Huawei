@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+build/
+dist/
+proof/
+techguy_huawei/resources_rc.py
+rust/health_core/target/
+runtime/health/*.exe
+runtime/health/techguy_health_core
+*.log
+
+assets/brand/techguy_huawei.ico

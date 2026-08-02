@@ -1,0 +1,24 @@
+<RCC>
+  <qresource prefix="/">
+    <file alias="qml/Main.qml">qml/Main.qml</file>
+    <file alias="qml/Theme.qml">qml/Theme.qml</file>
+    <file alias="qml/components/GlassPanel.qml">qml/components/GlassPanel.qml</file>
+    <file alias="qml/components/GlowButton.qml">qml/components/GlowButton.qml</file>
+    <file alias="qml/components/NavItem.qml">qml/components/NavItem.qml</file>
+    <file alias="qml/components/OperationTile.qml">qml/components/OperationTile.qml</file>
+    <file alias="qml/components/SectionLabel.qml">qml/components/SectionLabel.qml</file>
+    <file alias="qml/components/StatusCard.qml">qml/components/StatusCard.qml</file>
+    <file alias="qml/components/ToggleRow.qml">qml/components/ToggleRow.qml</file>
+    <file alias="qml/dialogs/AboutDialog.qml">qml/dialogs/AboutDialog.qml</file>
+    <file alias="qml/dialogs/DriverDialog.qml">qml/dialogs/DriverDialog.qml</file>
+    <file alias="qml/dialogs/RegisterDialog.qml">qml/dialogs/RegisterDialog.qml</file>
+    <file alias="qml/dialogs/SettingsMenu.qml">qml/dialogs/SettingsMenu.qml</file>
+    <file alias="qml/dialogs/TerminalDialog.qml">qml/dialogs/TerminalDialog.qml</file>
+    <file alias="qml/pages/FirmwareFlashPage.qml">qml/pages/FirmwareFlashPage.qml</file>
+    <file alias="qml/pages/PlaceholderPage.qml">qml/pages/PlaceholderPage.qml</file>
+    <file alias="qml/pages/ServiceCenterPage.qml">qml/pages/ServiceCenterPage.qml</file>
+    <file alias="qml/qmldir">qml/qmldir</file>
+    <file alias="assets/brand/techguy_logo.svg">assets/brand/techguy_logo.svg</file>
+    <file alias="assets/brand/techguy_mascot.svg">assets/brand/techguy_mascot.svg</file>
+  </qresource>
+</RCC>

@@ -1,0 +1,40 @@
+name: Huawei UI Proof
+
+on:
+  push:
+    branches: [main, "build/**"]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  source-proof:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install source and proof dependencies
+        run: python -m pip install -e ".[test]"
+      - name: Regenerate Qt resource manifest
+        run: python tools/generate_qrc.py
+      - name: Compile Qt resources
+        run: pyside6-rcc resources.qrc -o techguy_huawei/resources_rc.py
+      - name: Unit and contract tests
+        run: python -m pytest -q
+      - name: Strict SRG 20-for-2 review
+        run: python tools/review_20_for_2.py --strict
+      - name: Install headless Qt runtime dependencies
+        run: sudo apt-get update && sudo apt-get install -y xvfb libegl1 libxkbcommon-x11-0
+      - name: Real QML construction and screenshot proof
+        run: xvfb-run -a python tools/smoke_qml.py
+      - name: Upload QML proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: huawei-qml-proof
+          path: proof/qml-main.png
+          if-no-files-found: error
