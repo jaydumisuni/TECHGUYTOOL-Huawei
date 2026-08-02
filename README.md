@@ -1,14 +1,14 @@
-# TECHGUY TOOL — HUAWEI
+# TECHGUYTOOL Huawei
 
 **Service & Recovery Edition** by **THETECHGUY DIGITAL SOLUTIONS**.
 
-This repository is the cross-platform Qt Quick source for the Huawei service interface approved in the six visual references. The Windows release target is a single signed executable named `TECHGUY_TOOL_Huawei.exe`. The same QML and engine interface can produce platform-specific macOS and Linux packages.
+This repository is the cross-platform Qt Quick source for the Huawei service interface approved in the six visual references. The Windows release target is a single signed executable named `TECHGUYTOOL_Huawei.exe`. The same QML and engine interface can produce platform-specific macOS and Linux packages.
 
 ## Current milestone
 
 The first milestone establishes the complete UI shell and the safe engine boundary:
 
-- 1586 × 992 frameless glass interface matching the approved layout proportions;
+- 1586 × 992 frameless glass interface targeting the approved reference geometry;
 - Service Center, Firmware Flash, placeholder module pages, live operation log and footer state;
 - Settings, Fix Drivers, Register Device, About and Fastboot Terminal interfaces;
 - model/chipset selector contract and starter Huawei/Kirin profile database;
@@ -18,6 +18,10 @@ The first milestone establishes the complete UI shell and the safe engine bounda
 - optional Rust action-manifest auditor with Python fallback;
 - two governed waves of twenty deterministic checks—**SRG 20-for-2**;
 - Qt resource compilation and `pyside6-deploy`/Nuitka one-file release contract.
+
+## Verification state
+
+The interface is not considered approved merely because source-contract tests pass. Acceptance requires construction of the real QML application, workspace screenshots for every supplied reference state, interaction checks for every visible control, and visual comparison against the six approved mockups. Any runtime or visual mismatch remains a blocking defect until corrected.
 
 ## Safety and proof boundary
 
@@ -56,7 +60,7 @@ PySide6 is required to launch the QML application. The static tests and 20-for-2
 python tools\smoke_qml.py
 ```
 
-The command loads the real `qml/Main.qml`, creates the application window, captures it and writes `proof/qml-main.png`. CI runs the same proof under Xvfb and uploads the image artifact.
+The command loads the real `qml/Main.qml`, creates the application window, captures it and writes `proof/qml-main.png`. CI runs the same proof under an offscreen Qt platform and uploads the image artifact.
 
 ## Windows one-file build
 
@@ -71,7 +75,7 @@ The release script:
 3. regenerates and compiles Qt resources;
 4. runs tests and the strict 40-check review;
 5. invokes `pyside6-deploy` in Nuitka `onefile` mode;
-6. requires `TECHGUY_TOOL_Huawei.exe`;
+6. requires `TECHGUYTOOL_Huawei.exe`;
 7. signs it when `TECHGUY_SIGNING_CERT_THUMBPRINT` is supplied;
 8. writes `SHA256SUMS.txt`.
 
