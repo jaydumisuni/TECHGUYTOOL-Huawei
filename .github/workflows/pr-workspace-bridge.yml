@@ -1,22 +1,20 @@
-name: PR Workspace Bridge
+name: Workspace Runtime Export
 
 on:
-  issue_comment:
-    types: [created]
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
 
 permissions:
-  contents: read
-  issues: write
-  pull-requests: write
+  contents: write
 
 jobs:
   export-workspace:
-    if: github.event.issue.pull_request && github.event.comment.body == '/workspace-export'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: refs/pull/${{ github.event.issue.number }}/head
+          ref: build/huawei-ui-v0.1
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
@@ -29,7 +27,7 @@ jobs:
           name: huawei-qt-wheelhouse
           path: wheelhouse
           if-no-files-found: error
-      - name: Upload exact PR workspace
+      - name: Upload exact branch workspace
         uses: actions/upload-artifact@v4
         with:
           name: huawei-source-workspace
@@ -37,9 +35,17 @@ jobs:
             .
             !.git/**
             !wheelhouse/**
+            !runtime-export/**
           include-hidden-files: true
           if-no-files-found: error
-      - name: Report bridge run
+      - name: Publish export run marker
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh pr comment "${{ github.event.issue.number }}" --body "WORKSPACE_BRIDGE_RUN_ID=${{ github.run_id }}"
+        shell: bash
+        run: |
+          marker='runtime-export/latest-run.txt'
+          content="$(printf '%s\n' "$GITHUB_RUN_ID" | base64 -w0)"
+          existing="$(gh api "repos/$GITHUB_REPOSITORY/contents/$marker?ref=main" --jq .sha 2>/dev/null || true)"
+          args=(--method PUT "repos/$GITHUB_REPOSITORY/contents/$marker" -f message="Record workspace export run $GITHUB_RUN_ID" -f content="$content" -f branch=main)
+          if [ -n "$existing" ]; then args+=(-f sha="$existing"); fi
+          gh api "${args[@]}"
