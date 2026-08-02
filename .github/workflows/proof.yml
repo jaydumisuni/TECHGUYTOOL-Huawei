@@ -28,6 +28,8 @@ jobs:
         run: python -m pytest -q
       - name: Strict SRG 20-for-2 review
         run: python tools/review_20_for_2.py --strict
+      - name: Install Qt runtime dependency
+        run: sudo apt-get update && sudo apt-get install -y libegl1
       - name: Real QML construction and screenshot proof
         env:
           QT_QPA_PLATFORM: offscreen
