@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   source-proof:
@@ -63,5 +63,18 @@ jobs:
             !.venv/**
             !proof/**
             !wheelhouse/**
+            !runtime-export/**
           include-hidden-files: true
           if-no-files-found: error
+      - name: Publish proof run marker
+        if: always() && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          marker='runtime-export/latest-run.txt'
+          content="$(printf '%s\n' "$GITHUB_RUN_ID" | base64 -w0)"
+          existing="$(gh api "repos/$GITHUB_REPOSITORY/contents/$marker?ref=$GITHUB_REF_NAME" --jq .sha 2>/dev/null || true)"
+          args=(--method PUT "repos/$GITHUB_REPOSITORY/contents/$marker" -f message="Record proof run $GITHUB_RUN_ID" -f content="$content" -f branch="$GITHUB_REF_NAME")
+          if [ -n "$existing" ]; then args+=(-f sha="$existing"); fi
+          gh api "${args[@]}"
