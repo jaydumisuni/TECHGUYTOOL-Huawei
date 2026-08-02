@@ -21,7 +21,7 @@ def main() -> int:
     os.environ.setdefault("QT_QUICK_CONTROLS_STYLE", "Basic")
     app = QGuiApplication(sys.argv)
     app.setOrganizationName("THETECHGUY DIGITAL SOLUTIONS")
-    app.setApplicationName("TECHGUY TOOL — HUAWEI")
+    app.setApplicationName("TECHGUYTOOL Huawei")
     root = app_root()
     icon = root / "assets" / "brand" / "techguy_logo.svg"
     if icon.is_file():
