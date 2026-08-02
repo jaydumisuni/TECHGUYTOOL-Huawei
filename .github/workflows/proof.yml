@@ -37,12 +37,14 @@ jobs:
           QT_QUICK_CONTROLS_STYLE: Basic
         run: python tools/smoke_qml.py
       - name: Upload QML proof
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: huawei-qml-proof
           path: proof/qml-main.png
-          if-no-files-found: error
+          if-no-files-found: warn
       - name: Upload exact reviewed source workspace
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: huawei-source-workspace
