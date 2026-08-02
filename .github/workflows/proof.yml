@@ -29,7 +29,7 @@ jobs:
       - name: Strict SRG 20-for-2 review
         run: python tools/review_20_for_2.py --strict
       - name: Install headless Qt runtime dependencies
-        run: sudo apt-get update && sudo apt-get install -y xvfb libegl1 libxkbcommon-x11-0
+        run: sudo apt-get update && sudo apt-get install -y xvfb libegl1 libxkbcommon-x11-0 libxcb-cursor0
       - name: Real QML construction and screenshot proof
         run: xvfb-run -a python tools/smoke_qml.py
       - name: Upload QML proof
