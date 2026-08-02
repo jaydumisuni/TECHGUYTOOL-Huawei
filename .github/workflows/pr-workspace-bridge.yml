@@ -1,6 +1,9 @@
 name: Verified Workspace Import
 
 on:
+  push:
+    branches: [main]
+    paths: ["runtime-import/TRIGGER"]
   schedule:
     - cron: "0-59/5 * * * *"
     - cron: "1-59/5 * * * *"
