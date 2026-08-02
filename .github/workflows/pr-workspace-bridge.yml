@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   export-workspace:
@@ -37,3 +38,7 @@ jobs:
             !wheelhouse/**
           include-hidden-files: true
           if-no-files-found: error
+      - name: Report bridge run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr comment "${{ github.event.pull_request.number }}" --body "WORKSPACE_BRIDGE_RUN_ID=${{ github.run_id }}"
