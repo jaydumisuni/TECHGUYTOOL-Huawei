@@ -42,3 +42,14 @@ jobs:
           name: huawei-qml-proof
           path: proof/qml-main.png
           if-no-files-found: error
+      - name: Upload exact reviewed source workspace
+        uses: actions/upload-artifact@v4
+        with:
+          name: huawei-source-workspace
+          path: |
+            .
+            !.git/**
+            !.venv/**
+            !proof/**
+          include-hidden-files: true
+          if-no-files-found: error
