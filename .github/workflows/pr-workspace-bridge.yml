@@ -20,7 +20,9 @@ jobs:
         with:
           python-version: "3.11"
       - name: Export exact Qt runtime wheels
-        run: python -m pip download --only-binary=:all: --dest wheelhouse PySide6==6.11.1
+        run: >-
+          python -m pip download --only-binary=:all: --no-deps --dest wheelhouse
+          PySide6==6.11.1 PySide6_Essentials==6.11.1 shiboken6==6.11.1
       - name: Upload exact Qt wheelhouse
         uses: actions/upload-artifact@v4
         with:
