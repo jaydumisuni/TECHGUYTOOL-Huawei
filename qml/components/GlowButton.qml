@@ -35,8 +35,8 @@ Button {
         text: root.text
         color: root.enabled ? Theme.text : "#7c8793"
         font: root.font
+        font.letterSpacing: 1.1
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
-        letterSpacing: 1.1
     }
 }
