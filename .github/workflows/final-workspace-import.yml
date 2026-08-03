@@ -32,12 +32,24 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          : > "$RUNNER_TEMP/techguy-patch.tar.gz"
-          for index in 000 001 002 003 004 005 006a 006b 007 008; do
-            chunk="final-patch-v1/chunk-${index}.b64"
-            test -s "$chunk"
-            tr -d '\r\n\t ' < "$chunk" | base64 -d >> "$RUNNER_TEMP/techguy-patch.tar.gz"
-          done
+          python - <<'PY'
+          import base64
+          from pathlib import Path
+          import os
+
+          alphabet = set('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=')
+          indexes = ['000', '001', '002', '003', '004', '005', '006a', '006b', '007', '008']
+          output = Path(os.environ['RUNNER_TEMP']) / 'techguy-patch.tar.gz'
+          with output.open('wb') as destination:
+              for index in indexes:
+                  path = Path(f'final-patch-v1/chunk-{index}.b64')
+                  text = path.read_text(encoding='utf-8-sig')
+                  clean = ''.join(character for character in text if character in alphabet)
+                  clean += '=' * (-len(clean) % 4)
+                  decoded = base64.b64decode(clean, validate=False)
+                  print(f'{path}: source={len(text)} clean={len(clean)} decoded={len(decoded)}')
+                  destination.write(decoded)
+          PY
           gzip -t "$RUNNER_TEMP/techguy-patch.tar.gz"
           sha256sum "$RUNNER_TEMP/techguy-patch.tar.gz" | tee "$RUNNER_TEMP/archive.sha256"
           mkdir -p "$RUNNER_TEMP/patch"
