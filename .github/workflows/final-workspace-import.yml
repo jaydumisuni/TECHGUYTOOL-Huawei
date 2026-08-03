@@ -32,10 +32,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          : > "$RUNNER_TEMP/techguy-patch.tar.gz"
           for index in 000 001 002 003 004 005 006a 006b 007 008; do
-            test -s "final-patch-v1/chunk-${index}.b64"
+            chunk="final-patch-v1/chunk-${index}.b64"
+            test -s "$chunk"
+            tr -d '\r\n\t ' < "$chunk" | base64 -d >> "$RUNNER_TEMP/techguy-patch.tar.gz"
           done
-          cat final-patch-v1/chunk-*.b64 | tr -d '\r\n\t ' | base64 -d > "$RUNNER_TEMP/techguy-patch.tar.gz"
           gzip -t "$RUNNER_TEMP/techguy-patch.tar.gz"
           sha256sum "$RUNNER_TEMP/techguy-patch.tar.gz" | tee "$RUNNER_TEMP/archive.sha256"
           mkdir -p "$RUNNER_TEMP/patch"
