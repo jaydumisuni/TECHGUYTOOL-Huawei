@@ -6,6 +6,11 @@ on:
     paths:
       - "final-patch-v1/**"
       - ".github/workflows/final-workspace-import.yml"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "final-patch-v1/**"
+      - ".github/workflows/final-workspace-import.yml"
 
 permissions:
   contents: write
@@ -47,16 +52,7 @@ jobs:
           set -euo pipefail
           if [ -f "$RUNNER_TEMP/patch/PATCH_DELETE.json" ]; then
             cp "$RUNNER_TEMP/patch/PATCH_DELETE.json" /tmp/patch-delete.json
-            python - <<'PY'
-          import json, shutil
-          from pathlib import Path
-          for relative in json.loads(Path('/tmp/patch-delete.json').read_text(encoding='utf-8')):
-              target = Path(relative)
-              if target.is_file() or target.is_symlink():
-                  target.unlink()
-              elif target.is_dir():
-                  shutil.rmtree(target)
-          PY
+            python -c "import json,shutil; from pathlib import Path; paths=json.loads(Path('/tmp/patch-delete.json').read_text(encoding='utf-8')); [(p.unlink() if p.is_file() or p.is_symlink() else shutil.rmtree(p) if p.is_dir() else None) for p in map(Path, paths)]"
           fi
           rm -f "$RUNNER_TEMP/patch/PATCH_DELETE.json" "$RUNNER_TEMP/patch/PATCH_MANIFEST.json"
           cp -a "$RUNNER_TEMP/patch/." .
