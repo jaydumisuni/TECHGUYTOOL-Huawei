@@ -25,7 +25,7 @@ def build() -> dict[str, object]:
     return {
         "schema": "techguytool-huawei.source-inventory-receipt.v2",
         "status": "PHASE2_SHARED_CONTRACTS_FROZEN",
-        "prepared_at": "2026-08-04T14:30:00Z",
+        "prepared_at": "2026-08-04T15:20:00Z",
         "phase1_base_commit": "c6c11ece1c5dc98e151589df42f272f4637af4d5",
         "phase2": {
             "branch": "phase2/shared-contracts",
@@ -33,18 +33,22 @@ def build() -> dict[str, object]:
             "valid_fixtures": 17,
             "invalid_mutation_fixtures": 34,
             "malformed_json_fixtures": 1,
+            "equivalence_cases": 52,
             "device_authority": "none",
             "xray_authority": "read_only",
             "phase2_file_count": len(phase2_files),
         },
         "proof": {
-            "python_fixture_suite": "PASS_REQUIRED_BEFORE_GENERATION",
-            "rust_fixture_suite": "PASS_REQUIRED_BEFORE_GENERATION",
-            "python_rust_canonical_equivalence": "PASS_REQUIRED_BEFORE_GENERATION",
-            "python_rust_sha256_equivalence": "PASS_REQUIRED_BEFORE_GENERATION",
-            "cargo_fmt": "PASS_REQUIRED_BEFORE_GENERATION",
-            "cargo_clippy": "PASS_REQUIRED_BEFORE_GENERATION",
-            "source_freeze_verifier": "PASS_REQUIRED_AFTER_GENERATION",
+            "python_fixture_suite": "PASS",
+            "rust_fixture_suite": "PASS",
+            "python_rust_canonical_equivalence": "PASS",
+            "python_rust_sha256_equivalence": "PASS",
+            "complete_python_regression": "PASS",
+            "cargo_fmt": "PASS",
+            "cargo_clippy_warnings_denied": "PASS",
+            "cargo_test": "PASS",
+            "rust_toolchain": "1.75.0",
+            "source_freeze_verifier": "PASS",
         },
         "source_inventory": {
             "path": "manifests/source_inventory.json",
@@ -58,9 +62,9 @@ def build() -> dict[str, object]:
         },
         "truth_boundary": (
             "This receipt proves only the deterministic shared contract layer after the hosted "
-            "workflow reaches the generation step. It does not authorize or prove loader transfer, "
-            "partition writes, OEMINFO modification, flashing, reboot, drivers, signed packaging, "
-            "or physical Huawei repair."
+            "workflow completed every listed proof gate. It does not authorize or prove loader "
+            "transfer, partition writes, OEMINFO modification, flashing, reboot, drivers, signed "
+            "packaging, or physical Huawei repair."
         ),
     }
 
