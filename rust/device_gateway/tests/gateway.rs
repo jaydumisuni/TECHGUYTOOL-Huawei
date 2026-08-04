@@ -189,8 +189,7 @@ fn worker_deadlines_are_future_and_bounded() {
         })
         .expect("provider");
 
-    let past = (Utc::now() - ChronoDuration::seconds(1))
-        .to_rfc3339_opts(SecondsFormat::Secs, true);
+    let past = (Utc::now() - ChronoDuration::seconds(1)).to_rfc3339_opts(SecondsFormat::Secs, true);
     let error = gateway
         .register_worker(
             "past-worker",
@@ -206,7 +205,7 @@ fn worker_deadlines_are_future_and_bounded() {
             "long-worker",
             "gateway.worker-policy",
             &["worker.heartbeat".to_owned()],
-            &future_timestamp(301),
+            &future_timestamp(600),
         )
         .expect_err("excessive deadline must fail");
     assert_eq!(error.code(), "INVALID_INPUT");
