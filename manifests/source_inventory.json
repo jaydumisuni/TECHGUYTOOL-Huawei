@@ -117,8 +117,8 @@
     {
       "origin": "phase2_shared_contracts",
       "path": "docs/PHASE_2_SHARED_CONTRACTS.md",
-      "sha256": "b1becd4e4c7e7a2bc6de86125e4d6373118c1a8a77bbc72c1cd6f7248df78e84",
-      "size_bytes": 4565
+      "sha256": "ffb1ee207eba7bd0a080baad691e4b2c140e7fbc5a62b237161d31b0660a1de3",
+      "size_bytes": 5139
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -393,8 +393,8 @@
     {
       "origin": "phase2_shared_contracts",
       "path": "techguy_huawei/contract_support.py",
-      "sha256": "6484f19cd42814fa3c95b29a16e02a10cec8901bf2eb8fddc3f7c465093ad6a7",
-      "size_bytes": 2998
+      "sha256": "2163ab4b910ec0275f5860de111a95128ae53af9f8240cb843e4be94ce001f44",
+      "size_bytes": 2383
     },
     {
       "origin": "phase2_shared_contracts",
@@ -405,8 +405,8 @@
     {
       "origin": "phase2_shared_contracts",
       "path": "techguy_huawei/contracts.py",
-      "sha256": "4a1d7e834e320fb1b8ff7eefe68914b7a8dbf2ab2b08cc9df8c0d9cea62b5ffa",
-      "size_bytes": 552
+      "sha256": "42a4732e91794cdd82683d4d75167655b8133d12a7b8bb031d5d362f457d82b4",
+      "size_bytes": 500
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -453,8 +453,8 @@
     {
       "origin": "phase2_shared_contracts",
       "path": "tests/test_shared_contracts.py",
-      "sha256": "d787b123788b7b5c2ec136fc4e439409df4c42dbb33641962b9466c938afba6b",
-      "size_bytes": 6289
+      "sha256": "37cbf1b1f4827832b98c6b8ec6ce2063603f2d92cd4bc64b8b312e859e8aef1a",
+      "size_bytes": 7284
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -465,8 +465,8 @@
     {
       "origin": "phase2_shared_contracts",
       "path": "tools/build_phase2_receipt.py",
-      "sha256": "7195db69e60ab07a613f3b68642fc5713de8a246578ddf6202de6d474e3cc09d",
-      "size_bytes": 3179
+      "sha256": "06891a729d14bc5d63709055b824c1f95905855ba609072f098922a657e093e0",
+      "size_bytes": 3228
     },
     {
       "origin": "phase2_shared_contracts",
