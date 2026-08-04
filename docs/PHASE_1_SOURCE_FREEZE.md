@@ -1,6 +1,6 @@
 # Phase 1 — Source Freeze and External-Artifact Authority
 
-**Status:** IMPLEMENTED — pending Git commit receipt and independent review  
+**Status:** IMPLEMENTED AND FROZEN — exact checkpoint recorded by source-inventory receipt  
 **Plan authority:** `FULL_PLAN.md` Phase 1  
 **Prepared:** 2026-08-04
 
@@ -87,8 +87,8 @@ read-only specialist Xray
 - Athena recovery request: **not required**
 - Public/private boundary: **frozen**
 
-The phase is complete only after the clean source checkpoint is committed and `manifests/source_inventory.receipt.json` binds the manifest to the exact Git commit.
+The exact clean checkpoint commit is recorded in `manifests/source_inventory.receipt.json`. No hashed source or proof file may change without regenerating `manifests/source_inventory.json` and issuing a new receipt.
 
 ## 6. Next authorized phase
 
-Proceed to **Phase 2 — Shared Python/Rust contracts**. Do not activate historical write paths while implementing those contracts.
+After review and merge of this checkpoint, proceed to **Phase 2 — Shared Python/Rust contracts**. Do not activate historical write paths while implementing those contracts.
