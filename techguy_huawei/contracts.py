@@ -10,7 +10,6 @@ from .contract_support import (
     canonical_sha256,
     load_registry,
     parse_timestamp,
-    registry_candidates,
 )
 from .contract_validation import validate_contract
 
@@ -22,6 +21,5 @@ __all__ = [
     "canonical_sha256",
     "load_registry",
     "parse_timestamp",
-    "registry_candidates",
     "validate_contract",
 ]
