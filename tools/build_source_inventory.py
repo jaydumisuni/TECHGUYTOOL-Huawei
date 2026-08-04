@@ -11,10 +11,9 @@ EXCLUDED = {
     "manifests/source_inventory.receipt.json",
 }
 IGNORED_ROOTS = {"build", "dist", "proof", "wheelhouse"}
-IGNORED_PARTS = {"__pycache__", ".pytest_cache", ".venv", "venv"}
+IGNORED_PARTS = {"__pycache__", ".pytest_cache", ".venv", "venv", "target"}
 IGNORED_EXACT = {"techguy_huawei/resources_rc.py"}
 PHASE1_PREFIXES = (
-    "docs/",
     "manifests/",
 )
 PHASE1_PATHS = {
@@ -22,9 +21,27 @@ PHASE1_PATHS = {
     ".gitignore",
     "FULL_PLAN.md",
     "README.md",
+    "docs/LEGACY_AUTHORITY_REVIEW.md",
+    "docs/PHASE_1_SOURCE_FREEZE.md",
     "tests/test_source_freeze.py",
-    "tools/build_source_inventory.py",
     "tools/verify_source_freeze.py",
+}
+PHASE2_PREFIXES = (
+    "contracts/",
+    "rust/contracts_core/",
+)
+PHASE2_PATHS = {
+    ".github/workflows/phase2-contracts.yml",
+    "docs/PHASE_2_SHARED_CONTRACTS.md",
+    "techguy_huawei/contract_fields.py",
+    "techguy_huawei/contract_models.py",
+    "techguy_huawei/contract_support.py",
+    "techguy_huawei/contract_validation.py",
+    "techguy_huawei/contracts.py",
+    "tests/test_shared_contracts.py",
+    "tools/build_phase2_receipt.py",
+    "tools/build_source_inventory.py",
+    "tools/prove_contract_equivalence.py",
 }
 
 
@@ -54,6 +71,8 @@ def source_files() -> list[Path]:
 
 
 def origin_for(rel: str) -> str:
+    if rel in PHASE2_PATHS or rel.startswith(PHASE2_PREFIXES):
+        return "phase2_shared_contracts"
     if rel in PHASE1_PATHS or rel.startswith(PHASE1_PREFIXES):
         return "phase1_recovery_and_freeze"
     return "github_actions:huawei-source-workspace:8833608382"
@@ -82,7 +101,7 @@ def build() -> dict[str, object]:
         "excluded_from_recursive_hashing": sorted(EXCLUDED),
         "file_count": len(records),
         "files": records,
-        "prepared_at": "2026-08-04T11:30:00Z",
+        "prepared_at": "2026-08-04T14:30:00Z",
         "private_recovery_authority": {
             "archive_sha256": "d98d44364387431f86d4bad2e725bb5e6612f32a1f1884436a4285872c87efc4",
             "copied_into_public_source": False,
@@ -90,8 +109,8 @@ def build() -> dict[str, object]:
         },
         "schema": "techguytool-huawei.source-inventory.v1",
         "self_provenance": (
-            "This manifest and its receipt are bound by the exact Git commit recorded in "
-            "manifests/source_inventory.receipt.json."
+            "This manifest and its receipt are excluded from recursive hashing and are bound "
+            "by the reviewed phase branch and merge commit."
         ),
     }
 
