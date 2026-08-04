@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -30,6 +31,9 @@ SELF_EXCLUDED = {
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json",
 }
+IGNORED_ROOTS = {"build", "dist", "proof", "wheelhouse"}
+IGNORED_PARTS = {"__pycache__", ".pytest_cache", ".venv", "venv"}
+IGNORED_EXACT = {"techguy_huawei/resources_rc.py"}
 
 
 def digest(path: Path) -> str:
@@ -40,18 +44,47 @@ def digest(path: Path) -> str:
     return h.hexdigest()
 
 
+def is_ignored(path: Path) -> bool:
+    rel = path.relative_to(ROOT).as_posix()
+    parts = path.relative_to(ROOT).parts
+    return (
+        rel.startswith(".git/")
+        or rel in SELF_EXCLUDED
+        or rel in IGNORED_EXACT
+        or bool(parts and parts[0] in IGNORED_ROOTS)
+        or any(part in IGNORED_PARTS or part.endswith(".egg-info") for part in parts)
+    )
+
+
+def _git_tracked_files() -> list[Path] | None:
+    try:
+        result = subprocess.run(
+            ["git", "ls-files", "-z"],
+            cwd=ROOT,
+            capture_output=True,
+            check=False,
+        )
+    except OSError:
+        return None
+    if result.returncode != 0:
+        return None
+    paths = []
+    for raw in result.stdout.split(b"\0"):
+        if not raw:
+            continue
+        path = ROOT / raw.decode("utf-8")
+        if path.is_file() and not is_ignored(path):
+            paths.append(path)
+    return paths
+
+
 def tracked_files() -> list[Path]:
-    files: list[Path] = []
-    for path in ROOT.rglob("*"):
-        if not path.is_file():
-            continue
-        rel = path.relative_to(ROOT).as_posix()
-        if rel.startswith(".git/") or rel in SELF_EXCLUDED:
-            continue
-        if any(part in {"__pycache__", ".pytest_cache", ".venv", "venv"} for part in path.parts):
-            continue
-        files.append(path)
-    return sorted(files, key=lambda p: p.relative_to(ROOT).as_posix())
+    git_paths = _git_tracked_files()
+    if git_paths is not None:
+        files = git_paths
+    else:
+        files = [path for path in ROOT.rglob("*") if path.is_file() and not is_ignored(path)]
+    return sorted(files, key=lambda path: path.relative_to(ROOT).as_posix())
 
 
 def verify() -> list[str]:
@@ -64,9 +97,8 @@ def verify() -> list[str]:
         if (ROOT / root).exists():
             errors.append(f"forbidden source-control root exists: {root}")
 
-    for path in ROOT.rglob("*"):
-        if not path.is_file():
-            continue
+    actual_files = tracked_files()
+    for path in actual_files:
         rel = path.relative_to(ROOT).as_posix()
         if path.suffix.lower() in FORBIDDEN_SUFFIXES:
             errors.append(f"forbidden runtime/binary file tracked: {rel}")
@@ -81,7 +113,7 @@ def verify() -> list[str]:
         return errors
 
     declared = {item["path"]: item for item in inventory.get("files", [])}
-    actual_paths = {path.relative_to(ROOT).as_posix(): path for path in tracked_files()}
+    actual_paths = {path.relative_to(ROOT).as_posix(): path for path in actual_files}
 
     missing = sorted(set(declared) - set(actual_paths))
     undeclared = sorted(set(actual_paths) - set(declared))
