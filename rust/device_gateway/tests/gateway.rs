@@ -110,7 +110,10 @@ fn shared_contract_ingress_is_validated_and_authority_bound() {
     let mut contract = case["contract"].clone();
     contract["producer"] = json!("kirin.xray");
     contract["physical_session_id"] = json!(session.session_id);
-    let authority = contract["authority"].as_str().expect("authority").to_owned();
+    let authority = contract["authority"]
+        .as_str()
+        .expect("authority")
+        .to_owned();
     let mut context: ValidationContext =
         serde_json::from_value(case["context"].clone()).expect("context");
     context.expected_physical_session_id = Some(session.session_id.clone());
@@ -214,6 +217,9 @@ fn source_has_no_device_execution_surface() {
         "write_oeminfo(",
         "partition_write(",
     ] {
-        assert!(!source.contains(forbidden), "forbidden surface: {forbidden}");
+        assert!(
+            !source.contains(forbidden),
+            "forbidden surface: {forbidden}"
+        );
     }
 }
