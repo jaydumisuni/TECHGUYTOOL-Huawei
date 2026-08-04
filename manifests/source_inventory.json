@@ -15,7 +15,7 @@
     {
       "origin": "phase1_recovery_and_freeze",
       "path": ".github/workflows/proof.yml",
-      "sha256": "941cef6d565fca39199fd2c0e3d49b36c4221d95f4b804d02ca03caccca110ca",
+      "sha256": "b14b96cf034f5ceb2a765f3c15b5a2f2c077881b84678c30ee7aa15d53fab09e",
       "size_bytes": 2196
     },
     {
@@ -327,8 +327,8 @@
     {
       "origin": "phase1_recovery_and_freeze",
       "path": "tools/build_source_inventory.py",
-      "sha256": "9b9761712d3db30165973d4ef3261494ee23fc1a5e4ad6a9e152fc1abfe68809",
-      "size_bytes": 3167
+      "sha256": "474c82d55f75d00380aea6289427e4f28fea2f2aab9c4ab883fea1d487e9bdcd",
+      "size_bytes": 3421
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -363,8 +363,8 @@
     {
       "origin": "phase1_recovery_and_freeze",
       "path": "tools/verify_source_freeze.py",
-      "sha256": "ee80f87f0094d2cb2909bb074f57d8c6b7e7a73a41b8b06014d05316ac1e1fb3",
-      "size_bytes": 5006
+      "sha256": "7710842f348d8d525a7b9e41691d529edcfa429c6066a7899253a50dad20949a",
+      "size_bytes": 5920
     }
   ],
   "prepared_at": "2026-08-04T11:30:00Z",
