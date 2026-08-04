@@ -1,46 +1,58 @@
 {
-  "base_workspace_artifact": {
-    "artifact_id": 8833608382,
-    "artifact_name": "huawei-source-workspace",
-    "artifact_sha256": "dbbb3b430f3ea595f4c4f01bc18670770059deec2c2700809085333fa6d645bc",
-    "github_actions_run_id": 30748347340
+  "generated_at": "2026-08-04T17:53:36Z",
+  "hosted_proof": {
+    "run_id": 30935964784,
+    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/30935964784",
+    "tested_revision": "91b60a5fac42ae57fb932039489ccb9f138276dc"
   },
-  "prepared_at": "2026-08-04T12:12:00Z",
+  "owner_verification": {
+    "authority_commit": "e291b312f8fd5ad7812f2e296d314c4602271f05",
+    "source_proof_run_id": 30935964784,
+    "source_revision": "91b60a5fac42ae57fb932039489ccb9f138276dc",
+    "status": "CONFIRMED"
+  },
+  "phase1_base_commit": "c6c11ece1c5dc98e151589df42f272f4637af4d5",
+  "phase2": {
+    "branch": "phase2/shared-contracts",
+    "context_equivalence_cases": 2,
+    "context_fixtures": 2,
+    "contract_equivalence_cases": 55,
+    "contract_types": 17,
+    "device_authority": "none",
+    "invalid_mutation_fixtures": 34,
+    "malformed_json_fixtures": 1,
+    "phase2_file_count": 32,
+    "review_edge_fixtures": 3,
+    "total_cross_language_cases": 57,
+    "valid_fixtures": 17,
+    "xray_authority": "read_only"
+  },
   "private_recovery_archive": {
     "drive_file_id": "1qH4K0m1lX_3o0XLvCkJMXsDajOkfu2cs",
     "sha256": "d98d44364387431f86d4bad2e725bb5e6612f32a1f1884436a4285872c87efc4",
-    "size_bytes": 434391243,
     "visibility": "private"
   },
   "proof": {
-    "cargo_health_core": {
-      "status": "NOT_RUN_LOCALLY",
-      "truth_boundary": "Cargo was unavailable in the local proof environment. The Rust source is inventory-bound; hosted or Windows Rust build proof remains required."
-    },
-    "python_compileall": "PASS",
-    "pytest": {
-      "failed": 0,
-      "passed": 17
-    },
-    "qml_contract": {
-      "files": 17,
-      "status": "PASS"
-    },
-    "source_freeze_verifier": "PASS",
-    "srg_20_for_2": {
-      "failed": 0,
-      "passed": 40,
-      "total": 40
-    }
+    "cargo_clippy_warnings_denied": "PASS",
+    "cargo_fmt": "PASS",
+    "cargo_test": "PASS",
+    "complete_python_regression": "PASS",
+    "python_fixture_suite": "PASS",
+    "python_registry_authority": "PASS",
+    "python_rust_canonical_equivalence": "PASS",
+    "python_rust_error_code_equivalence": "PASS",
+    "python_rust_sha256_equivalence": "PASS",
+    "python_rust_validation_context_equivalence": "PASS",
+    "rust_fixture_suite": "PASS",
+    "rust_toolchain": "1.75.0",
+    "source_freeze_verifier": "PASS"
   },
-  "review_correction": "The proof workflow now verifies the frozen checkout before dependency installation or generated outputs. The verifier prefers git-tracked files and ignores generated build, wheelhouse, proof, egg-info, and compiled Qt resource outputs.",
-  "schema": "techguytool-huawei.source-inventory-receipt.v1",
-  "source_checkpoint_commit": "7a5be01d55a135525802043f63f3993a488f948a",
+  "schema": "techguytool-huawei.source-inventory-receipt.v3",
   "source_inventory": {
-    "file_count": 59,
+    "file_count": 88,
     "path": "manifests/source_inventory.json",
-    "sha256": "49834bf0596f7170fd25bdd644b574c9e99edcdb73dbe79d260a7a6912333e80"
+    "sha256": "4ffe1e5ab3e6827c4d3827eb26d6315045471e9bcec6f42e4c40817d79509bb5"
   },
-  "status": "FROZEN",
-  "truth_boundary": "This receipt proves the Phase 1 source/proof inventory and authority split. It does not prove physical Huawei repair, device drivers, Rust compilation in this environment, signed Windows packaging, or production write adapters."
+  "status": "PHASE2_SHARED_CONTRACTS_FROZEN",
+  "truth_boundary": "This receipt proves only the deterministic shared contract layer at the exact tested revision and hosted run recorded above. The authority commit may change only the inventory and this receipt. It does not authorize or prove loader transfer, partition writes, OEMINFO modification, flashing, reboot, drivers, signed packaging, or physical Huawei repair."
 }

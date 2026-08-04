@@ -7,6 +7,7 @@ build/
 dist/
 proof/
 wheelhouse/
+target/
 *.egg-info/
 
 # Mutable runtime state

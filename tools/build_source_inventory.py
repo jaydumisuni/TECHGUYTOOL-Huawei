@@ -11,24 +11,44 @@ EXCLUDED = {
     "manifests/source_inventory.receipt.json",
 }
 IGNORED_ROOTS = {"build", "dist", "proof", "wheelhouse"}
-IGNORED_PARTS = {"__pycache__", ".pytest_cache", ".venv", "venv"}
+IGNORED_PARTS = {"__pycache__", ".pytest_cache", ".venv", "venv", "target"}
 IGNORED_EXACT = {"techguy_huawei/resources_rc.py"}
 PHASE1_PREFIXES = (
-    "docs/",
     "manifests/",
 )
 PHASE1_PATHS = {
     ".github/workflows/proof.yml",
-    ".gitignore",
     "FULL_PLAN.md",
-    "README.md",
+    "docs/LEGACY_AUTHORITY_REVIEW.md",
+    "docs/PHASE_1_SOURCE_FREEZE.md",
     "tests/test_source_freeze.py",
-    "tools/build_source_inventory.py",
     "tools/verify_source_freeze.py",
+}
+PHASE2_PREFIXES = (
+    "contracts/",
+    "rust/contracts_core/",
+)
+PHASE2_PATHS = {
+    ".github/workflows/phase2-contracts.yml",
+    ".gitignore",
+    "README.md",
+    "docs/PHASE_2_SHARED_CONTRACTS.md",
+    "techguy_huawei/contract_fields.py",
+    "techguy_huawei/contract_models.py",
+    "techguy_huawei/contract_support.py",
+    "techguy_huawei/contract_validation.py",
+    "techguy_huawei/contracts.py",
+    "tests/test_shared_contracts.py",
+    "tools/build_phase2_receipt.py",
+    "tools/build_source_inventory.py",
+    "tools/prove_context_equivalence.py",
+    "tools/prove_contract_equivalence.py",
 }
 
 
 def sha256(path: Path) -> str:
+    """Return the SHA-256 digest for one source file."""
+
     digest = hashlib.sha256()
     with path.open("rb") as stream:
         for block in iter(lambda: stream.read(1024 * 1024), b""):
@@ -37,6 +57,8 @@ def sha256(path: Path) -> str:
 
 
 def is_ignored(path: Path) -> bool:
+    """Return whether a path is excluded from the deterministic inventory."""
+
     rel = path.relative_to(ROOT).as_posix()
     parts = path.relative_to(ROOT).parts
     return (
@@ -49,17 +71,25 @@ def is_ignored(path: Path) -> bool:
 
 
 def source_files() -> list[Path]:
+    """Collect all source files covered by the freeze manifest."""
+
     files = [path for path in ROOT.rglob("*") if path.is_file() and not is_ignored(path)]
     return sorted(files, key=lambda item: item.relative_to(ROOT).as_posix())
 
 
 def origin_for(rel: str) -> str:
+    """Classify a path by the phase that introduced its current authority."""
+
+    if rel in PHASE2_PATHS or rel.startswith(PHASE2_PREFIXES):
+        return "phase2_shared_contracts"
     if rel in PHASE1_PATHS or rel.startswith(PHASE1_PREFIXES):
         return "phase1_recovery_and_freeze"
     return "github_actions:huawei-source-workspace:8833608382"
 
 
 def build() -> dict[str, object]:
+    """Build the deterministic content inventory without self-referential files."""
+
     records = []
     for path in source_files():
         rel = path.relative_to(ROOT).as_posix()
@@ -82,7 +112,7 @@ def build() -> dict[str, object]:
         "excluded_from_recursive_hashing": sorted(EXCLUDED),
         "file_count": len(records),
         "files": records,
-        "prepared_at": "2026-08-04T11:30:00Z",
+        "inventory_definition_date": "2026-08-04",
         "private_recovery_authority": {
             "archive_sha256": "d98d44364387431f86d4bad2e725bb5e6612f32a1f1884436a4285872c87efc4",
             "copied_into_public_source": False,
@@ -90,13 +120,16 @@ def build() -> dict[str, object]:
         },
         "schema": "techguytool-huawei.source-inventory.v1",
         "self_provenance": (
-            "This manifest and its receipt are bound by the exact Git commit recorded in "
-            "manifests/source_inventory.receipt.json."
+            "This manifest and its receipt are excluded from recursive hashing. The manifest "
+            "proves the listed source contents only; hosted proof revision and run identity are "
+            "recorded separately in the Phase 2 receipt."
         ),
     }
 
 
 def main() -> int:
+    """Write the deterministic source inventory."""
+
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text(json.dumps(build(), indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(f"WROTE {OUTPUT.relative_to(ROOT)}")

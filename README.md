@@ -6,61 +6,85 @@ Huawei service and recovery engineering project for **THETECHGUY DIGITAL SOLUTIO
 
 Read **[FULL_PLAN.md](FULL_PLAN.md)** before changing architecture, routes, Xray boundaries, repair recipes, executors, packaging, or proof requirements.
 
-The repository now contains the recovered **safe active source checkpoint** for the approved Qt/QML interface and read-only host evidence shell. The historical Huawei Revive archive remains an external private recovery source because it contains device identifiers, customer/operation evidence, firmware-derived binaries, loaders, recovery images, and mixed read/write authority that must not be imported into public production source unchanged.
+The repository contains the frozen source checkpoint for the Qt/QML host application, the public/private artifact authority, and the deterministic shared Python/Rust contract core. The historical Huawei Revive archive remains private recovery evidence because it contains device identifiers, operation logs, firmware-derived binaries, loaders, recovery images, and mixed read/write authority that must be decomposed before production use.
 
 ## Current phase
 
-**Phase 1 — Source freeze and external-artifact manifests: implemented.**
+### Completed
 
-The source freeze records:
+**Phase 1 — Source freeze and external-artifact authority**
 
-- exact GitHub and GitHub Actions provenance for the active UI workspace;
-- exact Google Drive archive identity, size, and SHA-256;
-- key private artifact hashes without publishing the binaries;
-- intentionally omitted retail firmware, board firmware, SUPER, backups, logs, and customer evidence;
-- the authority gap between legacy mixed-purpose Revive code and the frozen read-only Xray boundary;
-- deterministic checks that reject transfer debris and runtime binaries from source control.
+- exact source and GitHub Actions provenance;
+- private Revive archive identity and SHA-256;
+- manifests for intentionally external firmware, board software, SUPER, loaders, backups, logs, and evidence;
+- fail-closed rejection of transfer debris and runtime binaries from public source.
 
-See:
+**Phase 2 — Shared Python/Rust contracts**
 
+- 17 versioned contract types;
+- deterministic canonical UTF-8 JSON and SHA-256 identity;
+- identical Python and Rust validation behavior;
+- fail-closed authority, session, expiry, single-use, recipe, artifact, and validation-context checks;
+- automatic promotion forbidden for write targets, offsets, destructive recipes, and expanded authority;
+- 17 valid fixtures, 34 invalid mutation fixtures, one malformed-JSON fixture, and one invalid-context fixture;
+- exact 53-case Python/Rust equivalence proof;
+- Rust 1.75 formatting, Clippy with warnings denied, compilation, and tests;
+- complete Python regression and source-freeze verification.
+
+Phase 2 proof receipt: [`manifests/source_inventory.receipt.json`](manifests/source_inventory.receipt.json)
+
+### Next authorized phase
+
+**Phase 3 — TTG Device Gateway**
+
+The next implementation must build the persistent, device-inert Gateway control plane around the frozen Phase 2 contracts:
+
+- physical-device and operation session registries;
+- typed event bus;
+- plugin/provider lifecycle;
+- ordered policy hooks;
+- SQLite durable state and evidence journal;
+- worker supervision and watchdogs;
+- crash recovery and UI reconnection;
+- diagnostics and capability allowlists.
+
+Phase 3 does not authorize device-changing executors.
+
+## Authorities and evidence
+
+- [`FULL_PLAN.md`](FULL_PLAN.md)
 - [`docs/PHASE_1_SOURCE_FREEZE.md`](docs/PHASE_1_SOURCE_FREEZE.md)
 - [`docs/LEGACY_AUTHORITY_REVIEW.md`](docs/LEGACY_AUTHORITY_REVIEW.md)
+- [`docs/PHASE_2_SHARED_CONTRACTS.md`](docs/PHASE_2_SHARED_CONTRACTS.md)
+- [`contracts/registry.json`](contracts/registry.json)
 - [`manifests/source_inventory.json`](manifests/source_inventory.json)
 - [`manifests/private_source_archive.json`](manifests/private_source_archive.json)
 - [`manifests/external_artifacts.json`](manifests/external_artifacts.json)
 
-## Active source boundary
+## Active safety boundary
 
-The active source currently provides:
+Xray remains strictly read-only. The active source may inspect, identify, correlate, diagnose, recommend, predict, and verify. It may not flash, erase, unlock, relock, reboot, upload a destructive service loader, write OEMINFO, or modify a device partition.
 
-- the approved cross-platform PySide6/QML shell;
-- read-only ADB/Fastboot discovery with exactly-one-device gating;
-- hashed physical-session/evidence records;
-- action health and guarded action contracts;
-- a deterministic Rust manifest auditor;
-- QML construction and screenshot proof;
-- Windows one-file build plumbing for `TECHGUYTOOL_Huawei.exe`.
+`execution_lease` is currently a validated contract only. No production executor consumes it yet.
 
-It does **not** yet claim production repair adapters, a completed Gateway, shared Python/Rust authority contracts, full Kirin Xray integration, or physical VOG-L29 end-to-end proof. Those belong to the subsequent plan phases.
+Historical code or evidence that can modify a device remains private recovery input until it is decomposed into a reviewed bounded executor governed by a versioned lease.
 
-## Safety boundary
-
-Xray remains read-only. The active application source may inspect, identify, correlate, diagnose, recommend, and verify. It may not flash, erase, unlock, relock, reboot, upload a service loader, write OEMINFO, or modify a device partition.
-
-Historical code or evidence that can perform those operations is private recovery input only until it is decomposed into reviewed bounded executors governed by versioned leases.
-
-## Development proof
+## Contract proof
 
 ```powershell
-python -m pip install -e ".[test]"
-python tools\generate_qrc.py
-python tools\verify_source_freeze.py
-python -m pytest
-python tools\review_20_for_2.py --strict
-python tools\smoke_qml.py
+python -m pytest tests\test_shared_contracts.py -q
+cargo fmt --manifest-path rust\contracts_core\Cargo.toml -- --check
+cargo clippy --manifest-path rust\contracts_core\Cargo.toml --all-targets -- -D warnings
+cargo test --manifest-path rust\contracts_core\Cargo.toml --all-targets
+cargo build --manifest-path rust\contracts_core\Cargo.toml --bin ttg-contracts
+python tools\prove_contract_equivalence.py --rust-bin rust\contracts_core\target\debug\ttg-contracts.exe
+python tools\prove_context_equivalence.py --rust-bin rust\contracts_core\target\debug\ttg-contracts.exe
+python tools\build_source_inventory.py
+python -m pytest -q
+python tools\verify_source_freeze.py --json
 ```
 
-## Windows one-file build
+## Windows one-file target
 
 ```powershell
 .\build_windows.ps1
