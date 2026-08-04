@@ -154,7 +154,11 @@ def verify() -> None:
         raise ValueError("Phase 2 receipt is missing source inventory identity")
 
     owner = receipt.get("owner_verification")
+    if owner is not None and not isinstance(owner, dict):
+        raise ValueError("owner_verification must be an object when present")
     if isinstance(owner, dict):
+        if owner.get("status") != "CONFIRMED":
+            raise ValueError("owner verification is not confirmed")
         authority_commit = str(owner.get("authority_commit"))
         source_revision = str(owner.get("source_revision"))
         source_run_id = str(owner.get("source_proof_run_id"))
