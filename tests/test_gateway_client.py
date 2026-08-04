@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import copy
 import json
+import pickle
 import socket
 import threading
 
@@ -66,6 +68,19 @@ def test_gateway_client_raises_structured_error() -> None:
     thread.join(timeout=5)
     assert caught.value.code == "POLICY_DENIED"
     assert caught.value.message == "blocked"
+    assert caught.value.args == ("POLICY_DENIED", "blocked")
+
+
+def test_gateway_client_error_preserves_exception_protocols() -> None:
+    error = GatewayClientError("PROTOCOL_ERROR", "invalid response")
+    copied = copy.copy(error)
+    restored = pickle.loads(pickle.dumps(error))
+    assert str(error) == "PROTOCOL_ERROR: invalid response"
+    assert error.args == ("PROTOCOL_ERROR", "invalid response")
+    assert copied.code == error.code
+    assert copied.message == error.message
+    assert restored.code == error.code
+    assert restored.message == error.message
 
 
 def _read_line(stream: socket.socket) -> bytes:
