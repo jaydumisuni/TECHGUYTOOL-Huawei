@@ -3,14 +3,19 @@ from __future__ import annotations
 import argparse
 import copy
 import json
+import os
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 from typing import Any
 
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 from techguy_huawei.contract_validation import validate_contract
 
-ROOT = Path(__file__).resolve().parents[1]
 VALID_FIXTURES = ROOT / "contracts" / "fixtures" / "valid_contracts.json"
 INVALID_FIXTURES = ROOT / "contracts" / "fixtures" / "invalid_contracts.json"
 DEFAULT_RUST_BINARY = (
@@ -19,7 +24,7 @@ DEFAULT_RUST_BINARY = (
     / "contracts_core"
     / "target"
     / "debug"
-    / ("ttg-contracts.exe" if __import__("os").name == "nt" else "ttg-contracts")
+    / ("ttg-contracts.exe" if os.name == "nt" else "ttg-contracts")
 )
 
 
