@@ -1,0 +1,121 @@
+name: Phase 2 Shared Contracts
+
+on:
+  push:
+    branches: ["phase2/shared-contracts"]
+    paths:
+      - ".github/workflows/phase2-contracts.yml"
+      - "contracts/**"
+      - "docs/PHASE_2_SHARED_CONTRACTS.md"
+      - "manifests/source_inventory.json"
+      - "manifests/source_inventory.receipt.json"
+      - "rust/contracts_core/**"
+      - "techguy_huawei/contract_*.py"
+      - "techguy_huawei/contracts.py"
+      - "tests/test_shared_contracts.py"
+      - "tools/build_phase2_receipt.py"
+      - "tools/build_source_inventory.py"
+      - "tools/prove_contract_equivalence.py"
+      - "tools/verify_source_freeze.py"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/phase2-contracts.yml"
+      - "contracts/**"
+      - "docs/PHASE_2_SHARED_CONTRACTS.md"
+      - "manifests/source_inventory.json"
+      - "manifests/source_inventory.receipt.json"
+      - "rust/contracts_core/**"
+      - "techguy_huawei/contract_*.py"
+      - "techguy_huawei/contracts.py"
+      - "tests/test_shared_contracts.py"
+      - "tools/build_phase2_receipt.py"
+      - "tools/build_source_inventory.py"
+      - "tools/prove_contract_equivalence.py"
+      - "tools/verify_source_freeze.py"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase2-contracts-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  contract-proof:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - uses: dtolnay/rust-toolchain@1.75.0
+        with:
+          components: rustfmt, clippy
+
+      - name: Install Python proof dependency
+        run: python -m pip install --upgrade pytest
+
+      - name: Compile deterministic Python contract modules
+        run: >-
+          python -m compileall -q
+          techguy_huawei/contract_fields.py
+          techguy_huawei/contract_models.py
+          techguy_huawei/contract_support.py
+          techguy_huawei/contract_validation.py
+          techguy_huawei/contracts.py
+          tests/test_shared_contracts.py
+          tools/prove_contract_equivalence.py
+
+      - name: Prove Python fixtures and safety boundaries
+        run: python -m pytest tests/test_shared_contracts.py -q
+
+      - name: Check Rust formatting
+        run: cargo fmt --manifest-path rust/contracts_core/Cargo.toml -- --check
+
+      - name: Reject Rust warnings
+        run: cargo clippy --manifest-path rust/contracts_core/Cargo.toml --all-targets -- -D warnings
+
+      - name: Prove Rust fixtures and safety boundaries
+        run: cargo test --manifest-path rust/contracts_core/Cargo.toml --all-targets
+
+      - name: Build deterministic Rust validator
+        run: cargo build --manifest-path rust/contracts_core/Cargo.toml --bin ttg-contracts
+
+      - name: Prove exact Python and Rust equivalence
+        run: >-
+          python tools/prove_contract_equivalence.py
+          --rust-bin rust/contracts_core/target/debug/ttg-contracts
+
+      - name: Run complete non-Qt Python regression suite
+        run: python -m pytest -q
+
+      - name: Regenerate source inventory and Phase 2 receipt
+        run: |
+          python tools/build_source_inventory.py
+          python tools/build_phase2_receipt.py
+          python tools/verify_source_freeze.py --json
+          git diff --check
+
+      - name: Freeze generated Phase 2 authority on branch
+        if: github.event_name == 'push' && github.ref == 'refs/heads/phase2/shared-contracts'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- manifests/source_inventory.json manifests/source_inventory.receipt.json rust/contracts_core/Cargo.lock; then
+            echo "Phase 2 inventory already frozen."
+            exit 0
+          fi
+          git config user.name "THETECHGUY Phase Freezer"
+          git config user.email "actions@users.noreply.github.com"
+          git add manifests/source_inventory.json manifests/source_inventory.receipt.json
+          if [ -f rust/contracts_core/Cargo.lock ]; then
+            git add rust/contracts_core/Cargo.lock
+          fi
+          git commit -m "Freeze Phase 2 contract inventory and proof receipt"
+          git push origin HEAD:phase2/shared-contracts
