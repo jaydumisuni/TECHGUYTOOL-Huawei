@@ -15,8 +15,8 @@
     {
       "origin": "phase2_shared_contracts",
       "path": ".github/workflows/phase2-contracts.yml",
-      "sha256": "0ea4113b58fcb8032e0885645bbc5b2d53d2cf43966a15da946b28ed3e37d105",
-      "size_bytes": 5301
+      "sha256": "53041a6f0cdaa0a7b1033e16aff5797f88138573da9f166db8733683fd0c8d41",
+      "size_bytes": 5300
     },
     {
       "origin": "phase1_recovery_and_freeze",
