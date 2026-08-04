@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from techguy_huawei.contract_support import canonical_json, canonical_sha256
 from techguy_huawei.contract_validation import validate_contract
 
 VALID_FIXTURES = ROOT / "contracts" / "fixtures" / "valid_contracts.json"
@@ -25,6 +26,7 @@ DEFAULT_RUST_BINARY = (
     / "debug"
     / ("ttg-contracts.exe" if os.name == "nt" else "ttg-contracts")
 )
+EXPECTED_CONTEXT_CASES = 2
 
 
 def _load(path: Path) -> dict[str, Any]:
@@ -60,6 +62,8 @@ def _rust_result(binary: Path, document: Any, context: dict[str, Any]) -> dict[s
             cwd=ROOT,
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="strict",
             check=False,
         )
         if completed.returncode not in {0, 1}:
@@ -75,35 +79,72 @@ def prove(binary: Path) -> dict[str, Any]:
     valid = {case["name"]: case["contract"] for case in _load(VALID_FIXTURES)["contracts"]}
     fixtures = _load(CONTEXT_FIXTURES)
     checked = 0
+    checked_success = 0
+    checked_failure = 0
 
     for case in fixtures["cases"]:
         document = valid[case["base"]]
         python_result = validate_contract(document, context=case["context"]).as_dict()
         rust_result = _rust_result(binary, document, case["context"])
-        expected = sorted(case["expected_error_codes"])
-        if python_result["ok"] != rust_result["ok"]:
-            raise AssertionError(f"{case['name']}: Python/Rust validity mismatch")
-        if _codes(python_result) != expected:
+        expected_ok = bool(case["expected_ok"])
+        expected_codes = sorted(case["expected_error_codes"])
+
+        if python_result["ok"] != expected_ok:
             raise AssertionError(
-                f"{case['name']}: Python returned {_codes(python_result)}, expected {expected}"
+                f"{case['name']}: Python validity {python_result['ok']} != {expected_ok}"
             )
-        if _codes(rust_result) != expected:
+        if rust_result["ok"] != expected_ok:
             raise AssertionError(
-                f"{case['name']}: Rust returned {_codes(rust_result)}, expected {expected}"
+                f"{case['name']}: Rust validity {rust_result['ok']} != {expected_ok}"
             )
+        if _codes(python_result) != expected_codes:
+            raise AssertionError(
+                f"{case['name']}: Python returned {_codes(python_result)}, expected {expected_codes}"
+            )
+        if _codes(rust_result) != expected_codes:
+            raise AssertionError(
+                f"{case['name']}: Rust returned {_codes(rust_result)}, expected {expected_codes}"
+            )
+
+        if expected_ok:
+            expected_canonical = canonical_json(document)
+            expected_sha256 = canonical_sha256(document)
+            if python_result.get("canonical") != expected_canonical:
+                raise AssertionError(f"{case['name']}: Python canonical JSON mismatch")
+            if rust_result.get("canonical") != expected_canonical:
+                raise AssertionError(f"{case['name']}: Rust canonical JSON mismatch")
+            if python_result.get("sha256") != expected_sha256:
+                raise AssertionError(f"{case['name']}: Python SHA-256 mismatch")
+            if rust_result.get("sha256") != expected_sha256:
+                raise AssertionError(f"{case['name']}: Rust SHA-256 mismatch")
+            checked_success += 1
+        else:
+            if python_result.get("canonical") is not None or rust_result.get("canonical") is not None:
+                raise AssertionError(f"{case['name']}: invalid context produced canonical JSON")
+            checked_failure += 1
         checked += 1
+
+    if checked != EXPECTED_CONTEXT_CASES or checked_success == 0 or checked_failure == 0:
+        raise AssertionError(
+            "context fixture coverage changed: "
+            f"total={checked} success={checked_success} failure={checked_failure}"
+        )
 
     return {
         "schema": "techguytool-huawei.context-equivalence-proof.v1",
         "status": "PASS",
         "context_cases": checked,
+        "successful_context_cases": checked_success,
+        "failing_context_cases": checked_failure,
         "python_rust_error_code_equivalence": True,
+        "python_rust_canonical_equivalence": True,
+        "python_rust_sha256_equivalence": True,
     }
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Prove Python/Rust validation-context error equivalence"
+        description="Prove Python/Rust validation-context equivalence"
     )
     parser.add_argument("--rust-bin", type=Path, default=DEFAULT_RUST_BINARY)
     args = parser.parse_args()
