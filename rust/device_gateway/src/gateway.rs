@@ -7,6 +7,7 @@ use crate::model::{
 };
 use crate::policy::{
     ensure_provider_authority, ensure_worker_capabilities, validate_provider_manifest,
+    validate_worker_deadline,
 };
 use crate::storage::Storage;
 use chrono::{SecondsFormat, Utc};
@@ -28,7 +29,10 @@ impl Gateway {
         let gateway = Self::build(path)?;
         gateway.storage.verify_journal()?;
         let now = now_utc();
-        let recovered = gateway.storage.recover_on_start(&now)?;
+        let (_recovered, recovery_event) = gateway.storage.recover_on_start(&now)?;
+        if let Some(event) = recovery_event {
+            gateway.notify_event(&event);
+        }
         gateway.publish_internal(
             GatewayEventKind::GatewayStarted,
             None,
@@ -39,15 +43,6 @@ impl Gateway {
             }),
             &now,
         )?;
-        if !recovered.physical_sessions.is_empty() || !recovered.operation_sessions.is_empty() {
-            gateway.publish_internal(
-                GatewayEventKind::GatewayRecovered,
-                None,
-                None,
-                serde_json::to_value(&recovered)?,
-                &now,
-            )?;
-        }
         Ok(gateway)
     }
 
@@ -94,13 +89,14 @@ impl Gateway {
         })
     }
 
-    pub fn subscribe(&self) -> Result<Receiver<GatewayEvent>, GatewayError> {
+    pub fn subscribe(&self) -> Receiver<GatewayEvent> {
         let (sender, receiver) = mpsc::channel();
-        self.subscribers
-            .lock()
-            .map_err(|_| GatewayError::Storage("event subscriber lock is poisoned".to_owned()))?
-            .push(sender);
-        Ok(receiver)
+        let mut subscribers = match self.subscribers.lock() {
+            Ok(subscribers) => subscribers,
+            Err(poisoned) => poisoned.into_inner(),
+        };
+        subscribers.push(sender);
+        receiver
     }
 
     pub fn open_physical_session(
@@ -108,16 +104,10 @@ impl Gateway {
         fingerprint_sha256: &str,
     ) -> Result<PhysicalDeviceSession, GatewayError> {
         let now = now_utc();
-        let session = self
+        let (session, event) = self
             .storage
             .open_physical_session(fingerprint_sha256, &now)?;
-        self.publish_internal(
-            GatewayEventKind::PhysicalSessionOpened,
-            Some(&session.session_id),
-            None,
-            json!({"fingerprint_sha256": session.fingerprint_sha256.clone()}),
-            &now,
-        )?;
+        self.notify_event(&event);
         Ok(session)
     }
 
@@ -133,14 +123,8 @@ impl Gateway {
         session_id: &str,
     ) -> Result<PhysicalDeviceSession, GatewayError> {
         let now = now_utc();
-        let session = self.storage.close_physical_session(session_id, &now)?;
-        self.publish_internal(
-            GatewayEventKind::PhysicalSessionClosed,
-            Some(session_id),
-            None,
-            json!({}),
-            &now,
-        )?;
+        let (session, event) = self.storage.close_physical_session(session_id, &now)?;
+        self.notify_event(&event);
         Ok(session)
     }
 
@@ -153,7 +137,7 @@ impl Gateway {
         payload: Value,
     ) -> Result<EndpointObservationRecord, GatewayError> {
         let now = now_utc();
-        let observation = self.storage.record_endpoint(
+        let (observation, event) = self.storage.record_endpoint(
             session_id,
             endpoint_key,
             mode,
@@ -161,13 +145,7 @@ impl Gateway {
             payload,
             &now,
         )?;
-        self.publish_internal(
-            GatewayEventKind::EndpointObserved,
-            Some(session_id),
-            None,
-            serde_json::to_value(&observation)?,
-            &now,
-        )?;
+        self.notify_event(&event);
         Ok(observation)
     }
 
@@ -177,16 +155,10 @@ impl Gateway {
         request_sha256: &str,
     ) -> Result<OperationSession, GatewayError> {
         let now = now_utc();
-        let operation = self
-            .storage
-            .open_operation(physical_session_id, request_sha256, &now)?;
-        self.publish_internal(
-            GatewayEventKind::OperationOpened,
-            Some(physical_session_id),
-            Some(&operation.operation_id),
-            serde_json::to_value(&operation)?,
-            &now,
-        )?;
+        let (operation, event) =
+            self.storage
+                .open_operation(physical_session_id, request_sha256, &now)?;
+        self.notify_event(&event);
         Ok(operation)
     }
 
@@ -200,36 +172,18 @@ impl Gateway {
         next: OperationStage,
     ) -> Result<OperationSession, GatewayError> {
         let now = now_utc();
-        let before = self.storage.get_operation(operation_id)?;
-        let operation = self
-            .storage
-            .transition_operation(operation_id, next, &now)?;
-        if operation.stage != before.stage {
-            self.publish_internal(
-                GatewayEventKind::OperationTransitioned,
-                Some(&operation.physical_session_id),
-                Some(operation_id),
-                json!({
-                    "from": before.stage,
-                    "status": operation.status,
-                    "to": operation.stage
-                }),
-                &now,
-            )?;
+        let (_previous_stage, operation, event) =
+            self.storage.transition_operation(operation_id, next, &now)?;
+        if let Some(event) = event {
+            self.notify_event(&event);
         }
         Ok(operation)
     }
 
     pub fn resume_operation(&self, operation_id: &str) -> Result<OperationSession, GatewayError> {
         let now = now_utc();
-        let operation = self.storage.resume_operation(operation_id, &now)?;
-        self.publish_internal(
-            GatewayEventKind::OperationResumed,
-            Some(&operation.physical_session_id),
-            Some(operation_id),
-            json!({"stage": operation.stage}),
-            &now,
-        )?;
+        let (operation, event) = self.storage.resume_operation(operation_id, &now)?;
+        self.notify_event(&event);
         Ok(operation)
     }
 
@@ -239,14 +193,10 @@ impl Gateway {
     ) -> Result<ProviderManifest, GatewayError> {
         validate_provider_manifest(&manifest)?;
         let now = now_utc();
-        let registered = self.storage.register_provider(&manifest, &now)?;
-        self.publish_internal(
-            GatewayEventKind::ProviderRegistered,
-            None,
-            None,
-            serde_json::to_value(&registered)?,
-            &now,
-        )?;
+        let (registered, event) = self.storage.register_provider(&manifest, &now)?;
+        if let Some(event) = event {
+            self.notify_event(&event);
+        }
         Ok(registered)
     }
 
@@ -332,20 +282,15 @@ impl Gateway {
             }
         }
         let now = now_utc();
-        let worker = self.storage.register_worker(
+        validate_worker_deadline(&now, deadline_at)?;
+        let (worker, event) = self.storage.register_worker(
             worker_id,
             provider_id,
             capabilities,
             deadline_at,
             &now,
         )?;
-        self.publish_internal(
-            GatewayEventKind::WorkerRegistered,
-            None,
-            None,
-            serde_json::to_value(&worker)?,
-            &now,
-        )?;
+        self.notify_event(&event);
         Ok(worker)
     }
 
@@ -355,32 +300,21 @@ impl Gateway {
         deadline_at: &str,
     ) -> Result<WorkerRecord, GatewayError> {
         let now = now_utc();
-        let worker = self
+        validate_worker_deadline(&now, deadline_at)?;
+        let (worker, event) = self
             .storage
             .heartbeat_worker(worker_id, deadline_at, &now)?;
-        self.publish_internal(
-            GatewayEventKind::WorkerHeartbeat,
-            None,
-            None,
-            json!({"deadline_at": deadline_at, "worker_id": worker_id}),
-            &now,
-        )?;
+        self.notify_event(&event);
         Ok(worker)
     }
 
-    pub fn sweep_workers(&self, now: &str) -> Result<Vec<WorkerRecord>, GatewayError> {
-        let workers = self.storage.sweep_workers(now)?;
-        for worker in &workers {
-            self.publish_internal(
-                GatewayEventKind::WorkerTimedOut,
-                None,
-                None,
-                json!({
-                    "deadline_at": worker.deadline_at.clone(),
-                    "worker_id": worker.worker_id.clone()
-                }),
-                now,
-            )?;
+    pub fn sweep_workers(&self) -> Result<Vec<WorkerRecord>, GatewayError> {
+        let now = now_utc();
+        let results = self.storage.sweep_workers(&now)?;
+        let mut workers = Vec::with_capacity(results.len());
+        for (worker, event) in results {
+            self.notify_event(&event);
+            workers.push(worker);
         }
         Ok(workers)
     }
@@ -421,12 +355,16 @@ impl Gateway {
             payload,
             timestamp,
         )?;
-        let mut subscribers = self
-            .subscribers
-            .lock()
-            .map_err(|_| GatewayError::Storage("event subscriber lock is poisoned".to_owned()))?;
-        subscribers.retain(|sender| sender.send(event.clone()).is_ok());
+        self.notify_event(&event);
         Ok(event)
+    }
+
+    fn notify_event(&self, event: &GatewayEvent) {
+        let mut subscribers = match self.subscribers.lock() {
+            Ok(subscribers) => subscribers,
+            Err(poisoned) => poisoned.into_inner(),
+        };
+        subscribers.retain(|sender| sender.send(event.clone()).is_ok());
     }
 }
 
