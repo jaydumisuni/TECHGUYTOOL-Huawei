@@ -110,10 +110,12 @@ jobs:
       - name: Run complete non-Qt Python regression suite
         run: python -m pytest -q
 
-      - name: Generate Phase 2 receipt and verify frozen authority
+      - name: Verify source authority after every proof gate
+        run: python tools/verify_source_freeze.py --json
+
+      - name: Generate truthful Phase 2 receipt
         run: |
           python tools/build_phase2_receipt.py
-          python tools/verify_source_freeze.py --json
           git diff --check
 
       - name: Freeze generated Phase 2 authority on branch
