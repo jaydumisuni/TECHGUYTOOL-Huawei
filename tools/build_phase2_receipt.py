@@ -25,7 +25,7 @@ def build() -> dict[str, object]:
     return {
         "schema": "techguytool-huawei.source-inventory-receipt.v2",
         "status": "PHASE2_SHARED_CONTRACTS_FROZEN",
-        "prepared_at": "2026-08-04T15:40:00Z",
+        "prepared_at": "2026-08-04T15:50:00Z",
         "phase1_base_commit": "c6c11ece1c5dc98e151589df42f272f4637af4d5",
         "phase2": {
             "branch": "phase2/shared-contracts",
@@ -41,6 +41,7 @@ def build() -> dict[str, object]:
         },
         "proof": {
             "python_fixture_suite": "PASS",
+            "python_registry_authority": "PASS",
             "rust_fixture_suite": "PASS",
             "python_rust_canonical_equivalence": "PASS",
             "python_rust_sha256_equivalence": "PASS",
