@@ -1,0 +1,43 @@
+{
+  "generated_at": "2026-08-04T22:14:39Z",
+  "hosted_proof": {
+    "run_id": 30955522783,
+    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/30955522783",
+    "tested_revision": "fe3f70b4ef8784f44f17d60ac035c1c36eea3439"
+  },
+  "phase2_merge_commit": "ea6e66dd91031485d6db39d47da294de6ff2e771",
+  "phase3": {
+    "branch": "phase3/device-gateway",
+    "database_schema_version": 1,
+    "device_authority": "none",
+    "phase3_file_count": 23,
+    "python_gateway_client_tests": 3,
+    "reconnect_proof_cases": 1,
+    "rust_gateway_tests": 7,
+    "xray_authority": "read_only"
+  },
+  "proof": {
+    "cargo_clippy_warnings_denied": "PASS",
+    "cargo_fmt": "PASS",
+    "cargo_lock_resolved": "PASS",
+    "cargo_test": "PASS",
+    "complete_python_regression": "PASS",
+    "forbidden_device_capability_rejection": "PASS",
+    "gateway_binary_build": "PASS",
+    "gateway_restart_recovery": "PASS",
+    "journal_chain_verification": "PASS",
+    "phase2_contract_regression": "PASS",
+    "python_gateway_client_suite": "PASS",
+    "rust_toolchain": "1.75.0",
+    "source_freeze_verifier": "PASS",
+    "ui_reconnect_proof": "PASS"
+  },
+  "schema": "techguytool-huawei.phase3-gateway-receipt.v1",
+  "source_inventory": {
+    "file_count": 107,
+    "path": "manifests/source_inventory.json",
+    "sha256": "5bba4cc43b5bbd24b40567b0b223a3c57e9bed4a3f48adc03575f414035ff204"
+  },
+  "status": "PHASE3_DEVICE_GATEWAY_FROZEN",
+  "truth_boundary": "This receipt proves only the persistent, device-inert TTG Device Gateway control plane at the tested revision and hosted run. It proves durable sessions, operation stage recovery, loopback UI reconnection, provider/capability policy, watchdog state, diagnostics, and a hash-chained journal. It does not authorize or prove loader transfer, partition writes, OEMINFO modification, flashing, reboot, drivers, signed packaging, or physical Huawei repair."
+}
