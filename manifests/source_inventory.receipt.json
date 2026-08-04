@@ -1,15 +1,9 @@
 {
-  "generated_at": "2026-08-04T17:43:18Z",
+  "generated_at": "2026-08-04T17:53:36Z",
   "hosted_proof": {
-    "run_id": 30935133192,
-    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/30935133192",
-    "tested_revision": "e689a4727a7e33cc8c87dc9d64a78a6da30ff6f9"
-  },
-  "owner_verification": {
-    "authority_commit": "50f545504cec623b4f3cfdbb2d3c4d87739dde6f",
-    "source_proof_run_id": 30935133192,
-    "source_revision": "e689a4727a7e33cc8c87dc9d64a78a6da30ff6f9",
-    "status": "CONFIRMED"
+    "run_id": 30935964784,
+    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/30935964784",
+    "tested_revision": "91b60a5fac42ae57fb932039489ccb9f138276dc"
   },
   "phase1_base_commit": "c6c11ece1c5dc98e151589df42f272f4637af4d5",
   "phase2": {
@@ -51,7 +45,7 @@
   "source_inventory": {
     "file_count": 88,
     "path": "manifests/source_inventory.json",
-    "sha256": "8a1179fa1569be28322b3aaf6edf6bc4ca90343faa4f123f6734be419be333c0"
+    "sha256": "4ffe1e5ab3e6827c4d3827eb26d6315045471e9bcec6f42e4c40817d79509bb5"
   },
   "status": "PHASE2_SHARED_CONTRACTS_FROZEN",
   "truth_boundary": "This receipt proves only the deterministic shared contract layer at the exact tested revision and hosted run recorded above. The authority commit may change only the inventory and this receipt. It does not authorize or prove loader transfer, partition writes, OEMINFO modification, flashing, reboot, drivers, signed packaging, or physical Huawei repair."

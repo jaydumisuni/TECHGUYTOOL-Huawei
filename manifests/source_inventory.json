@@ -339,8 +339,8 @@
     {
       "origin": "phase2_shared_contracts",
       "path": "rust/contracts_core/src/validation.rs",
-      "sha256": "a903efda22c539da9b73fa24ac5c439b2bbe28a0039f6e46bd4c26522980f84e",
-      "size_bytes": 13566
+      "sha256": "6e8d7cee58c5a19d65199f8c7d2113fdea0132fd10c3d4dec80c706f69381f19",
+      "size_bytes": 13389
     },
     {
       "origin": "phase2_shared_contracts",
