@@ -51,7 +51,7 @@ def test_reference_geometry_and_brand_assets_exist() -> None:
 def test_onefile_deployment_contract() -> None:
     spec = (ROOT / "pysidedeploy.spec").read_text(encoding="utf-8")
     assert "mode = onefile" in spec
-    assert "TECHGUY_TOOL_Huawei.exe" in spec
+    assert "TECHGUYTOOL_Huawei.exe" in spec
     build = (ROOT / "build_windows.ps1").read_text(encoding="utf-8")
     assert "pyside6-deploy" in build
     assert "pyside6-rcc" in build
