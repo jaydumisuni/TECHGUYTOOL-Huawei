@@ -1,0 +1,103 @@
+{
+  "artifacts": [
+    {
+      "custody": "private_drive_archive",
+      "git_allowed": false,
+      "id": "vog-l29-c185-oeminfo",
+      "path_in_private_archive": "huawei Revive/firmware/p 30 pro/VOG-L29C185.bin",
+      "proof_status": "historical_hardware_used_not_production_authorized",
+      "purpose": "historical generated 96 MiB target OEMINFO evidence",
+      "sha256": "740414511acbb3a3b3a03750456ff760a19cb17f98c160b7d041f5167824e491",
+      "size_bytes": 100663296
+    },
+    {
+      "custody": "private_drive_archive",
+      "git_allowed": false,
+      "id": "kirin980-xloader",
+      "path_in_private_archive": "huawei Revive/system/loaders/hisi980/xloader.img",
+      "proof_status": "compatibility_requires_exact_profile",
+      "purpose": "historical Kirin service loader component",
+      "sha256": "419abd240088c7b5cbc5a99d74402f77534328b4fd97964c45e4a942baf19d9b",
+      "size_bytes": 163840
+    },
+    {
+      "custody": "private_drive_archive",
+      "git_allowed": false,
+      "id": "kirin980-uce",
+      "path_in_private_archive": "huawei Revive/system/loaders/hisi980/uce.img",
+      "proof_status": "compatibility_requires_exact_profile",
+      "purpose": "historical Kirin service loader component",
+      "sha256": "6a5bf1e70eb525f16785a98ea54d937ebf5069a2fcb52b1411fbbaa559361190",
+      "size_bytes": 49152
+    },
+    {
+      "custody": "private_drive_archive",
+      "git_allowed": false,
+      "id": "kirin980-service-fastboot",
+      "path_in_private_archive": "huawei Revive/system/loaders/hisi980/fastboot.img",
+      "proof_status": "compatibility_requires_exact_profile",
+      "purpose": "historical service Fastboot image",
+      "sha256": "f46cb0e80c47592a5ee2c3a82d824f8cd7914ca5e1b1eca05b1c17205cfff7b2",
+      "size_bytes": 4501504
+    },
+    {
+      "custody": "private_drive_archive",
+      "git_allowed": false,
+      "id": "kirin980-service-fastbootf",
+      "path_in_private_archive": "huawei Revive/system/loaders/hisi980/fastbootf.img",
+      "proof_status": "compatibility_requires_exact_profile",
+      "purpose": "historical fast-flash service image",
+      "sha256": "9e660e8f55f31181fb4f5a68c5380a87c95245bfcddb338ddc2be5f5647f02ed",
+      "size_bytes": 4675584
+    },
+    {
+      "custody": "private_drive_archive",
+      "git_allowed": false,
+      "id": "vog-l29-temp-recovery",
+      "path_in_private_archive": "huawei Revive/tools/recovery/VOG-L29-C185-10.0.0.186-root-adb-recovery.img",
+      "proof_status": "historical_only_not_generalized",
+      "purpose": "historical temporary target recovery",
+      "sha256": "e348382fcd00f09843b85e1f98c0c53daf59e00fd460a4416a328d2746b1236b",
+      "size_bytes": 33554432
+    }
+  ],
+  "authority_archive_sha256": "d98d44364387431f86d4bad2e725bb5e6612f32a1f1884436a4285872c87efc4",
+  "global_rule": "Binaries remain external. A path or filename never authorizes use; exact hash, provenance, device profile, recipe, lease, backup, and verification are required.",
+  "intentionally_omitted_inputs": [
+    {
+      "expected_name": "update_sd_base.zip",
+      "family": "VOGUE-L29D 10.0.0.186(C185E8R5P1)",
+      "id": "vog-l29-c185-base",
+      "present_in_private_archive": false,
+      "required_for_physical_recipe": true
+    },
+    {
+      "expected_name": "update_sd_cust_VOG-L29_hw_meafnaf.zip",
+      "family": "VOGUE-L29D 10.0.0.186(C185E8R5P1)",
+      "id": "vog-l29-c185-cust",
+      "present_in_private_archive": false,
+      "required_for_physical_recipe": true
+    },
+    {
+      "expected_name": "update_sd_preload_VOG-L29_hw_meafnaf_R5.zip",
+      "family": "VOGUE-L29D 10.0.0.186(C185E8R5P1)",
+      "id": "vog-l29-c185-preload",
+      "present_in_private_archive": false,
+      "required_for_physical_recipe": true
+    },
+    {
+      "expected_name": "VOGUE-AL00A-BD 1.0.0.82_Board Software_general_9.1.0_r1_EMUI9.1.0_05022MXS",
+      "id": "vog-al00-board-software",
+      "present_in_private_archive": false,
+      "required_for_physical_recipe": true
+    },
+    {
+      "expected_name": "SUPER.img",
+      "id": "vog-l29-merged-super",
+      "present_in_private_archive": false,
+      "required_for_physical_recipe": true
+    }
+  ],
+  "prepared_at": "2026-08-04T11:30:00Z",
+  "schema": "techguytool-huawei.external-artifacts.v1"
+}

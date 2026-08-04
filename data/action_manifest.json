@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "product": "TECHGUY TOOL — HUAWEI",
+  "actions": [
+    {"id": "read_device", "label": "Read Device", "guarded": false},
+    {"id": "open_terminal", "label": "Fastboot Terminal", "guarded": false},
+    {"id": "fix_drivers", "label": "Fix Drivers", "guarded": true, "guard_reason": "Driver repair requires signed driver packages and elevation."},
+    {"id": "register_device", "label": "Register Device", "guarded": false},
+    {"id": "frp_repair", "label": "FRP Repair", "guarded": true, "guard_reason": "Restricted operation; ownership and an approved service adapter are required."},
+    {"id": "bootloader", "label": "Bootloader", "guarded": true, "guard_reason": "Only official unlock/relock routes may be used."},
+    {"id": "huawei_id", "label": "Huawei ID", "guarded": true, "guard_reason": "Account-lock operations require documented authorization."},
+    {"id": "verlist", "label": "Verlist", "guarded": true, "guard_reason": "Write access requires a verified backup and compatible firmware evidence."},
+    {"id": "pair", "label": "Pair", "guarded": true, "guard_reason": "Pairing repair requires a device-specific adapter."},
+    {"id": "full_oeminfo", "label": "Full OEMINFO", "guarded": true, "guard_reason": "OEMINFO access is read-first and device-specific."},
+    {"id": "flash_firmware", "label": "Flash Firmware", "guarded": true, "guard_reason": "Package compatibility and backup proof are mandatory before writes."},
+    {"id": "board_repair", "label": "Board Repair", "guarded": true, "guard_reason": "Board service requires an approved chipset adapter."},
+    {"id": "backup_restore", "label": "Backup / Restore", "guarded": true, "guard_reason": "Restore remains blocked until a verified backup exists."}
+  ]
+}

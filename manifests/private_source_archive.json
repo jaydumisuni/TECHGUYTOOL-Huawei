@@ -1,0 +1,70 @@
+{
+  "authority": {
+    "drive_file_id": "1qH4K0m1lX_3o0XLvCkJMXsDajOkfu2cs",
+    "entry_count": 4448,
+    "name": "huawei Revive.zip",
+    "production_status": "quarantined_mixed_authority",
+    "sha256": "d98d44364387431f86d4bad2e725bb5e6612f32a1f1884436a4285872c87efc4",
+    "size_bytes": 434391243,
+    "source_status": "authoritative_recovery_input",
+    "visibility": "private"
+  },
+  "duplicate_proof": {
+    "byte_identical": true,
+    "copies_compared": 2,
+    "sha256": "d98d44364387431f86d4bad2e725bb5e6612f32a1f1884436a4285872c87efc4"
+  },
+  "prepared_at": "2026-08-04T11:30:00Z",
+  "privacy": {
+    "contains_absolute_local_paths": true,
+    "contains_device_identifiers": true,
+    "contains_operation_logs": true,
+    "public_copy_allowed": false,
+    "rule": "Reference by digest; do not publish raw archive contents without file-level review and redaction."
+  },
+  "schema": "techguytool-huawei.private-source-archive.v1",
+  "selected_records": [
+    {
+      "classification": "historical_mixed_xray_recovery_source",
+      "path": "huawei Revive/system/huawei-revive.pyz",
+      "sha256": "8ea5ac9c04d1b77831f14ec48f0070a6ccf647dceed57511695786a0e369b403",
+      "size_bytes": 1012811
+    },
+    {
+      "classification": "private_device_bound_executor_source",
+      "path": "huawei Revive/system/flash_vog_l29_c185.py",
+      "sha256": "fd3cd429488ace05127c883d42a641bc97c8b22cb093c3ab823fedc46726721b",
+      "size_bytes": 10046
+    },
+    {
+      "classification": "golden_workflow_study",
+      "path": "huawei Revive/system/P10Revive reference study.md",
+      "sha256": "a359bd3db40f1aac387b758a3bd0307c72ea8b03bd6976eb3cb8d0cda78af37f",
+      "size_bytes": 5192
+    },
+    {
+      "classification": "historical_board_recipe_evidence",
+      "path": "huawei Revive/plans/p30-pro-workflow.json",
+      "sha256": "57772084b3aee50cffa92fb9729c3df08084c4d1afc96acf8eb2ab23320ba739",
+      "size_bytes": 140673
+    },
+    {
+      "classification": "historical_package_proof",
+      "path": "huawei Revive/plans/p30-pro-package-proof.json",
+      "sha256": "ff78bd796bfb6a10a4c90e1693e78f1addeded3da34964454e98f663630d96aa",
+      "size_bytes": 33870
+    },
+    {
+      "classification": "private_hardware_operation_evidence",
+      "path": "huawei Revive/logs/vog-l29-c185-full-flash-20260802.json",
+      "sha256": "459b2671c27f6333d68253541389833035596fda1a3b5834fea0b4ef0f51e2b1",
+      "size_bytes": 27654
+    },
+    {
+      "classification": "private_recovery_handoff",
+      "path": "huawei Revive/CHAT-HANDOFF-20260802.md",
+      "sha256": "93c5a4a24b0f84e6bebab0b84be4bc37261c3a00ece1f234fe4ca9fbcf59db28",
+      "size_bytes": 5045
+    }
+  ]
+}

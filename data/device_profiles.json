@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "vendors": ["Huawei", "Honor"],
+  "platform_families": [
+    {"name": "Kirin 620/650", "transport": ["adb", "fastboot", "upgrade"]},
+    {"name": "Kirin 659/710", "transport": ["adb", "fastboot", "upgrade"]},
+    {"name": "Kirin 960/970", "transport": ["adb", "fastboot", "rescue"]},
+    {"name": "Kirin 980/990", "transport": ["adb", "fastboot", "rescue"]},
+    {"name": "Qualcomm Huawei", "transport": ["adb", "fastboot", "edl-readonly"]},
+    {"name": "MediaTek Huawei", "transport": ["adb", "fastboot", "preloader-readonly"]}
+  ],
+  "models": [
+    {"model": "VOG-L29", "name": "Huawei P30 Pro", "platform": "Kirin 980"},
+    {"model": "ELE-L29", "name": "Huawei P30", "platform": "Kirin 980"},
+    {"model": "LYA-L29", "name": "Huawei Mate 20 Pro", "platform": "Kirin 980"},
+    {"model": "CLT-L29", "name": "Huawei P20 Pro", "platform": "Kirin 970"},
+    {"model": "ANE-LX1", "name": "Huawei P20 Lite", "platform": "Kirin 659"}
+  ]
+}

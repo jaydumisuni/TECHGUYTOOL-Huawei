@@ -1,0 +1,47 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+build/
+dist/
+proof/
+wheelhouse/
+*.egg-info/
+
+# Mutable runtime state
+runtime/*
+!runtime/health/
+!runtime/health/.gitkeep
+!runtime/platform-tools/
+!runtime/platform-tools/.gitkeep
+
+# Device/customer/runtime artifacts never belong in public source
+firmware/
+backups/
+logs/
+work/
+operation-journals/
+registration/
+*.img
+*.mbn
+*.bin
+*.app
+*.cpio
+*.cpio.gz
+*.pyz
+*.zip
+*.7z
+*.rar
+*.exe
+*.dll
+*.so
+
+# Temporary repository transfer/import material
+workspace-import/
+final-patch-v1/
+runtime-import/
+runtime-export/
+transfer-probe-*
+transfer-test.*
+*.b64
