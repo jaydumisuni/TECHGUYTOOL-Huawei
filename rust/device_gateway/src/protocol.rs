@@ -179,9 +179,9 @@ fn dispatch_command(gateway: &Gateway, command: GatewayCommand) -> Result<Value,
         } => Ok(serde_json::to_value(
             gateway.open_operation(&physical_session_id, &request_sha256)?,
         )?),
-        GatewayCommand::GetOperation { operation_id } => Ok(serde_json::to_value(
-            gateway.get_operation(&operation_id)?,
-        )?),
+        GatewayCommand::GetOperation { operation_id } => {
+            Ok(serde_json::to_value(gateway.get_operation(&operation_id)?)?)
+        }
         GatewayCommand::TransitionOperation {
             operation_id,
             stage,
@@ -191,9 +191,9 @@ fn dispatch_command(gateway: &Gateway, command: GatewayCommand) -> Result<Value,
         GatewayCommand::ResumeOperation { operation_id } => Ok(serde_json::to_value(
             gateway.resume_operation(&operation_id)?,
         )?),
-        GatewayCommand::RegisterProvider { manifest } => Ok(serde_json::to_value(
-            gateway.register_provider(manifest)?,
-        )?),
+        GatewayCommand::RegisterProvider { manifest } => {
+            Ok(serde_json::to_value(gateway.register_provider(manifest)?)?)
+        }
         GatewayCommand::PublishContract {
             component_id,
             contract,
