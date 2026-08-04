@@ -77,8 +77,8 @@ def build(
         "phase3": {
             "branch": "phase3/device-gateway",
             "database_schema_version": 1,
-            "rust_gateway_tests": 7,
-            "python_gateway_client_tests": 3,
+            "rust_gateway_tests": 10,
+            "python_gateway_client_tests": 4,
             "reconnect_proof_cases": 1,
             "device_authority": "none",
             "xray_authority": "read_only",
@@ -94,6 +94,10 @@ def build(
             "ui_reconnect_proof": "PASS",
             "gateway_restart_recovery": "PASS",
             "journal_chain_verification": "PASS",
+            "atomic_state_and_journal_commit": "PASS",
+            "concurrent_transition_audit": "PASS",
+            "bounded_protocol_framing": "PASS",
+            "bounded_worker_lease": "PASS",
             "forbidden_device_capability_rejection": "PASS",
             "complete_python_regression": "PASS",
             "phase2_contract_regression": "PASS",
@@ -109,9 +113,9 @@ def build(
             "This receipt proves only the persistent, device-inert TTG Device Gateway control "
             "plane at the tested revision and hosted run. It proves durable sessions, operation "
             "stage recovery, loopback UI reconnection, provider/capability policy, watchdog state, "
-            "diagnostics, and a hash-chained journal. It does not authorize or prove loader "
-            "transfer, partition writes, OEMINFO modification, flashing, reboot, drivers, signed "
-            "packaging, or physical Huawei repair."
+            "atomic state/audit commits, bounded protocol framing, diagnostics, and a hash-chained "
+            "journal. It does not authorize or prove loader transfer, partition writes, OEMINFO "
+            "modification, flashing, reboot, drivers, signed packaging, or physical Huawei repair."
         ),
     }
 
@@ -150,7 +154,11 @@ def verify() -> None:
         raise ValueError("Phase 3 receipt is missing source inventory identity")
 
     owner = receipt.get("owner_verification")
+    if owner is not None and not isinstance(owner, dict):
+        raise ValueError("owner_verification must be an object when present")
     if isinstance(owner, dict):
+        if owner.get("status") != "CONFIRMED":
+            raise ValueError("owner verification is not confirmed")
         authority_commit = str(owner.get("authority_commit"))
         source_revision = str(owner.get("source_revision"))
         source_run_id = str(owner.get("source_proof_run_id"))
