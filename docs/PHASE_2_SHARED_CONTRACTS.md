@@ -9,7 +9,7 @@
 
 Phase 2 freezes the versioned data contracts used by Xray, the future TTG Device Gateway, deterministic governors, bounded executors, verification, recovery, and governed learning.
 
-The same contract document receives the same validity verdict, canonical JSON, SHA-256 identity, and safety error codes in Python and Rust.
+The same contract document and validation context receive the same validity verdict, canonical JSON, SHA-256 identity, and safety error codes in Python and Rust.
 
 ## Frozen contract types
 
@@ -55,6 +55,7 @@ The validators reject:
 - unsorted or duplicate authority arrays;
 - authority, physical-session, expiry, and single-use mismatches;
 - future creation, invalid expiry, stale contracts, and invalid consumption state;
+- invalid validation timestamps;
 - context mismatches for contract type, authority, physical session, recipe, and artifacts;
 - timestamp-order violations;
 - automatic promotion of write targets, offsets, destructive recipes, or expanded authority.
@@ -64,9 +65,10 @@ The validators reject:
 - 17 valid canonical fixtures, one for each contract type;
 - 34 invalid mutation fixtures;
 - one malformed-JSON fixture;
-- six Python contract tests;
-- three Rust integration tests covering the complete fixture corpus;
-- exact cross-language validity, canonical JSON, error-code, and SHA-256 proof across 52 cases;
+- one invalid validation-context fixture;
+- seven Python contract tests;
+- four Rust integration tests covering the complete fixture corpus;
+- exact cross-language validity, canonical JSON, error-code, validation-context, and SHA-256 proof across 53 cases;
 - complete non-Qt Python regression;
 - Rust formatting and Clippy gates;
 - dependency lockfile generated and inventory-bound under Rust 1.75.0.
@@ -81,6 +83,7 @@ Hosted workflow `Phase 2 Shared Contracts` completed successfully after the foll
 4. Source inventory generation was moved before the complete regression suite.
 5. The generated Cargo lockfile was registered as intended source before inventory validation.
 6. The proof receipt was generated only after all proof gates passed.
+7. Invalid validation timestamps were classified identically by Python and Rust.
 
 Frozen receipt: [`../manifests/source_inventory.receipt.json`](../manifests/source_inventory.receipt.json)
 
@@ -100,13 +103,17 @@ This phase does not:
 ## Exit gate result
 
 - Python valid fixtures: **17/17 PASS**
-- Python invalid fixtures: **34/34 PASS**
+- Python invalid mutation fixtures: **34/34 PASS**
 - malformed JSON fixture: **1/1 PASS**
+- invalid validation-context fixture: **1/1 PASS**
 - Rust valid fixtures: **17/17 PASS**
-- Rust invalid fixtures: **34/34 PASS**
+- Rust invalid mutation fixtures: **34/34 PASS**
+- Rust malformed JSON fixture: **1/1 PASS**
+- Rust invalid validation-context fixture: **1/1 PASS**
 - exact Python/Rust canonical JSON equivalence: **PASS**
 - exact Python/Rust SHA-256 equivalence: **PASS**
 - exact Python/Rust error-code equivalence: **PASS**
+- exact Python/Rust validation-context equivalence: **PASS**
 - `cargo fmt --check`: **PASS**
 - `cargo clippy --all-targets -- -D warnings`: **PASS**
 - `cargo test`: **PASS**
