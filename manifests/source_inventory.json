@@ -25,7 +25,7 @@
       "size_bytes": 2196
     },
     {
-      "origin": "phase1_recovery_and_freeze",
+      "origin": "phase2_shared_contracts",
       "path": ".gitignore",
       "sha256": "af4713adc70dc7a63afa21886be10b9fa8f6677104af90b80c27c93d7033e227",
       "size_bytes": 605
@@ -37,7 +37,7 @@
       "size_bytes": 35696
     },
     {
-      "origin": "phase1_recovery_and_freeze",
+      "origin": "phase2_shared_contracts",
       "path": "README.md",
       "sha256": "39b66f34ffa64c122fbb087d27bf49ceed7fccb76307766a63e47857aa926221",
       "size_bytes": 4892
@@ -471,7 +471,7 @@
     {
       "origin": "phase2_shared_contracts",
       "path": "tools/build_source_inventory.py",
-      "sha256": "53ceaffc1732637df21a9c486fcd9222f784502ff4423b915b44099e573a1263",
+      "sha256": "4ad515796c1c911d11c433a82aa05736911374de20495687cf258c9396108d41",
       "size_bytes": 4145
     },
     {
@@ -523,7 +523,7 @@
       "size_bytes": 5920
     }
   ],
-  "prepared_at": "2026-08-04T15:40:00Z",
+  "prepared_at": "2026-08-04T15:55:00Z",
   "private_recovery_authority": {
     "archive_sha256": "d98d44364387431f86d4bad2e725bb5e6612f32a1f1884436a4285872c87efc4",
     "copied_into_public_source": false,
