@@ -39,8 +39,8 @@
     {
       "origin": "phase1_recovery_and_freeze",
       "path": "README.md",
-      "sha256": "0ce4d984760de17065e851c229d1a7a5ae5199cbaa03e80dd2860cbc822d336a",
-      "size_bytes": 3664
+      "sha256": "87ba5cf1c596589f7f57e69a1ae1142107cf6265290a04b84ba5eb486d1631b0",
+      "size_bytes": 4739
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -111,8 +111,8 @@
     {
       "origin": "phase2_shared_contracts",
       "path": "docs/PHASE_2_SHARED_CONTRACTS.md",
-      "sha256": "279043aabe2dbd47b49b9f6e1c3aa2b32d35c860f5dfd2763cd252c34282aaf5",
-      "size_bytes": 3167
+      "sha256": "3b9af76bf8bc89aa0e98721fee6f2d3e57a2b8e930e06169f87e7ed6e05833ad",
+      "size_bytes": 4136
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",

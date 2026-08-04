@@ -33,7 +33,7 @@
   "source_inventory": {
     "file_count": 82,
     "path": "manifests/source_inventory.json",
-    "sha256": "91fb76febda3ffd4c342eb2f6159566b5a622242cf0756ba1d90b7e9c8dc16f5"
+    "sha256": "11fb630292a1fd5850d56ab0b5cd691273d5b943e9f4ed2fdde0d250491ca54d"
   },
   "status": "PHASE2_SHARED_CONTRACTS_FROZEN",
   "truth_boundary": "This receipt proves only the deterministic shared contract layer after the hosted workflow completed every listed proof gate. It does not authorize or prove loader transfer, partition writes, OEMINFO modification, flashing, reboot, drivers, signed packaging, or physical Huawei repair."
