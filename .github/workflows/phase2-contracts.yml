@@ -97,12 +97,14 @@ jobs:
           python tools/prove_contract_equivalence.py
           --rust-bin rust/contracts_core/target/debug/ttg-contracts
 
+      - name: Regenerate source inventory for complete regression
+        run: python tools/build_source_inventory.py
+
       - name: Run complete non-Qt Python regression suite
         run: python -m pytest -q
 
-      - name: Regenerate source inventory and Phase 2 receipt
+      - name: Generate Phase 2 receipt and verify frozen authority
         run: |
-          python tools/build_source_inventory.py
           python tools/build_phase2_receipt.py
           python tools/verify_source_freeze.py --json
           git diff --check
