@@ -6,13 +6,11 @@ use serde_json::Value;
 use std::collections::BTreeSet;
 use uuid::Uuid;
 
-const TIMESTAMP_PATTERN: &str =
-    r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$";
+const TIMESTAMP_PATTERN: &str = r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$";
 const SHA256_PATTERN: &str = r"^[0-9a-f]{64}$";
 const UUID_PATTERN: &str =
     r"^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$";
-const SEMVER_PATTERN: &str =
-    r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$";
+const SEMVER_PATTERN: &str = r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$";
 
 pub(crate) fn validate_field(
     value: &Value,
