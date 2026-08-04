@@ -18,9 +18,7 @@ PHASE1_PREFIXES = (
 )
 PHASE1_PATHS = {
     ".github/workflows/proof.yml",
-    ".gitignore",
     "FULL_PLAN.md",
-    "README.md",
     "docs/LEGACY_AUTHORITY_REVIEW.md",
     "docs/PHASE_1_SOURCE_FREEZE.md",
     "tests/test_source_freeze.py",
@@ -32,6 +30,8 @@ PHASE2_PREFIXES = (
 )
 PHASE2_PATHS = {
     ".github/workflows/phase2-contracts.yml",
+    ".gitignore",
+    "README.md",
     "docs/PHASE_2_SHARED_CONTRACTS.md",
     "techguy_huawei/contract_fields.py",
     "techguy_huawei/contract_models.py",
@@ -102,7 +102,7 @@ def build() -> dict[str, object]:
         "excluded_from_recursive_hashing": sorted(EXCLUDED),
         "file_count": len(records),
         "files": records,
-        "prepared_at": "2026-08-04T15:40:00Z",
+        "prepared_at": "2026-08-04T15:55:00Z",
         "private_recovery_authority": {
             "archive_sha256": "d98d44364387431f86d4bad2e725bb5e6612f32a1f1884436a4285872c87efc4",
             "copied_into_public_source": False,
