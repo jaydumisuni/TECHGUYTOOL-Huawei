@@ -11,6 +11,7 @@ from techguy_huawei.contract_validation import validate_contract
 ROOT = Path(__file__).resolve().parents[1]
 VALID_FIXTURES = ROOT / "contracts" / "fixtures" / "valid_contracts.json"
 INVALID_FIXTURES = ROOT / "contracts" / "fixtures" / "invalid_contracts.json"
+CONTEXT_FIXTURES = ROOT / "contracts" / "fixtures" / "context_cases.json"
 
 
 def _load(path: Path) -> dict[str, Any]:
@@ -113,6 +114,21 @@ def test_all_raw_invalid_fixtures_fail_with_exact_codes() -> None:
         result = validate_contract(case["raw_json"], context=case.get("context"))
         assert not result.ok, case["name"]
         assert _error_codes(result) == sorted(case["expected_error_codes"])
+
+
+def test_all_invalid_context_fixtures_fail_with_exact_codes() -> None:
+    valid = _valid_by_name()
+    fixtures = _load(CONTEXT_FIXTURES)
+    assert fixtures["schema"] == "techguytool-huawei.context-contract-fixtures.v1"
+    assert len(fixtures["cases"]) == 1
+
+    for case in fixtures["cases"]:
+        document = copy.deepcopy(valid[case["base"]]["contract"])
+        result = validate_contract(document, context=case["context"])
+        assert not result.ok, case["name"]
+        assert _error_codes(result) == sorted(case["expected_error_codes"])
+        assert result.canonical is None
+        assert result.sha256 is None
 
 
 def test_execution_lease_context_is_fail_closed() -> None:
