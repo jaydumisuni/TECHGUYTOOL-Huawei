@@ -6,6 +6,9 @@ from typing import Any, Mapping
 from .contract_models import ContractError
 from .contract_support import SHA256_RE, SEMVER_RE, UUID_RE, canonical_json, parse_timestamp
 
+_I64_MIN = -(1 << 63)
+_I64_MAX = (1 << 63) - 1
+
 
 def validate_field(
     value: Any,
@@ -14,6 +17,8 @@ def validate_field(
     path: str,
     errors: list[ContractError],
 ) -> None:
+    """Validate one value against a reviewed registry field specification."""
+
     if value is None:
         if not spec.get("nullable", False):
             errors.append(ContractError("INVALID_FIELD_TYPE", path, "null is not permitted"))
@@ -58,19 +63,37 @@ def validate_field(
     if field_type == "string":
         _validate_string(value, spec, path, errors)
     elif field_type == "integer":
-        minimum, maximum = spec.get("minimum"), spec.get("maximum")
-        if (minimum is not None and value < minimum) or (
-            maximum is not None and value > maximum
-        ):
-            errors.append(
-                ContractError(
-                    "INTEGER_OUT_OF_RANGE",
-                    path,
-                    f"integer must be between {minimum} and {maximum}",
-                )
-            )
+        _validate_integer(value, spec, path, errors)
     elif field_type == "array":
         _validate_array(value, spec, path, errors)
+
+
+def _validate_integer(
+    value: int,
+    spec: Mapping[str, Any],
+    path: str,
+    errors: list[ContractError],
+) -> None:
+    if value < _I64_MIN or value > _I64_MAX:
+        errors.append(
+            ContractError(
+                "INTEGER_OUT_OF_RANGE",
+                path,
+                "integer exceeds signed 64-bit contract range",
+            )
+        )
+        return
+    minimum, maximum = spec.get("minimum"), spec.get("maximum")
+    if (minimum is not None and value < minimum) or (
+        maximum is not None and value > maximum
+    ):
+        errors.append(
+            ContractError(
+                "INTEGER_OUT_OF_RANGE",
+                path,
+                f"integer must be between {minimum} and {maximum}",
+            )
+        )
 
 
 def _validate_string(
@@ -141,14 +164,24 @@ def _validate_array(
             )
         )
     before = len(errors)
+    item_spec = spec.get("items")
+    if not isinstance(item_spec, Mapping):
+        errors.append(
+            ContractError(
+                "INVALID_REGISTRY_FIELD_TYPE",
+                path,
+                "array field specification is missing items",
+            )
+        )
+        return
     for index, child in enumerate(value):
-        validate_field(child, spec["items"], path=f"{path}[{index}]", errors=errors)
+        validate_field(child, item_spec, path=f"{path}[{index}]", errors=errors)
     if spec.get("sorted_unique") and len(errors) == before:
         canonical_items = [canonical_json(child) for child in value]
         if canonical_items != sorted(set(canonical_items)):
             code = (
                 "HASH_LIST_NOT_SORTED_UNIQUE"
-                if spec.get("items", {}).get("format") == "sha256"
+                if item_spec.get("format") == "sha256"
                 else "ARRAY_NOT_SORTED_UNIQUE"
             )
             errors.append(
