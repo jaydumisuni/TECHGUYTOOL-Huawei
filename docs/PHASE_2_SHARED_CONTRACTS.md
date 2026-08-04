@@ -1,14 +1,15 @@
 # Phase 2 — Shared Python/Rust Contracts
 
-**Status:** implementation candidate  
+**Status:** FROZEN — EXIT GATE SATISFIED  
 **Authority:** `FULL_PLAN.md`, Phase 2  
-**Device authority:** none; this phase is device-inert
+**Device authority:** none; this phase is device-inert  
+**Frozen branch:** `phase2/shared-contracts`
 
 ## Purpose
 
 Phase 2 freezes the versioned data contracts used by Xray, the future TTG Device Gateway, deterministic governors, bounded executors, verification, recovery, and governed learning.
 
-The same contract document must receive the same validity verdict, canonical JSON, SHA-256 identity, and safety error codes in Python and Rust.
+The same contract document receives the same validity verdict, canonical JSON, SHA-256 identity, and safety error codes in Python and Rust.
 
 ## Frozen contract types
 
@@ -58,17 +59,30 @@ The validators reject:
 - timestamp-order violations;
 - automatic promotion of write targets, offsets, destructive recipes, or expanded authority.
 
-## Proof corpus
-
-The branch contains:
+## Frozen proof corpus
 
 - 17 valid canonical fixtures, one for each contract type;
 - 34 invalid mutation fixtures;
 - one malformed-JSON fixture;
-- Python fixture tests;
-- Rust fixture tests;
-- exact cross-language canonical and SHA-256 equivalence proof;
-- Rust formatting and Clippy gates.
+- six Python contract tests;
+- three Rust integration tests covering the complete fixture corpus;
+- exact cross-language validity, canonical JSON, error-code, and SHA-256 proof across 52 cases;
+- complete non-Qt Python regression;
+- Rust formatting and Clippy gates;
+- dependency lockfile generated and inventory-bound under Rust 1.75.0.
+
+## Proof result
+
+Hosted workflow `Phase 2 Shared Contracts` completed successfully after the following corrections were proven:
+
+1. Rust sources were formatted deterministically.
+2. Dependencies were pinned to Rust-1.75-compatible versions.
+3. The equivalence runner was made independent of the caller's Python import path.
+4. Source inventory generation was moved before the complete regression suite.
+5. The generated Cargo lockfile was registered as intended source before inventory validation.
+6. The proof receipt was generated only after all proof gates passed.
+
+Frozen receipt: [`../manifests/source_inventory.receipt.json`](../manifests/source_inventory.receipt.json)
 
 ## Safety boundary
 
@@ -83,19 +97,20 @@ This phase does not:
 
 `execution_lease` is only a validated contract shape in this phase. No executor consumes it yet.
 
-## Exit gate
+## Exit gate result
 
-Phase 2 may merge only when hosted proof confirms:
+- Python valid fixtures: **17/17 PASS**
+- Python invalid fixtures: **34/34 PASS**
+- malformed JSON fixture: **1/1 PASS**
+- Rust valid fixtures: **17/17 PASS**
+- Rust invalid fixtures: **34/34 PASS**
+- exact Python/Rust canonical JSON equivalence: **PASS**
+- exact Python/Rust SHA-256 equivalence: **PASS**
+- exact Python/Rust error-code equivalence: **PASS**
+- `cargo fmt --check`: **PASS**
+- `cargo clippy --all-targets -- -D warnings`: **PASS**
+- `cargo test`: **PASS**
+- complete Python regression: **PASS**
+- source-freeze verification after inventory regeneration: **PASS**
 
-- Python valid fixtures: 17/17;
-- Python invalid fixtures: 34/34 plus malformed JSON;
-- Rust valid fixtures: 17/17;
-- Rust invalid fixtures: 34/34 plus malformed JSON;
-- exact Python/Rust canonical JSON equivalence: PASS;
-- exact Python/Rust SHA-256 equivalence: PASS;
-- `cargo fmt --check`: PASS;
-- `cargo clippy --all-targets -- -D warnings`: PASS;
-- `cargo test`: PASS;
-- Phase 1 source-freeze verification remains coherent after inventory regeneration.
-
-Passing this phase authorizes Phase 3 Gateway work. It does not authorize physical device execution.
+Phase 2 authorizes Phase 3 Gateway work. It does not authorize physical device execution.
