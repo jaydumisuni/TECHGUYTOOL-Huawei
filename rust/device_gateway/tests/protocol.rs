@@ -1,9 +1,9 @@
 use serde_json::{json, Value};
 use std::io::{BufRead, BufReader, Write};
-use std::net::{TcpListener, TcpStream};
+use std::net::{SocketAddr, TcpListener, TcpStream};
 use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
-use std::thread;
+use std::thread::{self, JoinHandle};
 use std::time::Duration;
 use techguy_device_gateway::{run_listener, Gateway};
 use tempfile::tempdir;
@@ -11,16 +11,7 @@ use tempfile::tempdir;
 #[test]
 fn loopback_clients_reconnect_to_the_same_operation() {
     let root = tempdir().expect("tempdir");
-    let gateway = Arc::new(Gateway::open(root.path().join("gateway.sqlite3")).expect("gateway"));
-    let listener = TcpListener::bind("127.0.0.1:0").expect("listener");
-    let address = listener.local_addr().expect("address");
-    let shutdown = Arc::new(AtomicBool::new(false));
-    let server_gateway = Arc::clone(&gateway);
-    let server_shutdown = Arc::clone(&shutdown);
-    let server = thread::spawn(move || {
-        run_listener(server_gateway, listener, server_shutdown).expect("server")
-    });
-    thread::sleep(Duration::from_millis(40));
+    let (address, server) = start_server(root.path().join("gateway.sqlite3"));
 
     let session = request(
         address,
@@ -67,6 +58,50 @@ fn loopback_clients_reconnect_to_the_same_operation() {
     assert!(recovered["ok"].as_bool().expect("ok"));
     assert_eq!(recovered["result"]["stage"], "requested");
 
+    stop_server(address, server);
+}
+
+#[test]
+fn oversized_request_without_newline_is_rejected_before_unbounded_buffering() {
+    let root = tempdir().expect("tempdir");
+    let (address, server) = start_server(root.path().join("gateway.sqlite3"));
+    let mut stream = TcpStream::connect(address).expect("connect");
+    stream
+        .set_write_timeout(Some(Duration::from_secs(5)))
+        .expect("write timeout");
+    stream
+        .set_read_timeout(Some(Duration::from_secs(5)))
+        .expect("read timeout");
+    stream
+        .write_all(&vec![b'{'; 1024 * 1024 + 1])
+        .expect("write oversized request");
+    stream.flush().expect("flush");
+    let mut line = String::new();
+    BufReader::new(stream)
+        .read_line(&mut line)
+        .expect("read rejection");
+    let response: Value = serde_json::from_str(&line).expect("response JSON");
+    assert_eq!(response["ok"], false);
+    assert_eq!(response["error"]["code"], "PROTOCOL_ERROR");
+    assert!(response["error"]["message"]
+        .as_str()
+        .expect("message")
+        .contains("one MiB"));
+
+    stop_server(address, server);
+}
+
+fn start_server(database: std::path::PathBuf) -> (SocketAddr, JoinHandle<()>) {
+    let gateway = Arc::new(Gateway::open(database).expect("gateway"));
+    let listener = TcpListener::bind("127.0.0.1:0").expect("listener");
+    let address = listener.local_addr().expect("address");
+    let shutdown = Arc::new(AtomicBool::new(false));
+    let server = thread::spawn(move || run_listener(gateway, listener, shutdown).expect("server"));
+    thread::sleep(Duration::from_millis(40));
+    (address, server)
+}
+
+fn stop_server(address: SocketAddr, server: JoinHandle<()>) {
     let shutdown_response = request(
         address,
         json!({
@@ -78,7 +113,7 @@ fn loopback_clients_reconnect_to_the_same_operation() {
     server.join().expect("join");
 }
 
-fn request(address: std::net::SocketAddr, payload: Value) -> Value {
+fn request(address: SocketAddr, payload: Value) -> Value {
     let mut stream = TcpStream::connect(address).expect("connect");
     stream
         .write_all(format!("{}\n", payload).as_bytes())
