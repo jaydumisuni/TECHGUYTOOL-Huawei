@@ -172,9 +172,9 @@ impl Gateway {
         next: OperationStage,
     ) -> Result<OperationSession, GatewayError> {
         let now = now_utc();
-        let (_previous_stage, operation, event) = self
-            .storage
-            .transition_operation(operation_id, next, &now)?;
+        let (_previous_stage, operation, event) =
+            self.storage
+                .transition_operation(operation_id, next, &now)?;
         if let Some(event) = event {
             self.notify_event(&event);
         }
