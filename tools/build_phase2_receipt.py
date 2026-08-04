@@ -25,7 +25,7 @@ def build() -> dict[str, object]:
     return {
         "schema": "techguytool-huawei.source-inventory-receipt.v2",
         "status": "PHASE2_SHARED_CONTRACTS_FROZEN",
-        "prepared_at": "2026-08-04T15:20:00Z",
+        "prepared_at": "2026-08-04T15:40:00Z",
         "phase1_base_commit": "c6c11ece1c5dc98e151589df42f272f4637af4d5",
         "phase2": {
             "branch": "phase2/shared-contracts",
@@ -33,7 +33,8 @@ def build() -> dict[str, object]:
             "valid_fixtures": 17,
             "invalid_mutation_fixtures": 34,
             "malformed_json_fixtures": 1,
-            "equivalence_cases": 52,
+            "invalid_context_fixtures": 1,
+            "equivalence_cases": 53,
             "device_authority": "none",
             "xray_authority": "read_only",
             "phase2_file_count": len(phase2_files),
@@ -43,6 +44,8 @@ def build() -> dict[str, object]:
             "rust_fixture_suite": "PASS",
             "python_rust_canonical_equivalence": "PASS",
             "python_rust_sha256_equivalence": "PASS",
+            "python_rust_error_code_equivalence": "PASS",
+            "python_rust_validation_context_equivalence": "PASS",
             "complete_python_regression": "PASS",
             "cargo_fmt": "PASS",
             "cargo_clippy_warnings_denied": "PASS",
