@@ -66,9 +66,8 @@ fn handle_client(
                 return Ok(());
             }
             RequestRead::Incomplete => {
-                let error = GatewayError::Protocol(
-                    "request must be terminated by a newline".to_owned(),
-                );
+                let error =
+                    GatewayError::Protocol("request must be terminated by a newline".to_owned());
                 write_response(
                     &mut stream,
                     &GatewayResponse::failure("unknown".to_owned(), &error),
