@@ -5,7 +5,6 @@ use crate::model::{
 };
 use chrono::{DateTime, Utc};
 use serde_json::{Map, Value};
-use std::collections::BTreeSet;
 
 const DANGEROUS_LEARNING_KINDS: &[&str] = &[
     "write_target",
@@ -420,9 +419,4 @@ fn timestamp_field(object: &Map<String, Value>, name: &str) -> Option<DateTime<U
         .get(name)
         .and_then(Value::as_str)
         .and_then(parse_timestamp)
-}
-
-#[allow(dead_code)]
-fn error_codes(errors: &[ContractError]) -> BTreeSet<&str> {
-    errors.iter().map(|error| error.code.as_str()).collect()
 }
