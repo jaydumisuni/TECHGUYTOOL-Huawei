@@ -1,18 +1,26 @@
 {
+  "generated_at": "2026-08-04T17:43:18Z",
+  "hosted_proof": {
+    "run_id": 30935133192,
+    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/30935133192",
+    "tested_revision": "e689a4727a7e33cc8c87dc9d64a78a6da30ff6f9"
+  },
   "phase1_base_commit": "c6c11ece1c5dc98e151589df42f272f4637af4d5",
   "phase2": {
     "branch": "phase2/shared-contracts",
+    "context_equivalence_cases": 2,
+    "context_fixtures": 2,
+    "contract_equivalence_cases": 55,
     "contract_types": 17,
     "device_authority": "none",
-    "equivalence_cases": 53,
-    "invalid_context_fixtures": 1,
     "invalid_mutation_fixtures": 34,
     "malformed_json_fixtures": 1,
-    "phase2_file_count": 29,
+    "phase2_file_count": 32,
+    "review_edge_fixtures": 3,
+    "total_cross_language_cases": 57,
     "valid_fixtures": 17,
     "xray_authority": "read_only"
   },
-  "prepared_at": "2026-08-04T15:50:00Z",
   "private_recovery_archive": {
     "drive_file_id": "1qH4K0m1lX_3o0XLvCkJMXsDajOkfu2cs",
     "sha256": "d98d44364387431f86d4bad2e725bb5e6612f32a1f1884436a4285872c87efc4",
@@ -33,12 +41,12 @@
     "rust_toolchain": "1.75.0",
     "source_freeze_verifier": "PASS"
   },
-  "schema": "techguytool-huawei.source-inventory-receipt.v2",
+  "schema": "techguytool-huawei.source-inventory-receipt.v3",
   "source_inventory": {
-    "file_count": 85,
+    "file_count": 88,
     "path": "manifests/source_inventory.json",
-    "sha256": "e33da516fa2ebd5dab562bedcf8a140d4751f9012bd61efac0a74f852b7b147a"
+    "sha256": "8a1179fa1569be28322b3aaf6edf6bc4ca90343faa4f123f6734be419be333c0"
   },
   "status": "PHASE2_SHARED_CONTRACTS_FROZEN",
-  "truth_boundary": "This receipt proves only the deterministic shared contract layer after the hosted workflow completed every listed proof gate. It does not authorize or prove loader transfer, partition writes, OEMINFO modification, flashing, reboot, drivers, signed packaging, or physical Huawei repair."
+  "truth_boundary": "This receipt proves only the deterministic shared contract layer at the exact tested revision and hosted run recorded above. The authority commit may change only the inventory and this receipt. It does not authorize or prove loader transfer, partition writes, OEMINFO modification, flashing, reboot, drivers, signed packaging, or physical Huawei repair."
 }
