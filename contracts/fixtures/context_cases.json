@@ -1,0 +1,1 @@
+{"cases":[{"base":"physical_device_session","context":{"now":"2030-01-01T00:05:00.000Z"},"expected_error_codes":["INVALID_VALIDATION_CONTEXT"],"name":"invalid_context_timestamp"}],"schema":"techguytool-huawei.context-contract-fixtures.v1"}
