@@ -7,7 +7,7 @@
     "equivalence_cases": 52,
     "invalid_mutation_fixtures": 34,
     "malformed_json_fixtures": 1,
-    "phase2_file_count": 24,
+    "phase2_file_count": 25,
     "valid_fixtures": 17,
     "xray_authority": "read_only"
   },
@@ -31,9 +31,9 @@
   },
   "schema": "techguytool-huawei.source-inventory-receipt.v2",
   "source_inventory": {
-    "file_count": 82,
+    "file_count": 83,
     "path": "manifests/source_inventory.json",
-    "sha256": "11fb630292a1fd5850d56ab0b5cd691273d5b943e9f4ed2fdde0d250491ca54d"
+    "sha256": "d67ed2e0b0e7c37fdba5d49b127e800d2bda192753c7dddf6d946101e76555e0"
   },
   "status": "PHASE2_SHARED_CONTRACTS_FROZEN",
   "truth_boundary": "This receipt proves only the deterministic shared contract layer after the hosted workflow completed every listed proof gate. It does not authorize or prove loader transfer, partition writes, OEMINFO modification, flashing, reboot, drivers, signed packaging, or physical Huawei repair."
