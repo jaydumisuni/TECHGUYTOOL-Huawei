@@ -3,9 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
-import os
 import re
-import sys
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -20,34 +18,13 @@ UUID_RE = re.compile(
 SEMVER_RE = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
 
 
-def registry_candidates() -> tuple[Path, ...]:
-    candidates: list[Path] = []
-    configured = os.environ.get("TTG_CONTRACT_REGISTRY")
-    if configured:
-        candidates.append(Path(configured).expanduser())
-    candidates.extend(
-        [
-            DEFAULT_REGISTRY_PATH,
-            Path(sys.prefix) / "contracts" / "registry.json",
-            Path.cwd() / "contracts" / "registry.json",
-        ]
-    )
-    unique: list[Path] = []
-    for candidate in candidates:
-        resolved = candidate.resolve(strict=False)
-        if resolved not in unique:
-            unique.append(resolved)
-    return tuple(unique)
-
-
 def load_registry(path: Path | None = None) -> dict[str, Any]:
-    registry_path = path or next(
-        (candidate for candidate in registry_candidates() if candidate.is_file()),
-        DEFAULT_REGISTRY_PATH,
-    )
+    registry_path = (path or DEFAULT_REGISTRY_PATH).resolve(strict=True)
     payload = json.loads(registry_path.read_text(encoding="utf-8"))
     if payload.get("schema") != "techguytool-huawei.contract-registry.v1":
         raise ValueError("unsupported contract registry schema")
+    if payload.get("registry_version") != 1:
+        raise ValueError("unsupported contract registry version")
     return payload
 
 
