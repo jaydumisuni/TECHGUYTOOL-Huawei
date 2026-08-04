@@ -1,46 +1,36 @@
 {
-  "base_workspace_artifact": {
-    "artifact_id": 8833608382,
-    "artifact_name": "huawei-source-workspace",
-    "artifact_sha256": "dbbb3b430f3ea595f4c4f01bc18670770059deec2c2700809085333fa6d645bc",
-    "github_actions_run_id": 30748347340
+  "phase1_base_commit": "c6c11ece1c5dc98e151589df42f272f4637af4d5",
+  "phase2": {
+    "branch": "phase2/shared-contracts",
+    "contract_types": 17,
+    "device_authority": "none",
+    "invalid_mutation_fixtures": 34,
+    "malformed_json_fixtures": 1,
+    "phase2_file_count": 24,
+    "valid_fixtures": 17,
+    "xray_authority": "read_only"
   },
-  "prepared_at": "2026-08-04T12:12:00Z",
+  "prepared_at": "2026-08-04T14:30:00Z",
   "private_recovery_archive": {
     "drive_file_id": "1qH4K0m1lX_3o0XLvCkJMXsDajOkfu2cs",
     "sha256": "d98d44364387431f86d4bad2e725bb5e6612f32a1f1884436a4285872c87efc4",
-    "size_bytes": 434391243,
     "visibility": "private"
   },
   "proof": {
-    "cargo_health_core": {
-      "status": "NOT_RUN_LOCALLY",
-      "truth_boundary": "Cargo was unavailable in the local proof environment. The Rust source is inventory-bound; hosted or Windows Rust build proof remains required."
-    },
-    "python_compileall": "PASS",
-    "pytest": {
-      "failed": 0,
-      "passed": 17
-    },
-    "qml_contract": {
-      "files": 17,
-      "status": "PASS"
-    },
-    "source_freeze_verifier": "PASS",
-    "srg_20_for_2": {
-      "failed": 0,
-      "passed": 40,
-      "total": 40
-    }
+    "cargo_clippy": "PASS_REQUIRED_BEFORE_GENERATION",
+    "cargo_fmt": "PASS_REQUIRED_BEFORE_GENERATION",
+    "python_fixture_suite": "PASS_REQUIRED_BEFORE_GENERATION",
+    "python_rust_canonical_equivalence": "PASS_REQUIRED_BEFORE_GENERATION",
+    "python_rust_sha256_equivalence": "PASS_REQUIRED_BEFORE_GENERATION",
+    "rust_fixture_suite": "PASS_REQUIRED_BEFORE_GENERATION",
+    "source_freeze_verifier": "PASS_REQUIRED_AFTER_GENERATION"
   },
-  "review_correction": "The proof workflow now verifies the frozen checkout before dependency installation or generated outputs. The verifier prefers git-tracked files and ignores generated build, wheelhouse, proof, egg-info, and compiled Qt resource outputs.",
-  "schema": "techguytool-huawei.source-inventory-receipt.v1",
-  "source_checkpoint_commit": "7a5be01d55a135525802043f63f3993a488f948a",
+  "schema": "techguytool-huawei.source-inventory-receipt.v2",
   "source_inventory": {
-    "file_count": 59,
+    "file_count": 82,
     "path": "manifests/source_inventory.json",
-    "sha256": "49834bf0596f7170fd25bdd644b574c9e99edcdb73dbe79d260a7a6912333e80"
+    "sha256": "cca507530072e2b7f76cf0a9a53ac1925d59c604f04f3386bb46f937fb589295"
   },
-  "status": "FROZEN",
-  "truth_boundary": "This receipt proves the Phase 1 source/proof inventory and authority split. It does not prove physical Huawei repair, device drivers, Rust compilation in this environment, signed Windows packaging, or production write adapters."
+  "status": "PHASE2_SHARED_CONTRACTS_FROZEN",
+  "truth_boundary": "This receipt proves only the deterministic shared contract layer after the hosted workflow reaches the generation step. It does not authorize or prove loader transfer, partition writes, OEMINFO modification, flashing, reboot, drivers, signed packaging, or physical Huawei repair."
 }

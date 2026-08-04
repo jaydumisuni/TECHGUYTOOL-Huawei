@@ -8,7 +8,8 @@ use uuid::Uuid;
 
 const TIMESTAMP_PATTERN: &str = r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$";
 const SHA256_PATTERN: &str = r"^[0-9a-f]{64}$";
-const UUID_PATTERN: &str = r"^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$";
+const UUID_PATTERN: &str =
+    r"^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$";
 const SEMVER_PATTERN: &str = r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$";
 
 pub(crate) fn validate_field(
@@ -196,15 +197,13 @@ fn validate_array(value: &[Value], spec: &FieldSpec, path: &str, errors: &mut Ve
         }
     }
     if spec.sorted_unique && errors.len() == item_error_count {
-        let canonical_items: Result<Vec<String>, String> = value.iter().map(canonical_json).collect();
+        let canonical_items: Result<Vec<String>, String> =
+            value.iter().map(canonical_json).collect();
         if let Ok(canonical_items) = canonical_items {
             let sorted: BTreeSet<&String> = canonical_items.iter().collect();
             let sorted_values: Vec<String> = sorted.into_iter().cloned().collect();
             if canonical_items != sorted_values {
-                let code = if spec
-                    .items
-                    .as_ref()
-                    .and_then(|item| item.format.as_deref())
+                let code = if spec.items.as_ref().and_then(|item| item.format.as_deref())
                     == Some("sha256")
                 {
                     "HASH_LIST_NOT_SORTED_UNIQUE"

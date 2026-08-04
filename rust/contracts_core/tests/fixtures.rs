@@ -65,17 +65,20 @@ fn all_valid_fixtures_pass_and_canonicalize() {
 
     for case in root.contracts {
         let result = validate_contract(&case.contract, &case.context, &registry);
+        assert!(result.ok, "{} failed: {:?}", case.name, result.errors);
         assert!(
-            result.ok,
-            "{} failed: {:?}",
-            case.name,
-            result.errors
+            result.canonical.is_some(),
+            "{} has no canonical JSON",
+            case.name
         );
-        assert!(result.canonical.is_some(), "{} has no canonical JSON", case.name);
         assert_eq!(result.sha256.as_deref().map(str::len), Some(64));
         let reparsed: Value = serde_json::from_str(result.canonical.as_deref().unwrap())
             .expect("canonical JSON must parse");
-        assert_eq!(reparsed, case.contract, "{} canonical value changed", case.name);
+        assert_eq!(
+            reparsed, case.contract,
+            "{} canonical value changed",
+            case.name
+        );
     }
 }
 
@@ -140,9 +143,7 @@ fn all_raw_invalid_fixtures_fail_with_exact_codes() {
     }
 }
 
-fn error_codes(
-    errors: &[techguy_contracts_core::ContractError],
-) -> BTreeSet<String> {
+fn error_codes(errors: &[techguy_contracts_core::ContractError]) -> BTreeSet<String> {
     errors.iter().map(|error| error.code.clone()).collect()
 }
 

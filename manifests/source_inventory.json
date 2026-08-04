@@ -10,8 +10,14 @@
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 59,
+  "file_count": 82,
   "files": [
+    {
+      "origin": "phase2_shared_contracts",
+      "path": ".github/workflows/phase2-contracts.yml",
+      "sha256": "566f808e36a8a63a82809dedd75c0b02cf01c213205ae91d327cec9eb64414c8",
+      "size_bytes": 4901
+    },
     {
       "origin": "phase1_recovery_and_freeze",
       "path": ".github/workflows/proof.yml",
@@ -21,8 +27,8 @@
     {
       "origin": "phase1_recovery_and_freeze",
       "path": ".gitignore",
-      "sha256": "3325377de980d51fe8e0516c070320a5064bc25cb9cf70b4ee0b6dec30664aa4",
-      "size_bytes": 597
+      "sha256": "af4713adc70dc7a63afa21886be10b9fa8f6677104af90b80c27c93d7033e227",
+      "size_bytes": 605
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -55,6 +61,30 @@
       "size_bytes": 3175
     },
     {
+      "origin": "phase2_shared_contracts",
+      "path": "contracts/README.md",
+      "sha256": "bb5edde40a2e613affede9030f653584a32b79b03cfd310ff08a36b53c840629",
+      "size_bytes": 883
+    },
+    {
+      "origin": "phase2_shared_contracts",
+      "path": "contracts/fixtures/invalid_contracts.json",
+      "sha256": "a0b59d6b2cd61408b921738c8d6afb46bd95823db711ab818a80b90b05613640",
+      "size_bytes": 8086
+    },
+    {
+      "origin": "phase2_shared_contracts",
+      "path": "contracts/fixtures/valid_contracts.json",
+      "sha256": "b7b9588e671ca3369a0a54a12e5ec9e1b8142e961eb795b8e1d090ec02240b59",
+      "size_bytes": 15878
+    },
+    {
+      "origin": "phase2_shared_contracts",
+      "path": "contracts/registry.json",
+      "sha256": "a53c3934d07d6969267e00d3bcdd18943f5bf0fb3aba5376378bd1088c0ad995",
+      "size_bytes": 14791
+    },
+    {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "data/action_manifest.json",
       "sha256": "48c9a22948dd7a0f7d70b151f3b58140daca15a10a1be453ce703d90f0b08e13",
@@ -77,6 +107,12 @@
       "path": "docs/PHASE_1_SOURCE_FREEZE.md",
       "sha256": "a29b49032752723e33af3e7ca0df9e319a7453dc638e66afc70e2fa8f3d2dfba",
       "size_bytes": 4415
+    },
+    {
+      "origin": "phase2_shared_contracts",
+      "path": "docs/PHASE_2_SHARED_CONTRACTS.md",
+      "sha256": "279043aabe2dbd47b49b9f6e1c3aa2b32d35c860f5dfd2763cd252c34282aaf5",
+      "size_bytes": 3167
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -247,6 +283,60 @@
       "size_bytes": 0
     },
     {
+      "origin": "phase2_shared_contracts",
+      "path": "rust/contracts_core/Cargo.lock",
+      "sha256": "2e8508c5626bad95d33448ac844bdb5f35bbf0f876d289ad60c352730abc8175",
+      "size_bytes": 6457
+    },
+    {
+      "origin": "phase2_shared_contracts",
+      "path": "rust/contracts_core/Cargo.toml",
+      "sha256": "7ee0941b15af09a734e892fb025ce74d23dfc95626e7889bd55a03168135d939",
+      "size_bytes": 534
+    },
+    {
+      "origin": "phase2_shared_contracts",
+      "path": "rust/contracts_core/src/canonical.rs",
+      "sha256": "c44fda6e9979a8eb58b5466dc12d091fbc578592ac231d80efe193da5e524e21",
+      "size_bytes": 1713
+    },
+    {
+      "origin": "phase2_shared_contracts",
+      "path": "rust/contracts_core/src/field.rs",
+      "sha256": "455a96269f5ee1cc06714cb877a6e7e0ea1d71ba3bcfe08dcf66ffe603400dbc",
+      "size_bytes": 8223
+    },
+    {
+      "origin": "phase2_shared_contracts",
+      "path": "rust/contracts_core/src/lib.rs",
+      "sha256": "80ee18f0316939fc53fbe24b3c8f1ae679a832d9fdaf3d80681a96eb6ace7aef",
+      "size_bytes": 335
+    },
+    {
+      "origin": "phase2_shared_contracts",
+      "path": "rust/contracts_core/src/main.rs",
+      "sha256": "e115011b3da54895a38cbe57acbab68b793a45cac6f5d7886d779c2c068837ad",
+      "size_bytes": 2704
+    },
+    {
+      "origin": "phase2_shared_contracts",
+      "path": "rust/contracts_core/src/model.rs",
+      "sha256": "826081f85713c9cf59968f59d877a3cc86bb9e4c78af5b1cab7aa20f148f57dd",
+      "size_bytes": 3962
+    },
+    {
+      "origin": "phase2_shared_contracts",
+      "path": "rust/contracts_core/src/validation.rs",
+      "sha256": "804e824ab2dd77b7999fb3537f930f54b206b831c5def89f821f3c0283ab0cf6",
+      "size_bytes": 13669
+    },
+    {
+      "origin": "phase2_shared_contracts",
+      "path": "rust/contracts_core/tests/fixtures.rs",
+      "sha256": "4e6b805b136ff0fc2ed33156e628c28c0acd69bc3bc744d0689f540172a5abf7",
+      "size_bytes": 7163
+    },
+    {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "rust/health_core/Cargo.toml",
       "sha256": "13ab52f8d60bc7aac6b973d2dfd42e9a9154f7f8c33a043bf1b02427084d6eb2",
@@ -275,6 +365,36 @@
       "path": "techguy_huawei/backend.py",
       "sha256": "2cc96556e851fe08c030d4f76d6e9141ca852771e9b93d427d6a15ebde2f87db",
       "size_bytes": 8225
+    },
+    {
+      "origin": "phase2_shared_contracts",
+      "path": "techguy_huawei/contract_fields.py",
+      "sha256": "8d7aecd56c1ddde5cf5094b4639abbe8efd717fe765bb250a14ec8e10501e15e",
+      "size_bytes": 5316
+    },
+    {
+      "origin": "phase2_shared_contracts",
+      "path": "techguy_huawei/contract_models.py",
+      "sha256": "dd5adc6db7c15ea65e7906048f1f3af5d506f06a01fa00201b7c4b22f6b14267",
+      "size_bytes": 2344
+    },
+    {
+      "origin": "phase2_shared_contracts",
+      "path": "techguy_huawei/contract_support.py",
+      "sha256": "6484f19cd42814fa3c95b29a16e02a10cec8901bf2eb8fddc3f7c465093ad6a7",
+      "size_bytes": 2998
+    },
+    {
+      "origin": "phase2_shared_contracts",
+      "path": "techguy_huawei/contract_validation.py",
+      "sha256": "0808baeaa12f3d1c2fb0954df40f3226ecf8c01abb9834092e430edb68c6bc91",
+      "size_bytes": 12715
+    },
+    {
+      "origin": "phase2_shared_contracts",
+      "path": "techguy_huawei/contracts.py",
+      "sha256": "4a1d7e834e320fb1b8ff7eefe68914b7a8dbf2ab2b08cc9df8c0d9cea62b5ffa",
+      "size_bytes": 552
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -319,16 +439,28 @@
       "size_bytes": 2435
     },
     {
+      "origin": "phase2_shared_contracts",
+      "path": "tests/test_shared_contracts.py",
+      "sha256": "65af7332b70c0fa54ffe47a7ad1242b12b9556c2d449ebe3a9bc7d25256ceb1d",
+      "size_bytes": 5584
+    },
+    {
       "origin": "phase1_recovery_and_freeze",
       "path": "tests/test_source_freeze.py",
       "sha256": "b88e29cb5b02c8f6cb9390d0e69a205930e990a49683cb604022df447d0b1cce",
       "size_bytes": 996
     },
     {
-      "origin": "phase1_recovery_and_freeze",
+      "origin": "phase2_shared_contracts",
+      "path": "tools/build_phase2_receipt.py",
+      "sha256": "477a663c4707009d5abcd181e49a4f6eaa259763c5acbae13bd5ad006420e3d1",
+      "size_bytes": 3017
+    },
+    {
+      "origin": "phase2_shared_contracts",
       "path": "tools/build_source_inventory.py",
-      "sha256": "474c82d55f75d00380aea6289427e4f28fea2f2aab9c4ab883fea1d487e9bdcd",
-      "size_bytes": 3421
+      "sha256": "aba26a9ffd252b03552e236a8cde2352802ea62d1d6d5b44303949c0e5683a0d",
+      "size_bytes": 4103
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -341,6 +473,12 @@
       "path": "tools/generate_qrc.py",
       "sha256": "6434a2e2ce3d3ac323bd75a407cb3074555027511e5fe924be5e3658cce969cc",
       "size_bytes": 560
+    },
+    {
+      "origin": "phase2_shared_contracts",
+      "path": "tools/prove_contract_equivalence.py",
+      "sha256": "79cc684c1ff9ca7a61c0df4c2e8174a2150197d233f3c3c8ce6319301498e528",
+      "size_bytes": 6851
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -367,12 +505,12 @@
       "size_bytes": 5920
     }
   ],
-  "prepared_at": "2026-08-04T11:30:00Z",
+  "prepared_at": "2026-08-04T14:30:00Z",
   "private_recovery_authority": {
     "archive_sha256": "d98d44364387431f86d4bad2e725bb5e6612f32a1f1884436a4285872c87efc4",
     "copied_into_public_source": false,
     "drive_file_id": "1qH4K0m1lX_3o0XLvCkJMXsDajOkfu2cs"
   },
   "schema": "techguytool-huawei.source-inventory.v1",
-  "self_provenance": "This manifest and its receipt are bound by the exact Git commit recorded in manifests/source_inventory.receipt.json."
+  "self_provenance": "This manifest and its receipt are excluded from recursive hashing and are bound by the reviewed phase branch and merge commit."
 }

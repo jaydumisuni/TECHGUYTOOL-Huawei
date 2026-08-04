@@ -2,7 +2,9 @@ use serde_json::Value;
 use std::env;
 use std::fs;
 use std::process::ExitCode;
-use techguy_contracts_core::{canonical_json, load_registry, validate_contract_json, ValidationContext};
+use techguy_contracts_core::{
+    canonical_json, load_registry, validate_contract_json, ValidationContext,
+};
 
 fn main() -> ExitCode {
     match run() {
@@ -21,7 +23,8 @@ fn run() -> Result<ExitCode, String> {
         "validate" => {
             let contract_path = option(&args, "--contract")?;
             let context_path = option_optional(&args, "--context");
-            let contract_json = fs::read_to_string(contract_path).map_err(|error| error.to_string())?;
+            let contract_json =
+                fs::read_to_string(contract_path).map_err(|error| error.to_string())?;
             let context = if let Some(path) = context_path {
                 serde_json::from_str::<ValidationContext>(
                     &fs::read_to_string(path).map_err(|error| error.to_string())?,
@@ -32,8 +35,15 @@ fn run() -> Result<ExitCode, String> {
             };
             let registry = load_registry().map_err(|error| error.to_string())?;
             let result = validate_contract_json(&contract_json, &context, &registry);
-            println!("{}", serde_json::to_string(&result).map_err(|error| error.to_string())?);
-            Ok(if result.ok { ExitCode::SUCCESS } else { ExitCode::from(1) })
+            println!(
+                "{}",
+                serde_json::to_string(&result).map_err(|error| error.to_string())?
+            );
+            Ok(if result.ok {
+                ExitCode::SUCCESS
+            } else {
+                ExitCode::from(1)
+            })
         }
         "canonicalize" => {
             let contract_path = option(&args, "--contract")?;

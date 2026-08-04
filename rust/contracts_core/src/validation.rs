@@ -124,10 +124,7 @@ fn validate_envelope_shape(
     }
 
     for name in &registry.envelope.required {
-        if let (Some(value), Some(spec)) = (
-            object.get(name),
-            registry.envelope.fields.get(name),
-        ) {
+        if let (Some(value), Some(spec)) = (object.get(name), registry.envelope.fields.get(name)) {
             validate_field(value, spec, &format!("$.{name}"), errors);
         }
     }
@@ -163,7 +160,9 @@ fn validate_definition(
         _ => {}
     }
 
-    let expiry_present = object.get("expires_at").is_some_and(|value| !value.is_null());
+    let expiry_present = object
+        .get("expires_at")
+        .is_some_and(|value| !value.is_null());
     match definition.expiry.as_str() {
         "required" if !expiry_present => errors.push(ContractError::new(
             "EXPIRY_REQUIRED",
@@ -211,10 +210,8 @@ fn validate_definition(
     }
 
     for name in &definition.payload_required {
-        if let (Some(value), Some(spec)) = (
-            payload.get(name),
-            definition.payload_fields.get(name),
-        ) {
+        if let (Some(value), Some(spec)) = (payload.get(name), definition.payload_fields.get(name))
+        {
             validate_field(value, spec, &format!("$.payload.{name}"), errors);
         }
     }
@@ -250,7 +247,10 @@ fn validate_definition(
             errors.push(ContractError::new(
                 "DANGEROUS_AUTO_PROMOTION_FORBIDDEN",
                 "$.payload.auto_promotion_allowed",
-                format!("{} can never be promoted automatically", kind.unwrap_or_default()),
+                format!(
+                    "{} can never be promoted automatically",
+                    kind.unwrap_or_default()
+                ),
             ));
         }
     }
@@ -338,11 +338,7 @@ fn validate_context(
         }
     }
     if let Some(expected) = &context.expected_physical_session_id {
-        if object
-            .get("physical_session_id")
-            .and_then(Value::as_str)
-            != Some(expected.as_str())
-        {
+        if object.get("physical_session_id").and_then(Value::as_str) != Some(expected.as_str()) {
             errors.push(ContractError::new(
                 "PHYSICAL_SESSION_MISMATCH",
                 "$.physical_session_id",
@@ -377,15 +373,16 @@ fn validate_context(
         return;
     };
     let actual = match object.get("contract_type").and_then(Value::as_str) {
-        Some("execution_lease") => payload.get("artifact_hashes").and_then(Value::as_array).map(
-            |values| {
+        Some("execution_lease") => payload
+            .get("artifact_hashes")
+            .and_then(Value::as_array)
+            .map(|values| {
                 values
                     .iter()
                     .filter_map(Value::as_str)
                     .map(str::to_owned)
                     .collect::<Vec<_>>()
-            },
-        ),
+            }),
         Some("artifact_manifest") => payload
             .get("sha256")
             .and_then(Value::as_str)
