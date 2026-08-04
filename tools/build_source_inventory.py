@@ -41,6 +41,7 @@ PHASE2_PATHS = {
     "tests/test_shared_contracts.py",
     "tools/build_phase2_receipt.py",
     "tools/build_source_inventory.py",
+    "tools/prove_context_equivalence.py",
     "tools/prove_contract_equivalence.py",
 }
 
@@ -101,7 +102,7 @@ def build() -> dict[str, object]:
         "excluded_from_recursive_hashing": sorted(EXCLUDED),
         "file_count": len(records),
         "files": records,
-        "prepared_at": "2026-08-04T14:30:00Z",
+        "prepared_at": "2026-08-04T15:40:00Z",
         "private_recovery_authority": {
             "archive_sha256": "d98d44364387431f86d4bad2e725bb5e6612f32a1f1884436a4285872c87efc4",
             "copied_into_public_source": False,
