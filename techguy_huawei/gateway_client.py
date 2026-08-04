@@ -3,14 +3,14 @@ from __future__ import annotations
 import json
 import socket
 import uuid
-from dataclasses import dataclass
 from typing import Any, Mapping
 
 
-@dataclass(frozen=True)
 class GatewayClientError(RuntimeError):
-    code: str
-    message: str
+    def __init__(self, code: str, message: str) -> None:
+        self.code = code
+        self.message = message
+        super().__init__(code, message)
 
     def __str__(self) -> str:
         return f"{self.code}: {self.message}"
