@@ -5,6 +5,7 @@ on:
     branches: ["phase2/shared-contracts"]
     paths:
       - ".github/workflows/phase2-contracts.yml"
+      - ".gitignore"
       - "contracts/**"
       - "docs/PHASE_2_SHARED_CONTRACTS.md"
       - "manifests/source_inventory.json"
@@ -21,6 +22,7 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/phase2-contracts.yml"
+      - ".gitignore"
       - "contracts/**"
       - "docs/PHASE_2_SHARED_CONTRACTS.md"
       - "manifests/source_inventory.json"
@@ -75,6 +77,9 @@ jobs:
       - name: Prove Python fixtures and safety boundaries
         run: python -m pytest tests/test_shared_contracts.py -q
 
+      - name: Format Rust sources deterministically
+        run: cargo fmt --manifest-path rust/contracts_core/Cargo.toml
+
       - name: Check Rust formatting
         run: cargo fmt --manifest-path rust/contracts_core/Cargo.toml -- --check
 
@@ -107,13 +112,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if git diff --quiet -- manifests/source_inventory.json manifests/source_inventory.receipt.json rust/contracts_core/Cargo.lock; then
-            echo "Phase 2 inventory already frozen."
+          if git diff --quiet -- \
+            manifests/source_inventory.json \
+            manifests/source_inventory.receipt.json \
+            rust/contracts_core/Cargo.lock \
+            rust/contracts_core/src \
+            rust/contracts_core/tests; then
+            echo "Phase 2 inventory and Rust formatting already frozen."
             exit 0
           fi
           git config user.name "THETECHGUY Phase Freezer"
           git config user.email "actions@users.noreply.github.com"
           git add manifests/source_inventory.json manifests/source_inventory.receipt.json
+          git add rust/contracts_core/src rust/contracts_core/tests
           if [ -f rust/contracts_core/Cargo.lock ]; then
             git add rust/contracts_core/Cargo.lock
           fi
