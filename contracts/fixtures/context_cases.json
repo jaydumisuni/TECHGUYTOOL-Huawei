@@ -1,1 +1,33 @@
-{"cases":[{"base":"physical_device_session","context":{"now":"2030-01-01T00:05:00.000Z"},"expected_error_codes":["INVALID_VALIDATION_CONTEXT"],"name":"invalid_context_timestamp"}],"schema":"techguytool-huawei.context-contract-fixtures.v1"}
+{
+  "schema": "techguytool-huawei.context-contract-fixtures.v1",
+  "cases": [
+    {
+      "name": "invalid_context_timestamp",
+      "base": "physical_device_session",
+      "context": {
+        "now": "2030-01-01T00:05:00.000Z"
+      },
+      "expected_ok": false,
+      "expected_error_codes": [
+        "INVALID_VALIDATION_CONTEXT"
+      ]
+    },
+    {
+      "name": "matching_execution_context_passes",
+      "base": "execution_lease",
+      "context": {
+        "now": "2030-01-01T00:05:00Z",
+        "expected_contract_type": "execution_lease",
+        "expected_physical_session_id": "11111111-1111-4111-8111-111111111111",
+        "expected_recipe_hash": "9999999999999999999999999999999999999999999999999999999999999999",
+        "expected_artifact_hashes": [
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ],
+        "expected_authority": "execution"
+      },
+      "expected_ok": true,
+      "expected_error_codes": []
+    }
+  ]
+}
