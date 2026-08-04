@@ -7,12 +7,13 @@ from typing import Any
 
 import pytest
 
-from techguy_huawei.contract_support import load_registry
+from techguy_huawei.contract_support import canonical_json, load_registry
 from techguy_huawei.contract_validation import validate_contract
 
 ROOT = Path(__file__).resolve().parents[1]
 VALID_FIXTURES = ROOT / "contracts" / "fixtures" / "valid_contracts.json"
 INVALID_FIXTURES = ROOT / "contracts" / "fixtures" / "invalid_contracts.json"
+EDGE_FIXTURES = ROOT / "contracts" / "fixtures" / "review_edge_cases.json"
 CONTEXT_FIXTURES = ROOT / "contracts" / "fixtures" / "context_cases.json"
 
 
@@ -58,6 +59,13 @@ def _error_codes(result: Any) -> list[str]:
     return sorted({error.code for error in result.errors})
 
 
+def _mutated_contract(case: dict[str, Any]) -> dict[str, Any]:
+    document = copy.deepcopy(_valid_by_name()[case["base"]]["contract"])
+    for mutation in case["mutations"]:
+        _apply_mutation(document, mutation)
+    return document
+
+
 def test_registry_contains_all_frozen_contract_types() -> None:
     registry = load_registry()
     assert registry["schema"] == "techguytool-huawei.contract-registry.v1"
@@ -95,6 +103,31 @@ def test_explicit_registry_rejects_unreviewed_version(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="unsupported contract registry version"):
         load_registry(path)
 
+    contract = _valid_by_name()["physical_device_session"]["contract"]
+    result = validate_contract(contract, registry=replacement)
+    assert _error_codes(result) == ["REGISTRY_UNAVAILABLE"]
+
+
+def test_registry_rejects_missing_and_unknown_members() -> None:
+    contract = _valid_by_name()["physical_device_session"]["contract"]
+
+    missing = copy.deepcopy(load_registry())
+    del missing["envelope"]
+    assert _error_codes(validate_contract(contract, registry=missing)) == [
+        "REGISTRY_UNAVAILABLE"
+    ]
+
+    misspelled = copy.deepcopy(load_registry())
+    misspelled["envelope"]["fields"]["producer"]["min_lenght"] = 1
+    assert _error_codes(validate_contract(contract, registry=misspelled)) == [
+        "REGISTRY_UNAVAILABLE"
+    ]
+
+
+def test_canonical_json_rejects_unpaired_surrogate() -> None:
+    with pytest.raises(UnicodeError):
+        canonical_json({"value": "\ud800"})
+
 
 def test_all_valid_contract_fixtures_pass_and_canonicalize() -> None:
     fixtures = _load(VALID_FIXTURES)
@@ -117,22 +150,31 @@ def test_all_valid_contract_fixtures_pass_and_canonicalize() -> None:
 
 
 def test_all_invalid_mutation_fixtures_fail_with_exact_codes() -> None:
-    valid = _valid_by_name()
     fixtures = _load(INVALID_FIXTURES)
     assert fixtures["schema"] == "techguytool-huawei.invalid-contract-fixtures.v1"
     assert len(fixtures["cases"]) == 34
 
     for case in fixtures["cases"]:
-        document = copy.deepcopy(valid[case["base"]]["contract"])
-        for mutation in case["mutations"]:
-            _apply_mutation(document, mutation)
-        result = validate_contract(document, context=case.get("context"))
+        result = validate_contract(_mutated_contract(case), context=case.get("context"))
         assert not result.ok, case["name"]
         assert _error_codes(result) == sorted(case["expected_error_codes"]), (
             case["name"],
             _error_codes(result),
             case["expected_error_codes"],
         )
+        assert result.canonical is None
+        assert result.sha256 is None
+
+
+def test_review_edge_fixtures_fail_with_exact_codes() -> None:
+    fixtures = _load(EDGE_FIXTURES)
+    assert fixtures["schema"] == "techguytool-huawei.review-edge-contract-fixtures.v1"
+    assert len(fixtures["cases"]) == 3
+
+    for case in fixtures["cases"]:
+        result = validate_contract(_mutated_contract(case), context=case.get("context"))
+        assert not result.ok, case["name"]
+        assert _error_codes(result) == sorted(case["expected_error_codes"])
         assert result.canonical is None
         assert result.sha256 is None
 
@@ -146,19 +188,23 @@ def test_all_raw_invalid_fixtures_fail_with_exact_codes() -> None:
         assert _error_codes(result) == sorted(case["expected_error_codes"])
 
 
-def test_all_invalid_context_fixtures_fail_with_exact_codes() -> None:
+def test_all_context_fixtures_match_expected_results() -> None:
     valid = _valid_by_name()
     fixtures = _load(CONTEXT_FIXTURES)
     assert fixtures["schema"] == "techguytool-huawei.context-contract-fixtures.v1"
-    assert len(fixtures["cases"]) == 1
+    assert len(fixtures["cases"]) == 2
 
     for case in fixtures["cases"]:
         document = copy.deepcopy(valid[case["base"]]["contract"])
         result = validate_contract(document, context=case["context"])
-        assert not result.ok, case["name"]
+        assert result.ok is case["expected_ok"], case["name"]
         assert _error_codes(result) == sorted(case["expected_error_codes"])
-        assert result.canonical is None
-        assert result.sha256 is None
+        if case["expected_ok"]:
+            assert result.canonical == canonical_json(document)
+            assert result.sha256 is not None
+        else:
+            assert result.canonical is None
+            assert result.sha256 is None
 
 
 def test_execution_lease_context_is_fail_closed() -> None:
