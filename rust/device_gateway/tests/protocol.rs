@@ -81,7 +81,7 @@ fn oversized_request_without_newline_is_rejected_before_unbounded_buffering() {
         .read_line(&mut line)
         .expect("read rejection");
     let response: Value = serde_json::from_str(&line).expect("response JSON");
-    assert_eq!(response["ok"], false);
+    assert!(!response["ok"].as_bool().expect("ok field"));
     assert_eq!(response["error"]["code"], "PROTOCOL_ERROR");
     assert!(response["error"]["message"]
         .as_str()
