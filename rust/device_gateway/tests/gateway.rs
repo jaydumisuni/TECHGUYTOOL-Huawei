@@ -305,6 +305,5 @@ fn source_has_no_device_execution_surface() {
 }
 
 fn future_timestamp(seconds: i64) -> String {
-    (Utc::now() + ChronoDuration::seconds(seconds))
-        .to_rfc3339_opts(SecondsFormat::Secs, true)
+    (Utc::now() + ChronoDuration::seconds(seconds)).to_rfc3339_opts(SecondsFormat::Secs, true)
 }
