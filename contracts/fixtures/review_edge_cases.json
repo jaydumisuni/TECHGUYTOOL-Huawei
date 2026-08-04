@@ -1,0 +1,54 @@
+{
+  "schema": "techguytool-huawei.review-edge-contract-fixtures.v1",
+  "cases": [
+    {
+      "name": "unicode_semver_digits_rejected",
+      "base": "repair_recipe",
+      "context": {},
+      "expected_error_codes": [
+        "INVALID_SEMVER"
+      ],
+      "mutations": [
+        {
+          "op": "set",
+          "path": "/payload/recipe_version",
+          "value": "1٢.3.4"
+        }
+      ]
+    },
+    {
+      "name": "optional_consumed_at_type_checked",
+      "base": "physical_device_session",
+      "context": {
+        "now": "2030-01-01T00:05:00Z"
+      },
+      "expected_error_codes": [
+        "INVALID_FIELD_TYPE"
+      ],
+      "mutations": [
+        {
+          "op": "set",
+          "path": "/consumed_at",
+          "value": 42
+        }
+      ]
+    },
+    {
+      "name": "signed_64_bit_upper_bound_enforced",
+      "base": "artifact_manifest",
+      "context": {
+        "now": "2030-01-01T00:05:00Z"
+      },
+      "expected_error_codes": [
+        "INTEGER_OUT_OF_RANGE"
+      ],
+      "mutations": [
+        {
+          "op": "set",
+          "path": "/payload/size_bytes",
+          "value": 9223372036854775808
+        }
+      ]
+    }
+  ]
+}
