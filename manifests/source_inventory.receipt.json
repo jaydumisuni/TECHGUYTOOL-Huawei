@@ -5,6 +5,12 @@
     "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/30935964784",
     "tested_revision": "91b60a5fac42ae57fb932039489ccb9f138276dc"
   },
+  "owner_verification": {
+    "authority_commit": "e291b312f8fd5ad7812f2e296d314c4602271f05",
+    "source_proof_run_id": 30935964784,
+    "source_revision": "91b60a5fac42ae57fb932039489ccb9f138276dc",
+    "status": "CONFIRMED"
+  },
   "phase1_base_commit": "c6c11ece1c5dc98e151589df42f272f4637af4d5",
   "phase2": {
     "branch": "phase2/shared-contracts",
