@@ -16,6 +16,7 @@ on:
       - "tests/test_shared_contracts.py"
       - "tools/build_phase2_receipt.py"
       - "tools/build_source_inventory.py"
+      - "tools/prove_context_equivalence.py"
       - "tools/prove_contract_equivalence.py"
       - "tools/verify_source_freeze.py"
   pull_request:
@@ -33,6 +34,7 @@ on:
       - "tests/test_shared_contracts.py"
       - "tools/build_phase2_receipt.py"
       - "tools/build_source_inventory.py"
+      - "tools/prove_context_equivalence.py"
       - "tools/prove_contract_equivalence.py"
       - "tools/verify_source_freeze.py"
 
@@ -72,6 +74,7 @@ jobs:
           techguy_huawei/contract_validation.py
           techguy_huawei/contracts.py
           tests/test_shared_contracts.py
+          tools/prove_context_equivalence.py
           tools/prove_contract_equivalence.py
 
       - name: Prove Python fixtures and safety boundaries
@@ -92,9 +95,14 @@ jobs:
       - name: Build deterministic Rust validator
         run: cargo build --manifest-path rust/contracts_core/Cargo.toml --bin ttg-contracts
 
-      - name: Prove exact Python and Rust equivalence
+      - name: Prove exact Python and Rust contract equivalence
         run: >-
           python tools/prove_contract_equivalence.py
+          --rust-bin rust/contracts_core/target/debug/ttg-contracts
+
+      - name: Prove exact Python and Rust validation-context equivalence
+        run: >-
+          python tools/prove_context_equivalence.py
           --rust-bin rust/contracts_core/target/debug/ttg-contracts
 
       - name: Register generated lockfile as intended source
