@@ -14,11 +14,9 @@ use serde_json::{json, Value};
 use std::path::Path;
 use std::sync::mpsc::{self, Receiver, Sender};
 use std::sync::{Arc, Mutex};
-use techguy_contracts_core::{
-    load_registry, validate_contract_json, Registry, ValidationContext,
-};
+use techguy_contracts_core::{load_registry, validate_contract_json, Registry, ValidationContext};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Gateway {
     storage: Storage,
     registry: Registry,
@@ -110,7 +108,9 @@ impl Gateway {
         fingerprint_sha256: &str,
     ) -> Result<PhysicalDeviceSession, GatewayError> {
         let now = now_utc();
-        let session = self.storage.open_physical_session(fingerprint_sha256, &now)?;
+        let session = self
+            .storage
+            .open_physical_session(fingerprint_sha256, &now)?;
         self.publish_internal(
             GatewayEventKind::PhysicalSessionOpened,
             Some(&session.session_id),
@@ -177,9 +177,9 @@ impl Gateway {
         request_sha256: &str,
     ) -> Result<OperationSession, GatewayError> {
         let now = now_utc();
-        let operation =
-            self.storage
-                .open_operation(physical_session_id, request_sha256, &now)?;
+        let operation = self
+            .storage
+            .open_operation(physical_session_id, request_sha256, &now)?;
         self.publish_internal(
             GatewayEventKind::OperationOpened,
             Some(physical_session_id),
@@ -201,7 +201,9 @@ impl Gateway {
     ) -> Result<OperationSession, GatewayError> {
         let now = now_utc();
         let before = self.storage.get_operation(operation_id)?;
-        let operation = self.storage.transition_operation(operation_id, next, &now)?;
+        let operation = self
+            .storage
+            .transition_operation(operation_id, next, &now)?;
         if operation.stage != before.stage {
             self.publish_internal(
                 GatewayEventKind::OperationTransitioned,
@@ -218,10 +220,7 @@ impl Gateway {
         Ok(operation)
     }
 
-    pub fn resume_operation(
-        &self,
-        operation_id: &str,
-    ) -> Result<OperationSession, GatewayError> {
+    pub fn resume_operation(&self, operation_id: &str) -> Result<OperationSession, GatewayError> {
         let now = now_utc();
         let operation = self.storage.resume_operation(operation_id, &now)?;
         self.publish_internal(
@@ -277,12 +276,11 @@ impl Gateway {
         let authority = contract
             .get("authority")
             .and_then(Value::as_str)
-            .ok_or_else(|| GatewayError::InvalidInput("contract authority is missing".to_owned()))?;
+            .ok_or_else(|| {
+                GatewayError::InvalidInput("contract authority is missing".to_owned())
+            })?;
         ensure_provider_authority(&provider, authority)?;
-        if let Some(session_id) = contract
-            .get("physical_session_id")
-            .and_then(Value::as_str)
-        {
+        if let Some(session_id) = contract.get("physical_session_id").and_then(Value::as_str) {
             self.storage.get_physical_session(session_id)?;
         }
         let contract_type = contract
@@ -296,9 +294,7 @@ impl Gateway {
         let now = now_utc();
         let event = self.publish_internal(
             GatewayEventKind::ContractAccepted,
-            contract
-                .get("physical_session_id")
-                .and_then(Value::as_str),
+            contract.get("physical_session_id").and_then(Value::as_str),
             None,
             json!({
                 "canonical": result.canonical,
@@ -324,7 +320,11 @@ impl Gateway {
         ensure_worker_capabilities(capabilities)?;
         let provider = self.storage.get_provider(provider_id)?;
         for capability in capabilities {
-            if !provider.capabilities.iter().any(|allowed| allowed == capability) {
+            if !provider
+                .capabilities
+                .iter()
+                .any(|allowed| allowed == capability)
+            {
                 return Err(GatewayError::PolicyDenied(format!(
                     "worker capability {capability:?} exceeds provider {:?}",
                     provider.component_id
@@ -355,7 +355,9 @@ impl Gateway {
         deadline_at: &str,
     ) -> Result<WorkerRecord, GatewayError> {
         let now = now_utc();
-        let worker = self.storage.heartbeat_worker(worker_id, deadline_at, &now)?;
+        let worker = self
+            .storage
+            .heartbeat_worker(worker_id, deadline_at, &now)?;
         self.publish_internal(
             GatewayEventKind::WorkerHeartbeat,
             None,
