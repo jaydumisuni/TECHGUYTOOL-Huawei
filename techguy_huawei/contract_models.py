@@ -33,7 +33,12 @@ class ValidationContext:
             return cls()
         now = value.get("now")
         if isinstance(now, str):
-            now = parse_timestamp(now)
+            try:
+                now = parse_timestamp(now)
+            except ValueError as exc:
+                raise TypeError(
+                    "context.now must use YYYY-MM-DDTHH:MM:SSZ"
+                ) from exc
         elif now is not None and not isinstance(now, datetime):
             raise TypeError("context.now must be an RFC3339 UTC string or datetime")
         if isinstance(now, datetime) and now.tzinfo is None:
