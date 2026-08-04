@@ -73,9 +73,7 @@ pub enum GatewayCommand {
         worker_id: String,
         deadline_at: String,
     },
-    SweepWorkers {
-        now: String,
-    },
+    SweepWorkers,
     ListEvents {
         #[serde(default)]
         after_sequence: i64,
@@ -220,9 +218,7 @@ fn dispatch_command(gateway: &Gateway, command: GatewayCommand) -> Result<Value,
         } => Ok(serde_json::to_value(
             gateway.heartbeat_worker(&worker_id, &deadline_at)?,
         )?),
-        GatewayCommand::SweepWorkers { now } => {
-            Ok(serde_json::to_value(gateway.sweep_workers(&now)?)?)
-        }
+        GatewayCommand::SweepWorkers => Ok(serde_json::to_value(gateway.sweep_workers()?)?),
         GatewayCommand::ListEvents {
             after_sequence,
             limit,
