@@ -38,7 +38,7 @@ fn serve(arguments: &[String]) -> Result<(), GatewayError> {
     let listen =
         option_value(arguments, "--listen").unwrap_or_else(|| "127.0.0.1:49321".to_owned());
     let gateway = Arc::new(Gateway::open(db)?);
-    let listener = TcpListener::bind(&listen)?;
+    let listener = TcpListener::bind(listen)?;
     let address = listener.local_addr()?;
     println!(
         "{}",
