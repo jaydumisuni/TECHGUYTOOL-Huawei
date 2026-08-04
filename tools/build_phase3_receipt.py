@@ -9,14 +9,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 INVENTORY = ROOT / "manifests" / "source_inventory.json"
-OUTPUT = ROOT / "manifests" / "source_inventory.receipt.json"
+OUTPUT = ROOT / "manifests" / "phase3_gateway.receipt.json"
 _SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 _TIMESTAMP_RE = re.compile(
     r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
 )
 _ALLOWED_POST_PROOF_CHANGES = {
+    "manifests/phase3_gateway.receipt.json",
     "manifests/source_inventory.json",
-    "manifests/source_inventory.receipt.json",
+    "rust/device_gateway/Cargo.lock",
 }
 
 
@@ -56,80 +57,79 @@ def build(
 ) -> dict[str, object]:
     _validate_proof_identity(tested_revision, proof_run_id, generated_at, proof_run_url)
     inventory = json.loads(INVENTORY.read_text(encoding="utf-8"))
-    phase2_files = [
+    phase3_files = [
         item
         for item in inventory.get("files", [])
-        if item.get("origin") == "phase2_shared_contracts"
+        if item.get("origin") == "phase3_device_gateway"
     ]
+    if not phase3_files:
+        raise ValueError("source inventory contains no Phase 3 files")
     return {
-        "schema": "techguytool-huawei.source-inventory-receipt.v3",
-        "status": "PHASE2_SHARED_CONTRACTS_FROZEN",
+        "schema": "techguytool-huawei.phase3-gateway-receipt.v1",
+        "status": "PHASE3_DEVICE_GATEWAY_FROZEN",
         "generated_at": generated_at,
-        "phase1_base_commit": "c6c11ece1c5dc98e151589df42f272f4637af4d5",
+        "phase2_merge_commit": "ea6e66dd91031485d6db39d47da294de6ff2e771",
         "hosted_proof": {
             "tested_revision": tested_revision,
             "run_id": int(proof_run_id),
             "run_url": proof_run_url,
         },
-        "phase2": {
-            "branch": "phase2/shared-contracts",
-            "contract_types": 17,
-            "valid_fixtures": 17,
-            "invalid_mutation_fixtures": 34,
-            "review_edge_fixtures": 3,
-            "malformed_json_fixtures": 1,
-            "context_fixtures": 2,
-            "contract_equivalence_cases": 55,
-            "context_equivalence_cases": 2,
-            "total_cross_language_cases": 57,
+        "phase3": {
+            "branch": "phase3/device-gateway",
+            "database_schema_version": 1,
+            "rust_gateway_tests": 10,
+            "python_gateway_client_tests": 4,
+            "reconnect_proof_cases": 1,
             "device_authority": "none",
             "xray_authority": "read_only",
-            "phase2_file_count": len(phase2_files),
+            "phase3_file_count": len(phase3_files),
         },
         "proof": {
-            "python_fixture_suite": "PASS",
-            "python_registry_authority": "PASS",
-            "rust_fixture_suite": "PASS",
-            "python_rust_canonical_equivalence": "PASS",
-            "python_rust_sha256_equivalence": "PASS",
-            "python_rust_error_code_equivalence": "PASS",
-            "python_rust_validation_context_equivalence": "PASS",
-            "complete_python_regression": "PASS",
+            "cargo_lock_resolved": "PASS",
             "cargo_fmt": "PASS",
             "cargo_clippy_warnings_denied": "PASS",
             "cargo_test": "PASS",
-            "rust_toolchain": "1.75.0",
+            "gateway_binary_build": "PASS",
+            "python_gateway_client_suite": "PASS",
+            "ui_reconnect_proof": "PASS",
+            "gateway_restart_recovery": "PASS",
+            "journal_chain_verification": "PASS",
+            "atomic_state_and_journal_commit": "PASS",
+            "concurrent_transition_audit": "PASS",
+            "bounded_protocol_framing": "PASS",
+            "bounded_worker_lease": "PASS",
+            "forbidden_device_capability_rejection": "PASS",
+            "complete_python_regression": "PASS",
+            "phase2_contract_regression": "PASS",
             "source_freeze_verifier": "PASS",
+            "rust_toolchain": "1.75.0",
         },
         "source_inventory": {
             "path": "manifests/source_inventory.json",
             "file_count": inventory.get("file_count"),
             "sha256": sha256(INVENTORY),
         },
-        "private_recovery_archive": {
-            "drive_file_id": "1qH4K0m1lX_3o0XLvCkJMXsDajOkfu2cs",
-            "sha256": "d98d44364387431f86d4bad2e725bb5e6612f32a1f1884436a4285872c87efc4",
-            "visibility": "private",
-        },
         "truth_boundary": (
-            "This receipt proves only the deterministic shared contract layer at the exact "
-            "tested revision and hosted run recorded above. It does not authorize or prove "
-            "loader transfer, partition writes, OEMINFO modification, flashing, reboot, drivers, "
-            "signed packaging, or physical Huawei repair."
+            "This receipt proves only the persistent, device-inert TTG Device Gateway control "
+            "plane at the tested revision and hosted run. It proves durable sessions, operation "
+            "stage recovery, loopback UI reconnection, provider/capability policy, watchdog state, "
+            "atomic state/audit commits, bounded protocol framing, diagnostics, and a hash-chained "
+            "journal. It does not authorize or prove loader transfer, partition writes, OEMINFO "
+            "modification, flashing, reboot, drivers, signed packaging, or physical Huawei repair."
         ),
     }
 
 
 def verify() -> None:
     receipt = json.loads(OUTPUT.read_text(encoding="utf-8"))
-    if receipt.get("schema") != "techguytool-huawei.source-inventory-receipt.v3":
-        raise ValueError("unsupported Phase 2 receipt schema")
-    if receipt.get("status") != "PHASE2_SHARED_CONTRACTS_FROZEN":
-        raise ValueError("Phase 2 receipt is not frozen")
+    if receipt.get("schema") != "techguytool-huawei.phase3-gateway-receipt.v1":
+        raise ValueError("unsupported Phase 3 receipt schema")
+    if receipt.get("status") != "PHASE3_DEVICE_GATEWAY_FROZEN":
+        raise ValueError("Phase 3 receipt is not frozen")
 
     hosted = receipt.get("hosted_proof")
     if not isinstance(hosted, dict):
-        raise ValueError("Phase 2 receipt is missing hosted proof identity")
+        raise ValueError("Phase 3 receipt is missing hosted proof identity")
     tested_revision = str(hosted.get("tested_revision"))
     run_id = str(hosted.get("run_id"))
     run_url = str(hosted.get("run_url"))
@@ -138,20 +138,20 @@ def verify() -> None:
 
     proof = receipt.get("proof")
     if not isinstance(proof, dict):
-        raise ValueError("Phase 2 receipt is missing proof results")
+        raise ValueError("Phase 3 receipt is missing proof results")
     failed = [
         name
         for name, value in proof.items()
         if name != "rust_toolchain" and value != "PASS"
     ]
     if failed:
-        raise ValueError("Phase 2 receipt contains non-PASS proof fields: " + ", ".join(failed))
+        raise ValueError("Phase 3 receipt contains non-PASS proof fields: " + ", ".join(failed))
     if proof.get("rust_toolchain") != "1.75.0":
-        raise ValueError("Phase 2 receipt records an unsupported Rust toolchain")
+        raise ValueError("Phase 3 receipt records an unsupported Rust toolchain")
 
     inventory = receipt.get("source_inventory")
     if not isinstance(inventory, dict):
-        raise ValueError("Phase 2 receipt is missing source inventory identity")
+        raise ValueError("Phase 3 receipt is missing source inventory identity")
 
     owner = receipt.get("owner_verification")
     if owner is not None and not isinstance(owner, dict):
@@ -170,12 +170,12 @@ def verify() -> None:
         _require_ancestor(authority_commit, "HEAD")
         inventory_bytes = _git_file_bytes(authority_commit, "manifests/source_inventory.json")
         if inventory.get("sha256") != sha256_bytes(inventory_bytes):
-            raise ValueError("Phase 2 receipt does not match its frozen inventory")
+            raise ValueError("Phase 3 receipt does not match its authority inventory")
         changed = _changed_files(tested_revision, authority_commit)
     else:
         _require_ancestor(tested_revision, "HEAD")
         if inventory.get("sha256") != sha256(INVENTORY):
-            raise ValueError("Phase 2 receipt does not match the committed source inventory")
+            raise ValueError("Phase 3 receipt does not match the committed source inventory")
         changed = _changed_files(tested_revision, "HEAD")
 
     unexpected = sorted(set(changed) - _ALLOWED_POST_PROOF_CHANGES)
@@ -217,7 +217,7 @@ def _git_file_bytes(revision: str, path: str) -> bytes:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Build or verify the Phase 2 proof receipt")
+    parser = argparse.ArgumentParser(description="Build or verify the Phase 3 proof receipt")
     parser.add_argument("--verify", action="store_true")
     parser.add_argument("--tested-revision")
     parser.add_argument("--proof-run-id")

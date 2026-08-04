@@ -7,16 +7,23 @@
     "source_branch": "build/huawei-ui-v0.1"
   },
   "excluded_from_recursive_hashing": [
+    "manifests/phase3_gateway.receipt.json",
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 88,
+  "file_count": 107,
   "files": [
     {
       "origin": "phase2_shared_contracts",
       "path": ".github/workflows/phase2-contracts.yml",
       "sha256": "8fa73d7d7fd4465a5ccf7e7f9832103ac1997caeadf21b91937f5bcc894d96ee",
       "size_bytes": 6588
+    },
+    {
+      "origin": "phase3_device_gateway",
+      "path": ".github/workflows/phase3-gateway.yml",
+      "sha256": "abccbebba10ba3834bd06e234cd044c46771a186ff588297ec4436c59b992eef",
+      "size_bytes": 7189
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -37,10 +44,10 @@
       "size_bytes": 35696
     },
     {
-      "origin": "phase2_shared_contracts",
+      "origin": "phase3_device_gateway",
       "path": "README.md",
-      "sha256": "39b66f34ffa64c122fbb087d27bf49ceed7fccb76307766a63e47857aa926221",
-      "size_bytes": 4892
+      "sha256": "4b3243ec7b7b85571f956b96349986ceab8105666e13750416290d05c58073cb",
+      "size_bytes": 5556
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -125,6 +132,12 @@
       "path": "docs/PHASE_2_SHARED_CONTRACTS.md",
       "sha256": "ffb1ee207eba7bd0a080baad691e4b2c140e7fbc5a62b237161d31b0660a1de3",
       "size_bytes": 5139
+    },
+    {
+      "origin": "phase3_device_gateway",
+      "path": "docs/PHASE_3_DEVICE_GATEWAY.md",
+      "sha256": "230f1d4ad71cc39749bb663f5d87d77312f1104eace60dde8cf8a274860e8268",
+      "size_bytes": 6033
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -367,6 +380,84 @@
       "size_bytes": 4431
     },
     {
+      "origin": "phase3_device_gateway",
+      "path": "rust/device_gateway/Cargo.lock",
+      "sha256": "5bec1249e0102b5860e1e55708d5398f8a74d786421b59039af63153fc13252f",
+      "size_bytes": 20419
+    },
+    {
+      "origin": "phase3_device_gateway",
+      "path": "rust/device_gateway/Cargo.toml",
+      "sha256": "37022284aaad41437578e203dd6b9ff19bb07ab5f0ecc1635de879f84109bd04",
+      "size_bytes": 725
+    },
+    {
+      "origin": "phase3_device_gateway",
+      "path": "rust/device_gateway/src/error.rs",
+      "sha256": "bbc598084776a5b6812a2332e18794b11074fa81f78f00348d67417b09bc4185",
+      "size_bytes": 1928
+    },
+    {
+      "origin": "phase3_device_gateway",
+      "path": "rust/device_gateway/src/gateway.rs",
+      "sha256": "904f3578e80cd02651cca8f0543dd56727d8904b55caf8fd8060573fdd185c69",
+      "size_bytes": 14049
+    },
+    {
+      "origin": "phase3_device_gateway",
+      "path": "rust/device_gateway/src/lib.rs",
+      "sha256": "9bd45273771aa072b74f6056e25c702a48cbdb01cb0804cc1395af7d83c1abb7",
+      "size_bytes": 665
+    },
+    {
+      "origin": "phase3_device_gateway",
+      "path": "rust/device_gateway/src/main.rs",
+      "sha256": "8af1439c1f1cdc48bd9504aeb51fce236cac74ea782cc4eba445679f13b4ac73",
+      "size_bytes": 2963
+    },
+    {
+      "origin": "phase3_device_gateway",
+      "path": "rust/device_gateway/src/model.rs",
+      "sha256": "d264b2f05aacc6b5948e9dd46bc57b655ed92b1d8146fe9d8f6e8f362e4c8896",
+      "size_bytes": 5170
+    },
+    {
+      "origin": "phase3_device_gateway",
+      "path": "rust/device_gateway/src/policy.rs",
+      "sha256": "887b230ccf198b0e356b09b3bb48994915595a20decd4c1c81d25105bf55a323",
+      "size_bytes": 6863
+    },
+    {
+      "origin": "phase3_device_gateway",
+      "path": "rust/device_gateway/src/protocol.rs",
+      "sha256": "61a51a43f7e33cb783b26d83ed50949ca0192e69169c2bca7824de87341a0faf",
+      "size_bytes": 7007
+    },
+    {
+      "origin": "phase3_device_gateway",
+      "path": "rust/device_gateway/src/server.rs",
+      "sha256": "ab78af490eeada10038dda26fc5303f135a66ae1d0cfee8a55e099abeaab3c1e",
+      "size_bytes": 3110
+    },
+    {
+      "origin": "phase3_device_gateway",
+      "path": "rust/device_gateway/src/storage.rs",
+      "sha256": "92f78613c5c89ef508bf67aaf126b40a3bc12d7c44f4ae1c97e8604dbaed57e6",
+      "size_bytes": 38564
+    },
+    {
+      "origin": "phase3_device_gateway",
+      "path": "rust/device_gateway/tests/gateway.rs",
+      "sha256": "b201ed91be75d803984b1e0fc84987b9b75cb874849fcb9d6a348086f6e89b3a",
+      "size_bytes": 8274
+    },
+    {
+      "origin": "phase3_device_gateway",
+      "path": "rust/device_gateway/tests/protocol.rs",
+      "sha256": "6b92c9a31aaf61f9565770ad209936146fc3541ec2de8603c13ab5f454ce01f0",
+      "size_bytes": 2927
+    },
+    {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "rust/health_core/Cargo.toml",
       "sha256": "13ab52f8d60bc7aac6b973d2dfd42e9a9154f7f8c33a043bf1b02427084d6eb2",
@@ -439,6 +530,12 @@
       "size_bytes": 1853
     },
     {
+      "origin": "phase3_device_gateway",
+      "path": "techguy_huawei/gateway_client.py",
+      "sha256": "460a4c3465d97064767136c79dec135a905741a62e3806f243e66137d4f8ecf0",
+      "size_bytes": 6922
+    },
+    {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "techguy_huawei/storage.py",
       "sha256": "45d35a8381b79307399dc884b9755b15111c4730957c6a5738bb32c69f0b6caa",
@@ -463,6 +560,12 @@
       "size_bytes": 790
     },
     {
+      "origin": "phase3_device_gateway",
+      "path": "tests/test_gateway_client.py",
+      "sha256": "9f4d61a7c1df8640e30633c369afb7ed1d74fe16feac68aad29b4e2cc2b511e1",
+      "size_bytes": 2500
+    },
+    {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "tests/test_repository_contracts.py",
       "sha256": "656fa9c096080b36b40241548395495f6abf768513380387101c2165878b9410",
@@ -481,16 +584,22 @@
       "size_bytes": 996
     },
     {
-      "origin": "phase2_shared_contracts",
+      "origin": "phase3_device_gateway",
       "path": "tools/build_phase2_receipt.py",
-      "sha256": "9c0fe23d7b1b86a94dde01b2bc5ecb77de0aa85a238a475a08f3398f77477a00",
-      "size_bytes": 8484
+      "sha256": "df549657e645b321967528a51c69aa9e309b7f7bb1283a1badab132d7bdf82ae",
+      "size_bytes": 9517
     },
     {
-      "origin": "phase2_shared_contracts",
+      "origin": "phase3_device_gateway",
+      "path": "tools/build_phase3_receipt.py",
+      "sha256": "2b8d202e4b5f5da56cf3afbb16438eaec95aaba8bb34651ccf849807549a4c51",
+      "size_bytes": 9412
+    },
+    {
+      "origin": "phase3_device_gateway",
       "path": "tools/build_source_inventory.py",
-      "sha256": "83f28757d3188f515e8b3bb9ad1c8c27a42985b599fc35dbff84c670b09056db",
-      "size_bytes": 4666
+      "sha256": "66e1816194e54c0634a45ba7f28fd1d9caacde0dc47f03b30e1695f3c8b74131",
+      "size_bytes": 4675
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -517,6 +626,12 @@
       "size_bytes": 8143
     },
     {
+      "origin": "phase3_device_gateway",
+      "path": "tools/prove_gateway_reconnect.py",
+      "sha256": "208c9bdfc084dbea08d858dfa1e4f41dc70af0ddebb9dc6900ac71f27d8de141",
+      "size_bytes": 7328
+    },
+    {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "tools/review_20_for_2.py",
       "sha256": "202210df400ebc34004d419f628d6ef2aee596c33aa16a3c8d8fae6c6bacbc30",
@@ -535,10 +650,10 @@
       "size_bytes": 4231
     },
     {
-      "origin": "phase1_recovery_and_freeze",
+      "origin": "phase3_device_gateway",
       "path": "tools/verify_source_freeze.py",
-      "sha256": "7710842f348d8d525a7b9e41691d529edcfa429c6066a7899253a50dad20949a",
-      "size_bytes": 5920
+      "sha256": "1208a9310b84c2c44baeaa7ff741de9f383b48bb4dca5a1229a43645d8c43cd7",
+      "size_bytes": 6368
     }
   ],
   "inventory_definition_date": "2026-08-04",
@@ -548,5 +663,5 @@
     "drive_file_id": "1qH4K0m1lX_3o0XLvCkJMXsDajOkfu2cs"
   },
   "schema": "techguytool-huawei.source-inventory.v1",
-  "self_provenance": "This manifest and its receipt are excluded from recursive hashing. The manifest proves the listed source contents only; hosted proof revision and run identity are recorded separately in the Phase 2 receipt."
+  "self_provenance": "Generated authority files are excluded from recursive hashing. The source inventory proves listed source contents; hosted proof revision and run identity are recorded in the phase-specific receipts."
 }

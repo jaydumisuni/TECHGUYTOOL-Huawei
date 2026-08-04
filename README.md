@@ -6,49 +6,54 @@ Huawei service and recovery engineering project for **THETECHGUY DIGITAL SOLUTIO
 
 Read **[FULL_PLAN.md](FULL_PLAN.md)** before changing architecture, routes, Xray boundaries, repair recipes, executors, packaging, or proof requirements.
 
-The repository contains the frozen source checkpoint for the Qt/QML host application, the public/private artifact authority, and the deterministic shared Python/Rust contract core. The historical Huawei Revive archive remains private recovery evidence because it contains device identifiers, operation logs, firmware-derived binaries, loaders, recovery images, and mixed read/write authority that must be decomposed before production use.
+The repository contains the frozen Qt/QML host checkpoint, public/private artifact authority, deterministic shared Python/Rust contracts, and the persistent device-inert TTG Device Gateway. The historical Huawei Revive archive remains private recovery evidence because it contains device identifiers, operation logs, firmware-derived binaries, loaders, recovery images, and mixed read/write authority that must be decomposed before production use.
 
-## Current phase
+## Completed phases
 
-### Completed
-
-**Phase 1 — Source freeze and external-artifact authority**
+### Phase 1 — Source freeze and external-artifact authority
 
 - exact source and GitHub Actions provenance;
 - private Revive archive identity and SHA-256;
 - manifests for intentionally external firmware, board software, SUPER, loaders, backups, logs, and evidence;
 - fail-closed rejection of transfer debris and runtime binaries from public source.
 
-**Phase 2 — Shared Python/Rust contracts**
+### Phase 2 — Shared Python/Rust contracts
 
 - 17 versioned contract types;
 - deterministic canonical UTF-8 JSON and SHA-256 identity;
 - identical Python and Rust validation behavior;
 - fail-closed authority, session, expiry, single-use, recipe, artifact, and validation-context checks;
 - automatic promotion forbidden for write targets, offsets, destructive recipes, and expanded authority;
-- 17 valid fixtures, 34 invalid mutation fixtures, one malformed-JSON fixture, and one invalid-context fixture;
-- exact 53-case Python/Rust equivalence proof;
-- Rust 1.75 formatting, Clippy with warnings denied, compilation, and tests;
-- complete Python regression and source-freeze verification.
+- 17 valid fixtures, 34 invalid mutations, 3 review-edge cases, one malformed-JSON case, and two context cases;
+- exact 57-case Python/Rust proof;
+- Rust 1.75 formatting, Clippy with warnings denied, compilation, and tests.
 
-Phase 2 proof receipt: [`manifests/source_inventory.receipt.json`](manifests/source_inventory.receipt.json)
+Phase 2 receipt: [`manifests/source_inventory.receipt.json`](manifests/source_inventory.receipt.json)
 
-### Next authorized phase
+### Phase 3 — TTG Device Gateway
 
-**Phase 3 — TTG Device Gateway**
+- persistent physical-device and operation sessions;
+- SQLite schema version 1;
+- typed event bus and append-only hash-chained journal;
+- provider manifests and contract-authority checks;
+- ordered operation-stage policy;
+- Phase 2 contract validation at Gateway ingress;
+- fail-closed capability allowlists;
+- worker heartbeat and watchdog state;
+- crash recovery and explicit operation resume;
+- loopback-only UTF-8 JSON-lines protocol;
+- reconnect-safe Python UI client;
+- `doctor`, snapshots, and journal verification;
+- no device-write, loader, flash, partition, OEMINFO, or reboot surface.
 
-The next implementation must build the persistent, device-inert Gateway control plane around the frozen Phase 2 contracts:
+Phase 3 authority: [`docs/PHASE_3_DEVICE_GATEWAY.md`](docs/PHASE_3_DEVICE_GATEWAY.md)  
+Phase 3 receipt: [`manifests/phase3_gateway.receipt.json`](manifests/phase3_gateway.receipt.json)
 
-- physical-device and operation session registries;
-- typed event bus;
-- plugin/provider lifecycle;
-- ordered policy hooks;
-- SQLite durable state and evidence journal;
-- worker supervision and watchdogs;
-- crash recovery and UI reconnection;
-- diagnostics and capability allowlists.
+## Next authorized phase
 
-Phase 3 does not authorize device-changing executors.
+**Phase 4 — Harden Kirin Xray**
+
+The next implementation must build the complete read-only Huawei evidence lane and replay the P10/P30 evidence without adding write authority.
 
 ## Authorities and evidence
 
@@ -56,6 +61,7 @@ Phase 3 does not authorize device-changing executors.
 - [`docs/PHASE_1_SOURCE_FREEZE.md`](docs/PHASE_1_SOURCE_FREEZE.md)
 - [`docs/LEGACY_AUTHORITY_REVIEW.md`](docs/LEGACY_AUTHORITY_REVIEW.md)
 - [`docs/PHASE_2_SHARED_CONTRACTS.md`](docs/PHASE_2_SHARED_CONTRACTS.md)
+- [`docs/PHASE_3_DEVICE_GATEWAY.md`](docs/PHASE_3_DEVICE_GATEWAY.md)
 - [`contracts/registry.json`](contracts/registry.json)
 - [`manifests/source_inventory.json`](manifests/source_inventory.json)
 - [`manifests/private_source_archive.json`](manifests/private_source_archive.json)
@@ -63,25 +69,27 @@ Phase 3 does not authorize device-changing executors.
 
 ## Active safety boundary
 
-Xray remains strictly read-only. The active source may inspect, identify, correlate, diagnose, recommend, predict, and verify. It may not flash, erase, unlock, relock, reboot, upload a destructive service loader, write OEMINFO, or modify a device partition.
+Xray remains strictly read-only. The Gateway has `device_authority = none`. The active source may inspect, identify, correlate, diagnose, recommend, predict, coordinate, journal, and verify. It may not flash, erase, unlock, relock, reboot, upload a destructive service loader, write OEMINFO, or modify a device partition.
 
-`execution_lease` is currently a validated contract only. No production executor consumes it yet.
+`execution_lease` remains a validated contract only. No production executor consumes it yet.
 
 Historical code or evidence that can modify a device remains private recovery input until it is decomposed into a reviewed bounded executor governed by a versioned lease.
 
-## Contract proof
+## Phase 3 proof
 
 ```powershell
-python -m pytest tests\test_shared_contracts.py -q
-cargo fmt --manifest-path rust\contracts_core\Cargo.toml -- --check
-cargo clippy --manifest-path rust\contracts_core\Cargo.toml --all-targets -- -D warnings
-cargo test --manifest-path rust\contracts_core\Cargo.toml --all-targets
-cargo build --manifest-path rust\contracts_core\Cargo.toml --bin ttg-contracts
-python tools\prove_contract_equivalence.py --rust-bin rust\contracts_core\target\debug\ttg-contracts.exe
-python tools\prove_context_equivalence.py --rust-bin rust\contracts_core\target\debug\ttg-contracts.exe
+cargo generate-lockfile --manifest-path rust\device_gateway\Cargo.toml
+cargo fmt --manifest-path rust\device_gateway\Cargo.toml -- --check
+cargo clippy --locked --manifest-path rust\device_gateway\Cargo.toml --all-targets -- -D warnings
+cargo test --locked --manifest-path rust\device_gateway\Cargo.toml --all-targets
+cargo build --locked --manifest-path rust\device_gateway\Cargo.toml --bin ttg-device-gateway
+python -m pytest tests\test_gateway_client.py -q
+python tools\prove_gateway_reconnect.py --gateway-bin rust\device_gateway\target\debug\ttg-device-gateway.exe
 python tools\build_source_inventory.py
 python -m pytest -q
 python tools\verify_source_freeze.py --json
+python tools\build_phase2_receipt.py --verify
+python tools\build_phase3_receipt.py --verify
 ```
 
 ## Windows one-file target
@@ -90,7 +98,7 @@ python tools\verify_source_freeze.py --json
 .\build_windows.ps1
 ```
 
-The intended release filename is `TECHGUYTOOL_Huawei.exe`. Firmware, loaders, recovery images, backups, logs, registration data, and downloaded artifacts remain outside the executable and outside normal Git source control.
+The intended release filename is `TECHGUYTOOL_Huawei.exe`. Firmware, loaders, recovery images, backups, logs, registration data, runtime Gateway databases, and downloaded artifacts remain outside the executable and outside normal Git source control.
 
 ## Recovery authority
 

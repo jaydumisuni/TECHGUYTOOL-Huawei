@@ -7,22 +7,20 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "manifests" / "source_inventory.json"
 EXCLUDED = {
+    "manifests/phase3_gateway.receipt.json",
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json",
 }
 IGNORED_ROOTS = {"build", "dist", "proof", "wheelhouse"}
 IGNORED_PARTS = {"__pycache__", ".pytest_cache", ".venv", "venv", "target"}
 IGNORED_EXACT = {"techguy_huawei/resources_rc.py"}
-PHASE1_PREFIXES = (
-    "manifests/",
-)
+PHASE1_PREFIXES = ("manifests/",)
 PHASE1_PATHS = {
     ".github/workflows/proof.yml",
     "FULL_PLAN.md",
     "docs/LEGACY_AUTHORITY_REVIEW.md",
     "docs/PHASE_1_SOURCE_FREEZE.md",
     "tests/test_source_freeze.py",
-    "tools/verify_source_freeze.py",
 }
 PHASE2_PREFIXES = (
     "contracts/",
@@ -31,7 +29,6 @@ PHASE2_PREFIXES = (
 PHASE2_PATHS = {
     ".github/workflows/phase2-contracts.yml",
     ".gitignore",
-    "README.md",
     "docs/PHASE_2_SHARED_CONTRACTS.md",
     "techguy_huawei/contract_fields.py",
     "techguy_huawei/contract_models.py",
@@ -39,16 +36,25 @@ PHASE2_PATHS = {
     "techguy_huawei/contract_validation.py",
     "techguy_huawei/contracts.py",
     "tests/test_shared_contracts.py",
-    "tools/build_phase2_receipt.py",
-    "tools/build_source_inventory.py",
     "tools/prove_context_equivalence.py",
     "tools/prove_contract_equivalence.py",
+}
+PHASE3_PREFIXES = ("rust/device_gateway/",)
+PHASE3_PATHS = {
+    ".github/workflows/phase3-gateway.yml",
+    "README.md",
+    "docs/PHASE_3_DEVICE_GATEWAY.md",
+    "techguy_huawei/gateway_client.py",
+    "tests/test_gateway_client.py",
+    "tools/build_phase2_receipt.py",
+    "tools/build_phase3_receipt.py",
+    "tools/build_source_inventory.py",
+    "tools/prove_gateway_reconnect.py",
+    "tools/verify_source_freeze.py",
 }
 
 
 def sha256(path: Path) -> str:
-    """Return the SHA-256 digest for one source file."""
-
     digest = hashlib.sha256()
     with path.open("rb") as stream:
         for block in iter(lambda: stream.read(1024 * 1024), b""):
@@ -57,8 +63,6 @@ def sha256(path: Path) -> str:
 
 
 def is_ignored(path: Path) -> bool:
-    """Return whether a path is excluded from the deterministic inventory."""
-
     rel = path.relative_to(ROOT).as_posix()
     parts = path.relative_to(ROOT).parts
     return (
@@ -71,15 +75,13 @@ def is_ignored(path: Path) -> bool:
 
 
 def source_files() -> list[Path]:
-    """Collect all source files covered by the freeze manifest."""
-
     files = [path for path in ROOT.rglob("*") if path.is_file() and not is_ignored(path)]
     return sorted(files, key=lambda item: item.relative_to(ROOT).as_posix())
 
 
 def origin_for(rel: str) -> str:
-    """Classify a path by the phase that introduced its current authority."""
-
+    if rel in PHASE3_PATHS or rel.startswith(PHASE3_PREFIXES):
+        return "phase3_device_gateway"
     if rel in PHASE2_PATHS or rel.startswith(PHASE2_PREFIXES):
         return "phase2_shared_contracts"
     if rel in PHASE1_PATHS or rel.startswith(PHASE1_PREFIXES):
@@ -88,8 +90,6 @@ def origin_for(rel: str) -> str:
 
 
 def build() -> dict[str, object]:
-    """Build the deterministic content inventory without self-referential files."""
-
     records = []
     for path in source_files():
         rel = path.relative_to(ROOT).as_posix()
@@ -120,16 +120,14 @@ def build() -> dict[str, object]:
         },
         "schema": "techguytool-huawei.source-inventory.v1",
         "self_provenance": (
-            "This manifest and its receipt are excluded from recursive hashing. The manifest "
-            "proves the listed source contents only; hosted proof revision and run identity are "
-            "recorded separately in the Phase 2 receipt."
+            "Generated authority files are excluded from recursive hashing. The source inventory "
+            "proves listed source contents; hosted proof revision and run identity are recorded "
+            "in the phase-specific receipts."
         ),
     }
 
 
 def main() -> int:
-    """Write the deterministic source inventory."""
-
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text(json.dumps(build(), indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(f"WROTE {OUTPUT.relative_to(ROOT)}")

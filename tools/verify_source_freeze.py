@@ -24,24 +24,39 @@ FORBIDDEN_ROOTS = {
     "operation-journals",
 }
 FORBIDDEN_SUFFIXES = {
-    ".img", ".mbn", ".bin", ".app", ".cpio", ".pyz", ".zip", ".7z",
-    ".rar", ".exe", ".dll", ".so", ".b64",
+    ".img",
+    ".mbn",
+    ".bin",
+    ".app",
+    ".cpio",
+    ".pyz",
+    ".zip",
+    ".7z",
+    ".rar",
+    ".exe",
+    ".dll",
+    ".so",
+    ".b64",
 }
 SELF_EXCLUDED = {
+    "manifests/phase3_gateway.receipt.json",
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json",
 }
+GENERATED_SOURCE_PATHS = {
+    "rust/device_gateway/Cargo.lock",
+}
 IGNORED_ROOTS = {"build", "dist", "proof", "wheelhouse"}
-IGNORED_PARTS = {"__pycache__", ".pytest_cache", ".venv", "venv"}
+IGNORED_PARTS = {"__pycache__", ".pytest_cache", ".venv", "venv", "target"}
 IGNORED_EXACT = {"techguy_huawei/resources_rc.py"}
 
 
 def digest(path: Path) -> str:
-    h = hashlib.sha256()
+    value = hashlib.sha256()
     with path.open("rb") as stream:
         for block in iter(lambda: stream.read(1024 * 1024), b""):
-            h.update(block)
-    return h.hexdigest()
+            value.update(block)
+    return value.hexdigest()
 
 
 def is_ignored(path: Path) -> bool:
@@ -74,6 +89,10 @@ def _git_tracked_files() -> list[Path] | None:
             continue
         path = ROOT / raw.decode("utf-8")
         if path.is_file() and not is_ignored(path):
+            paths.append(path)
+    for rel in GENERATED_SOURCE_PATHS:
+        path = ROOT / rel
+        if path.is_file() and not is_ignored(path) and path not in paths:
             paths.append(path)
     return paths
 
@@ -140,27 +159,38 @@ def verify() -> list[str]:
     external = json.loads(EXTERNAL.read_text(encoding="utf-8"))
     omitted = {item.get("id") for item in external.get("intentionally_omitted_inputs", [])}
     required_omitted = {
-        "vog-l29-c185-base", "vog-l29-c185-cust", "vog-l29-c185-preload",
-        "vog-al00-board-software", "vog-l29-merged-super",
+        "vog-l29-c185-base",
+        "vog-l29-c185-cust",
+        "vog-l29-c185-preload",
+        "vog-al00-board-software",
+        "vog-l29-merged-super",
     }
     if not required_omitted <= omitted:
-        errors.append("external artifact manifest does not declare every intentionally omitted required input")
+        errors.append(
+            "external artifact manifest does not declare every intentionally omitted required input"
+        )
     return errors
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Verify TECHGUYTOOL Huawei Phase 1 source freeze")
+    parser = argparse.ArgumentParser(
+        description="Verify TECHGUYTOOL Huawei source and external-artifact authority"
+    )
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
     errors = verify()
-    payload = {"schema": "techguytool-huawei.source-freeze-verification.v1", "status": "PASS" if not errors else "FAIL", "errors": errors}
+    payload = {
+        "schema": "techguytool-huawei.source-freeze-verification.v1",
+        "status": "PASS" if not errors else "FAIL",
+        "errors": errors,
+    }
     if args.json:
         print(json.dumps(payload, indent=2, sort_keys=True))
     elif errors:
         for error in errors:
             print(f"FAIL: {error}", file=sys.stderr)
     else:
-        print("PASS: Phase 1 source freeze and external-artifact authority are coherent.")
+        print("PASS: source freeze and external-artifact authority are coherent.")
     return 0 if not errors else 1
 
 
