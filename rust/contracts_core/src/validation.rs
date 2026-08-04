@@ -123,8 +123,8 @@ fn validate_envelope_shape(
         }
     }
 
-    for name in &registry.envelope.required {
-        if let (Some(value), Some(spec)) = (object.get(name), registry.envelope.fields.get(name)) {
+    for (name, value) in object {
+        if let Some(spec) = registry.envelope.fields.get(name) {
             validate_field(value, spec, &format!("$.{name}"), errors);
         }
     }
@@ -209,9 +209,8 @@ fn validate_definition(
         }
     }
 
-    for name in &definition.payload_required {
-        if let (Some(value), Some(spec)) = (payload.get(name), definition.payload_fields.get(name))
-        {
+    for (name, value) in payload {
+        if let Some(spec) = definition.payload_fields.get(name) {
             validate_field(value, spec, &format!("$.payload.{name}"), errors);
         }
     }
