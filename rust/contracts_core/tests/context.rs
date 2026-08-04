@@ -66,15 +66,17 @@ fn validation_contexts_match_expected_results() {
             case.name
         );
         if case.expected_ok {
+            let expected_canonical = canonical_json(contract).expect("canonical JSON");
+            let expected_sha256 = canonical_sha256(contract).expect("canonical hash");
             assert_eq!(
                 result.canonical.as_deref(),
-                Some(canonical_json(contract).expect("canonical JSON").as_str()),
+                Some(expected_canonical.as_str()),
                 "{} canonical JSON mismatch",
                 case.name
             );
             assert_eq!(
                 result.sha256.as_deref(),
-                Some(canonical_sha256(contract).expect("canonical hash").as_str()),
+                Some(expected_sha256.as_str()),
                 "{} SHA-256 mismatch",
                 case.name
             );
