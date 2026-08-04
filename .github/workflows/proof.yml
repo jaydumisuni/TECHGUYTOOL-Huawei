@@ -2,12 +2,12 @@ name: Huawei UI Proof
 
 on:
   push:
-    branches: [main, "build/**"]
+    branches: [main, "build/**", "phase1/**"]
   pull_request:
     branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   source-proof:
@@ -26,6 +26,8 @@ jobs:
         run: python tools/generate_qrc.py
       - name: Compile Qt resources
         run: pyside6-rcc resources.qrc -o techguy_huawei/resources_rc.py
+      - name: Verify Phase 1 source freeze
+        run: python tools/verify_source_freeze.py --json
       - name: Unit and contract tests
         run: python -m pytest -q
       - name: Strict SRG 20-for-2 review
@@ -66,15 +68,3 @@ jobs:
             !runtime-export/**
           include-hidden-files: true
           if-no-files-found: error
-      - name: Publish proof run marker
-        if: always() && github.event_name == 'push'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          marker='runtime-export/latest-run.txt'
-          content="$(printf '%s\n' "$GITHUB_RUN_ID" | base64 -w0)"
-          existing="$(gh api "repos/$GITHUB_REPOSITORY/contents/$marker?ref=$GITHUB_REF_NAME" --jq .sha 2>/dev/null || true)"
-          args=(--method PUT "repos/$GITHUB_REPOSITORY/contents/$marker" -f message="Record proof run $GITHUB_RUN_ID" -f content="$content" -f branch="$GITHUB_REF_NAME")
-          if [ -n "$existing" ]; then args+=(-f sha="$existing"); fi
-          gh api "${args[@]}"
