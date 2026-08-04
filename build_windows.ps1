@@ -57,8 +57,8 @@ if (Test-Path dist) { Remove-Item dist -Recurse -Force }
 pyside6-deploy -c pysidedeploy.spec -f
 if ($LASTEXITCODE -ne 0) { throw "pyside6-deploy failed." }
 
-$Exe = Get-ChildItem -Path dist -Filter "TECHGUY_TOOL_Huawei.exe" -Recurse | Select-Object -First 1
-if (-not $Exe) { throw "TECHGUY_TOOL_Huawei.exe was not produced." }
+$Exe = Get-ChildItem -Path dist -Filter "TECHGUYTOOL_Huawei.exe" -Recurse | Select-Object -First 1
+if (-not $Exe) { throw "TECHGUYTOOL_Huawei.exe was not produced." }
 
 if ($CertificateThumbprint) {
     $SignTool = Get-Command signtool.exe -ErrorAction SilentlyContinue
