@@ -85,8 +85,6 @@ fn request(address: std::net::SocketAddr, payload: Value) -> Value {
         .expect("write");
     stream.flush().expect("flush");
     let mut line = String::new();
-    BufReader::new(stream)
-        .read_line(&mut line)
-        .expect("read");
+    BufReader::new(stream).read_line(&mut line).expect("read");
     serde_json::from_str(&line).expect("response JSON")
 }
