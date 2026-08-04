@@ -5,6 +5,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+import pytest
+
 from techguy_huawei.contract_support import load_registry
 from techguy_huawei.contract_validation import validate_contract
 
@@ -64,6 +66,34 @@ def test_registry_contains_all_frozen_contract_types() -> None:
     assert set(registry["contracts"]) == set(
         registry["envelope"]["fields"]["contract_type"]["enum"]
     )
+
+
+def test_default_registry_cannot_be_replaced_by_environment(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    replacement = tmp_path / "replacement-registry.json"
+    replacement.write_text(
+        json.dumps(
+            {
+                "schema": "techguytool-huawei.contract-registry.v1",
+                "registry_version": 999,
+                "envelope": {},
+                "contracts": {},
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("TTG_CONTRACT_REGISTRY", str(replacement))
+    assert load_registry()["registry_version"] == 1
+
+
+def test_explicit_registry_rejects_unreviewed_version(tmp_path: Path) -> None:
+    replacement = copy.deepcopy(load_registry())
+    replacement["registry_version"] = 2
+    path = tmp_path / "registry-v2.json"
+    path.write_text(json.dumps(replacement), encoding="utf-8")
+    with pytest.raises(ValueError, match="unsupported contract registry version"):
+        load_registry(path)
 
 
 def test_all_valid_contract_fixtures_pass_and_canonicalize() -> None:
