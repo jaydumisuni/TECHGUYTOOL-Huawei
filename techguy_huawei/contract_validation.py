@@ -7,7 +7,13 @@ from typing import Any, Mapping, Sequence
 
 from .contract_fields import validate_field
 from .contract_models import ContractError, ValidationContext, ValidationResult
-from .contract_support import canonical_json, load_registry, parse_timestamp, try_timestamp
+from .contract_support import (
+    canonical_json,
+    load_registry,
+    parse_timestamp,
+    try_timestamp,
+    validate_registry,
+)
 
 _DANGEROUS_LEARNING_KINDS = {
     "write_target",
@@ -23,6 +29,8 @@ def validate_contract(
     context: ValidationContext | Mapping[str, Any] | None = None,
     registry: Mapping[str, Any] | None = None,
 ) -> ValidationResult:
+    """Validate one shared contract against the frozen authority registry."""
+
     try:
         value = _decode_document(document)
     except (json.JSONDecodeError, UnicodeDecodeError, TypeError, ValueError) as exc:
@@ -39,19 +47,22 @@ def validate_contract(
                 ),
             ),
         )
+
     try:
-        active_registry = dict(registry or load_registry())
+        active_registry = load_registry() if registry is None else validate_registry(registry)
+    except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+        return ValidationResult(
+            ok=False,
+            errors=(ContractError("REGISTRY_UNAVAILABLE", "$registry", str(exc)),),
+        )
+
+    try:
         active_context = (
             context
             if isinstance(context, ValidationContext)
             else ValidationContext.from_mapping(context)
         )
-    except (OSError, ValueError, json.JSONDecodeError) as exc:
-        return ValidationResult(
-            ok=False,
-            errors=(ContractError("REGISTRY_UNAVAILABLE", "$", str(exc)),),
-        )
-    except TypeError as exc:
+    except (TypeError, ValueError) as exc:
         return ValidationResult(
             ok=False,
             errors=(
@@ -80,9 +91,8 @@ def validate_contract(
                 f"unknown top-level field {name!r}",
             )
         )
-    for name in required:
-        if name in value:
-            validate_field(value[name], field_specs[name], path=f"$.{name}", errors=errors)
+    for name in sorted(set(value) & set(field_specs)):
+        validate_field(value[name], field_specs[name], path=f"$.{name}", errors=errors)
 
     contract_type = value.get("contract_type")
     definition = None
@@ -106,7 +116,7 @@ def validate_contract(
         return ValidationResult(ok=False, errors=ordered)
     try:
         canonical = canonical_json(value)
-    except (TypeError, ValueError) as exc:
+    except (TypeError, ValueError, UnicodeError) as exc:
         return ValidationResult(
             ok=False,
             errors=(ContractError("NON_CANONICAL_JSON_VALUE", "$", str(exc)),),
@@ -193,6 +203,7 @@ def _validate_definition(
                     f"required payload field {name!r} is missing",
                 )
             )
+        )
     for name in sorted(set(payload) - set(field_specs)):
         errors.append(
             ContractError(
@@ -201,14 +212,13 @@ def _validate_definition(
                 f"unknown payload field {name!r}",
             )
         )
-    for name in required:
-        if name in payload:
-            validate_field(
-                payload[name],
-                field_specs[name],
-                path=f"$.payload.{name}",
-                errors=errors,
-            )
+    for name in sorted(set(payload) & set(field_specs)):
+        validate_field(
+            payload[name],
+            field_specs[name],
+            path=f"$.payload.{name}",
+            errors=errors,
+        )
     for earlier_name, later_name in definition.get("timestamp_order", []):
         earlier, later = payload.get(earlier_name), payload.get(later_name)
         try:
