@@ -775,16 +775,16 @@ impl Storage {
             )
             .optional()?;
         let event_id = Uuid::new_v4().to_string();
-        let core = event_core(
-            &event_id,
+        let core = event_core(EventCore {
+            event_id: &event_id,
             event_type,
             producer,
             physical_session_id,
             operation_id,
             timestamp,
-            &payload,
-            previous_hash.as_deref(),
-        )?;
+            payload: &payload,
+            previous_hash: previous_hash.as_deref(),
+        })?;
         let event_hash = canonical_sha256(&core).map_err(GatewayError::Json)?;
         transaction.execute(
             "INSERT INTO journal_events(
@@ -893,16 +893,16 @@ impl Storage {
                         event.sequence
                     )));
                 }
-                let core = event_core(
-                    &event.event_id,
-                    event.event_type,
-                    &event.producer,
-                    event.physical_session_id.as_deref(),
-                    event.operation_id.as_deref(),
-                    &event.timestamp,
-                    &event.payload,
-                    event.previous_hash.as_deref(),
-                )?;
+                let core = event_core(EventCore {
+                    event_id: &event.event_id,
+                    event_type: event.event_type,
+                    producer: &event.producer,
+                    physical_session_id: event.physical_session_id.as_deref(),
+                    operation_id: event.operation_id.as_deref(),
+                    timestamp: &event.timestamp,
+                    payload: &event.payload,
+                    previous_hash: event.previous_hash.as_deref(),
+                })?;
                 let actual = canonical_sha256(&core).map_err(GatewayError::Json)?;
                 if actual != event.event_hash {
                     return Err(GatewayError::JournalCorrupt(format!(
@@ -992,25 +992,27 @@ impl Storage {
     }
 }
 
-fn event_core(
-    event_id: &str,
+struct EventCore<'a> {
+    event_id: &'a str,
     event_type: GatewayEventKind,
-    producer: &str,
-    physical_session_id: Option<&str>,
-    operation_id: Option<&str>,
-    timestamp: &str,
-    payload: &Value,
-    previous_hash: Option<&str>,
-) -> Result<Value, GatewayError> {
+    producer: &'a str,
+    physical_session_id: Option<&'a str>,
+    operation_id: Option<&'a str>,
+    timestamp: &'a str,
+    payload: &'a Value,
+    previous_hash: Option<&'a str>,
+}
+
+fn event_core(input: EventCore<'_>) -> Result<Value, GatewayError> {
     Ok(json!({
-        "event_id": event_id,
-        "event_type": encode_enum(event_type)?,
-        "operation_id": operation_id,
-        "payload": payload,
-        "physical_session_id": physical_session_id,
-        "previous_hash": previous_hash,
-        "producer": producer,
-        "timestamp": timestamp
+        "event_id": input.event_id,
+        "event_type": encode_enum(input.event_type)?,
+        "operation_id": input.operation_id,
+        "payload": input.payload,
+        "physical_session_id": input.physical_session_id,
+        "previous_hash": input.previous_hash,
+        "producer": input.producer,
+        "timestamp": input.timestamp
     }))
 }
 
