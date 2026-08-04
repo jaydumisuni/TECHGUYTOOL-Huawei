@@ -58,7 +58,11 @@ fn validation_contexts_match_expected_results() {
             .get(&case.base)
             .unwrap_or_else(|| panic!("missing base fixture {}", case.base));
         let result = validate_contract(contract, &case.context, &registry);
-        assert_eq!(result.ok, case.expected_ok, "{} validity mismatch", case.name);
+        assert_eq!(
+            result.ok, case.expected_ok,
+            "{} validity mismatch",
+            case.name
+        );
         assert_eq!(
             error_codes(&result.errors),
             case.expected_error_codes.into_iter().collect(),
