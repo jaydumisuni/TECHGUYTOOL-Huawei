@@ -1,6 +1,9 @@
 use crate::error::GatewayError;
 use crate::model::{OperationStage, ProviderManifest};
+use chrono::{DateTime, Duration, Utc};
 use std::collections::BTreeSet;
+
+pub const MAX_WORKER_LEASE_SECONDS: i64 = 300;
 
 const ALLOWED_CAPABILITIES: &[&str] = &[
     "contract.publish",
@@ -123,6 +126,25 @@ pub fn ensure_worker_capabilities(capabilities: &[String]) -> Result<(), Gateway
     Ok(())
 }
 
+pub fn validate_worker_deadline(now: &str, deadline_at: &str) -> Result<(), GatewayError> {
+    let now = parse_timestamp(now)?;
+    let deadline = parse_timestamp(deadline_at)?;
+    if deadline <= now {
+        return Err(GatewayError::InvalidInput(
+            "worker deadline must be in the future".to_owned(),
+        ));
+    }
+    let maximum = now
+        .checked_add_signed(Duration::seconds(MAX_WORKER_LEASE_SECONDS))
+        .ok_or_else(|| GatewayError::InvalidInput("worker deadline overflowed".to_owned()))?;
+    if deadline > maximum {
+        return Err(GatewayError::InvalidInput(format!(
+            "worker deadline exceeds the {MAX_WORKER_LEASE_SECONDS}-second maximum lease"
+        )));
+    }
+    Ok(())
+}
+
 pub fn ensure_stage_transition(
     current: OperationStage,
     next: OperationStage,
@@ -178,6 +200,16 @@ pub fn ensure_stage_transition(
         )));
     }
     Ok(())
+}
+
+pub(crate) fn parse_timestamp(value: &str) -> Result<DateTime<Utc>, GatewayError> {
+    DateTime::parse_from_rfc3339(value)
+        .map(|timestamp| timestamp.with_timezone(&Utc))
+        .map_err(|_| {
+            GatewayError::InvalidInput(format!(
+                "timestamp {value:?} must be RFC3339 with an explicit offset"
+            ))
+        })
 }
 
 fn validate_semver(value: &str) -> Result<(), GatewayError> {
