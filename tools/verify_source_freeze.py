@@ -43,6 +43,9 @@ SELF_EXCLUDED = {
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json",
 }
+GENERATED_SOURCE_PATHS = {
+    "rust/device_gateway/Cargo.lock",
+}
 IGNORED_ROOTS = {"build", "dist", "proof", "wheelhouse"}
 IGNORED_PARTS = {"__pycache__", ".pytest_cache", ".venv", "venv", "target"}
 IGNORED_EXACT = {"techguy_huawei/resources_rc.py"}
@@ -86,6 +89,10 @@ def _git_tracked_files() -> list[Path] | None:
             continue
         path = ROOT / raw.decode("utf-8")
         if path.is_file() and not is_ignored(path):
+            paths.append(path)
+    for rel in GENERATED_SOURCE_PATHS:
+        path = ROOT / rel
+        if path.is_file() and not is_ignored(path) and path not in paths:
             paths.append(path)
     return paths
 
