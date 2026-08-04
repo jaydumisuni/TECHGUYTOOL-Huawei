@@ -6,27 +6,26 @@ import json
 import re
 import subprocess
 from pathlib import Path
-from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 INVENTORY = ROOT / "manifests" / "source_inventory.json"
 OUTPUT = ROOT / "manifests" / "source_inventory.receipt.json"
 _SHA_RE = re.compile(r"^[0-9a-f]{40}$")
-_TIMESTAMP_RE = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$")
+_TIMESTAMP_RE = re.compile(
+    r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+)
 _ALLOWED_POST_PROOF_CHANGES = {
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json",
 }
 
 
-def sha256(path: Path) -> str:
-    """Return the SHA-256 digest for one authority file."""
+def sha256_bytes(value: bytes) -> str:
+    return hashlib.sha256(value).hexdigest()
 
-    digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        for block in iter(lambda: stream.read(1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
+
+def sha256(path: Path) -> str:
+    return sha256_bytes(path.read_bytes())
 
 
 def _validate_proof_identity(
@@ -55,8 +54,6 @@ def build(
     generated_at: str,
     proof_run_url: str,
 ) -> dict[str, object]:
-    """Build a traceable Phase 2 receipt after all hosted proof gates pass."""
-
     _validate_proof_identity(tested_revision, proof_run_id, generated_at, proof_run_url)
     inventory = json.loads(INVENTORY.read_text(encoding="utf-8"))
     phase2_files = [
@@ -116,17 +113,14 @@ def build(
         },
         "truth_boundary": (
             "This receipt proves only the deterministic shared contract layer at the exact "
-            "tested revision and hosted run recorded above. The authority commit may change only "
-            "the inventory and this receipt. It does not authorize or prove loader transfer, "
-            "partition writes, OEMINFO modification, flashing, reboot, drivers, signed packaging, "
-            "or physical Huawei repair."
+            "tested revision and hosted run recorded above. It does not authorize or prove "
+            "loader transfer, partition writes, OEMINFO modification, flashing, reboot, drivers, "
+            "signed packaging, or physical Huawei repair."
         ),
     }
 
 
 def verify() -> None:
-    """Verify receipt provenance and reject source changes after the tested revision."""
-
     receipt = json.loads(OUTPUT.read_text(encoding="utf-8"))
     if receipt.get("schema") != "techguytool-huawei.source-inventory-receipt.v3":
         raise ValueError("unsupported Phase 2 receipt schema")
@@ -136,29 +130,58 @@ def verify() -> None:
     hosted = receipt.get("hosted_proof")
     if not isinstance(hosted, dict):
         raise ValueError("Phase 2 receipt is missing hosted proof identity")
-    tested_revision = hosted.get("tested_revision")
-    run_id = hosted.get("run_id")
-    run_url = hosted.get("run_url")
-    generated_at = receipt.get("generated_at")
-    _validate_proof_identity(
-        str(tested_revision), str(run_id), str(generated_at), str(run_url)
-    )
-
-    inventory = receipt.get("source_inventory")
-    if not isinstance(inventory, dict) or inventory.get("sha256") != sha256(INVENTORY):
-        raise ValueError("Phase 2 receipt does not match the committed source inventory")
+    tested_revision = str(hosted.get("tested_revision"))
+    run_id = str(hosted.get("run_id"))
+    run_url = str(hosted.get("run_url"))
+    generated_at = str(receipt.get("generated_at"))
+    _validate_proof_identity(tested_revision, run_id, generated_at, run_url)
 
     proof = receipt.get("proof")
     if not isinstance(proof, dict):
         raise ValueError("Phase 2 receipt is missing proof results")
-    pass_fields = [name for name, value in proof.items() if name != "rust_toolchain" and value != "PASS"]
-    if pass_fields:
-        raise ValueError("Phase 2 receipt contains non-PASS proof fields: " + ", ".join(pass_fields))
+    failed = [
+        name
+        for name, value in proof.items()
+        if name != "rust_toolchain" and value != "PASS"
+    ]
+    if failed:
+        raise ValueError("Phase 2 receipt contains non-PASS proof fields: " + ", ".join(failed))
     if proof.get("rust_toolchain") != "1.75.0":
         raise ValueError("Phase 2 receipt records an unsupported Rust toolchain")
 
+    inventory = receipt.get("source_inventory")
+    if not isinstance(inventory, dict):
+        raise ValueError("Phase 2 receipt is missing source inventory identity")
+
+    owner = receipt.get("owner_verification")
+    if isinstance(owner, dict):
+        authority_commit = str(owner.get("authority_commit"))
+        source_revision = str(owner.get("source_revision"))
+        source_run_id = str(owner.get("source_proof_run_id"))
+        if _SHA_RE.fullmatch(authority_commit) is None:
+            raise ValueError("owner verification authority_commit is invalid")
+        if source_revision != tested_revision or source_run_id != run_id:
+            raise ValueError("owner verification does not match hosted proof identity")
+        _require_ancestor(tested_revision, authority_commit)
+        _require_ancestor(authority_commit, "HEAD")
+        inventory_bytes = _git_file_bytes(authority_commit, "manifests/source_inventory.json")
+        if inventory.get("sha256") != sha256_bytes(inventory_bytes):
+            raise ValueError("Phase 2 receipt does not match its frozen inventory")
+        changed = _changed_files(tested_revision, authority_commit)
+    else:
+        _require_ancestor(tested_revision, "HEAD")
+        if inventory.get("sha256") != sha256(INVENTORY):
+            raise ValueError("Phase 2 receipt does not match the committed source inventory")
+        changed = _changed_files(tested_revision, "HEAD")
+
+    unexpected = sorted(set(changed) - _ALLOWED_POST_PROOF_CHANGES)
+    if unexpected:
+        raise ValueError("source changed after hosted proof: " + ", ".join(unexpected))
+
+
+def _require_ancestor(ancestor: str, descendant: str) -> None:
     subprocess.run(
-        ["git", "merge-base", "--is-ancestor", str(tested_revision), "HEAD"],
+        ["git", "merge-base", "--is-ancestor", ancestor, descendant],
         cwd=ROOT,
         check=True,
         capture_output=True,
@@ -166,8 +189,11 @@ def verify() -> None:
         encoding="utf-8",
         errors="strict",
     )
-    changed = subprocess.run(
-        ["git", "diff", "--name-only", f"{tested_revision}..HEAD"],
+
+
+def _changed_files(base: str, head: str) -> list[str]:
+    return subprocess.run(
+        ["git", "diff", "--name-only", f"{base}..{head}"],
         cwd=ROOT,
         check=True,
         capture_output=True,
@@ -175,16 +201,18 @@ def verify() -> None:
         encoding="utf-8",
         errors="strict",
     ).stdout.splitlines()
-    unexpected = sorted(set(changed) - _ALLOWED_POST_PROOF_CHANGES)
-    if unexpected:
-        raise ValueError(
-            "source changed after hosted proof: " + ", ".join(unexpected)
-        )
+
+
+def _git_file_bytes(revision: str, path: str) -> bytes:
+    return subprocess.run(
+        ["git", "show", f"{revision}:{path}"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+    ).stdout
 
 
 def main() -> int:
-    """Write or verify the traceable Phase 2 proof receipt."""
-
     parser = argparse.ArgumentParser(description="Build or verify the Phase 2 proof receipt")
     parser.add_argument("--verify", action="store_true")
     parser.add_argument("--tested-revision")
