@@ -15,8 +15,8 @@
     {
       "origin": "phase2_shared_contracts",
       "path": ".github/workflows/phase2-contracts.yml",
-      "sha256": "566f808e36a8a63a82809dedd75c0b02cf01c213205ae91d327cec9eb64414c8",
-      "size_bytes": 4901
+      "sha256": "3f34758cad0a922285cd8c490de5548d41d5afd5f592762d038810a97366d32a",
+      "size_bytes": 4947
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -453,8 +453,8 @@
     {
       "origin": "phase2_shared_contracts",
       "path": "tools/build_phase2_receipt.py",
-      "sha256": "477a663c4707009d5abcd181e49a4f6eaa259763c5acbae13bd5ad006420e3d1",
-      "size_bytes": 3017
+      "sha256": "66bed8e2ed3bf2322859d8152c73b0848defdaec17fecd68307b8ef06936cf9d",
+      "size_bytes": 3012
     },
     {
       "origin": "phase2_shared_contracts",

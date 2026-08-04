@@ -4,33 +4,37 @@
     "branch": "phase2/shared-contracts",
     "contract_types": 17,
     "device_authority": "none",
+    "equivalence_cases": 52,
     "invalid_mutation_fixtures": 34,
     "malformed_json_fixtures": 1,
     "phase2_file_count": 24,
     "valid_fixtures": 17,
     "xray_authority": "read_only"
   },
-  "prepared_at": "2026-08-04T14:30:00Z",
+  "prepared_at": "2026-08-04T15:20:00Z",
   "private_recovery_archive": {
     "drive_file_id": "1qH4K0m1lX_3o0XLvCkJMXsDajOkfu2cs",
     "sha256": "d98d44364387431f86d4bad2e725bb5e6612f32a1f1884436a4285872c87efc4",
     "visibility": "private"
   },
   "proof": {
-    "cargo_clippy": "PASS_REQUIRED_BEFORE_GENERATION",
-    "cargo_fmt": "PASS_REQUIRED_BEFORE_GENERATION",
-    "python_fixture_suite": "PASS_REQUIRED_BEFORE_GENERATION",
-    "python_rust_canonical_equivalence": "PASS_REQUIRED_BEFORE_GENERATION",
-    "python_rust_sha256_equivalence": "PASS_REQUIRED_BEFORE_GENERATION",
-    "rust_fixture_suite": "PASS_REQUIRED_BEFORE_GENERATION",
-    "source_freeze_verifier": "PASS_REQUIRED_AFTER_GENERATION"
+    "cargo_clippy_warnings_denied": "PASS",
+    "cargo_fmt": "PASS",
+    "cargo_test": "PASS",
+    "complete_python_regression": "PASS",
+    "python_fixture_suite": "PASS",
+    "python_rust_canonical_equivalence": "PASS",
+    "python_rust_sha256_equivalence": "PASS",
+    "rust_fixture_suite": "PASS",
+    "rust_toolchain": "1.75.0",
+    "source_freeze_verifier": "PASS"
   },
   "schema": "techguytool-huawei.source-inventory-receipt.v2",
   "source_inventory": {
     "file_count": 82,
     "path": "manifests/source_inventory.json",
-    "sha256": "cca507530072e2b7f76cf0a9a53ac1925d59c604f04f3386bb46f937fb589295"
+    "sha256": "91fb76febda3ffd4c342eb2f6159566b5a622242cf0756ba1d90b7e9c8dc16f5"
   },
   "status": "PHASE2_SHARED_CONTRACTS_FROZEN",
-  "truth_boundary": "This receipt proves only the deterministic shared contract layer after the hosted workflow reaches the generation step. It does not authorize or prove loader transfer, partition writes, OEMINFO modification, flashing, reboot, drivers, signed packaging, or physical Huawei repair."
+  "truth_boundary": "This receipt proves only the deterministic shared contract layer after the hosted workflow completed every listed proof gate. It does not authorize or prove loader transfer, partition writes, OEMINFO modification, flashing, reboot, drivers, signed packaging, or physical Huawei repair."
 }
