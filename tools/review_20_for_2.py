@@ -144,7 +144,7 @@ def check_single_device_gate() -> tuple[bool, str]:
 
 def check_onefile() -> tuple[bool, str]:
     spec = text("pysidedeploy.spec")
-    return ok("mode = onefile" in spec and "TECHGUY_TOOL_Huawei.exe" in spec, "Nuitka onefile target fixed")
+    return ok("mode = onefile" in spec and "TECHGUYTOOL_Huawei.exe" in spec, "Nuitka onefile target fixed")
 
 
 def check_build_proof() -> tuple[bool, str]:
