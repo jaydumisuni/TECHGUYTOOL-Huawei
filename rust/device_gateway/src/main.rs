@@ -6,7 +6,9 @@ use std::path::PathBuf;
 use std::process;
 use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
-use techguy_device_gateway::{run_listener, Gateway, GatewayError};
+use techguy_device_gateway::{
+    run_listener, Gateway, GatewayError, DEVICE_AUTHORITY, XRAY_AUTHORITY,
+};
 
 fn main() {
     if let Err(error) = run() {
@@ -43,10 +45,10 @@ fn serve(arguments: &[String]) -> Result<(), GatewayError> {
     println!(
         "{}",
         serde_json::to_string(&json!({
-            "device_authority": "none",
+            "device_authority": DEVICE_AUTHORITY,
             "listen": address.to_string(),
             "status": "ready",
-            "xray_authority": "read_only"
+            "xray_authority": XRAY_AUTHORITY
         }))?
     );
     io::stdout().flush()?;
