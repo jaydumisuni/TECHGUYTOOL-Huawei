@@ -35,7 +35,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rustup toolchain install 1.75.0 --profile minimal --component rustfmt clippy
+          rustup toolchain install 1.75.0 --profile minimal --component rustfmt --component clippy
           rustup override set 1.75.0
           rustc --version
           cargo --version
