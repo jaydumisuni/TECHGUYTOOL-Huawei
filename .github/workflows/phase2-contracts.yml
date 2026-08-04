@@ -39,7 +39,7 @@ on:
       - "tools/verify_source_freeze.py"
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: phase2-contracts-${{ github.ref }}
@@ -80,9 +80,6 @@ jobs:
       - name: Prove Python fixtures and safety boundaries
         run: python -m pytest tests/test_shared_contracts.py -q
 
-      - name: Format Rust sources deterministically
-        run: cargo fmt --manifest-path rust/contracts_core/Cargo.toml
-
       - name: Check Rust formatting
         run: cargo fmt --manifest-path rust/contracts_core/Cargo.toml -- --check
 
@@ -105,45 +102,66 @@ jobs:
           python tools/prove_context_equivalence.py
           --rust-bin rust/contracts_core/target/debug/ttg-contracts
 
-      - name: Register generated lockfile as intended source
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -s rust/contracts_core/Cargo.lock
-          git add --intent-to-add rust/contracts_core/Cargo.lock
-
       - name: Regenerate source inventory for complete regression
         run: python tools/build_source_inventory.py
 
       - name: Run complete non-Qt Python regression suite
         run: python -m pytest -q
 
-      - name: Verify source authority after every proof gate
-        run: python tools/verify_source_freeze.py --json
-
-      - name: Generate truthful Phase 2 receipt
-        run: |
-          python tools/build_phase2_receipt.py
-          git diff --check
-
-      - name: Freeze generated Phase 2 authority on branch
-        if: github.event_name == 'push' && github.ref == 'refs/heads/phase2/shared-contracts'
+      - name: Generate and verify truthful Phase 2 authority
         shell: bash
         run: |
           set -euo pipefail
-          if git diff --quiet -- \
-            manifests/source_inventory.json \
-            manifests/source_inventory.receipt.json \
-            rust/contracts_core/Cargo.lock \
-            rust/contracts_core/src \
-            rust/contracts_core/tests; then
-            echo "Phase 2 inventory and Rust formatting already frozen."
+          python tools/build_phase2_receipt.py
+          python tools/verify_source_freeze.py --json
+          git diff --check
+          unexpected="$(git diff --name-only | grep -Ev '^manifests/source_inventory(\.receipt)?\.json$' || true)"
+          test -z "$unexpected" || {
+            echo "Unexpected generated source changes:" >&2
+            echo "$unexpected" >&2
+            exit 1
+          }
+
+  freeze-authority:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/phase2/shared-contracts'
+    needs: contract-proof
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Regenerate reviewed authority files only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/build_source_inventory.py
+          python tools/build_phase2_receipt.py
+          python tools/verify_source_freeze.py --json
+          git diff --check
+          unexpected="$(git diff --name-only | grep -Ev '^manifests/source_inventory(\.receipt)?\.json$' || true)"
+          test -z "$unexpected" || {
+            echo "Refusing to freeze unexpected files:" >&2
+            echo "$unexpected" >&2
+            exit 1
+          }
+
+      - name: Freeze generated Phase 2 authority on branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- manifests/source_inventory.json manifests/source_inventory.receipt.json; then
+            echo "Phase 2 authority is already frozen."
             exit 0
           fi
           git config user.name "THETECHGUY Phase Freezer"
           git config user.email "actions@users.noreply.github.com"
           git add manifests/source_inventory.json manifests/source_inventory.receipt.json
-          git add rust/contracts_core/src rust/contracts_core/tests
-          git add rust/contracts_core/Cargo.lock
           git commit -m "Freeze Phase 2 contract inventory and proof receipt"
           git push origin HEAD:phase2/shared-contracts
