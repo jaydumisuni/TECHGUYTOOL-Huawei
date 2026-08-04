@@ -6,20 +6,34 @@ use std::fmt;
 const REGISTRY_JSON: &str = include_str!("../../../contracts/registry.json");
 
 #[derive(Debug, Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Registry {
     pub schema: String,
     pub registry_version: u64,
+    pub canonical_json: CanonicalJsonSpec,
     pub envelope: Envelope,
     pub contracts: BTreeMap<String, ContractDefinition>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CanonicalJsonSpec {
+    pub array_order: String,
+    pub encoding: String,
+    pub numbers: String,
+    pub object_keys: String,
+    pub whitespace: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Envelope {
     pub required: Vec<String>,
     pub fields: BTreeMap<String, FieldSpec>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct FieldSpec {
     #[serde(rename = "type")]
     pub field_type: String,
@@ -52,6 +66,7 @@ pub struct FieldSpec {
 }
 
 #[derive(Debug, Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ContractDefinition {
     pub authority: String,
     pub physical_session: String,
@@ -66,6 +81,7 @@ pub struct ContractDefinition {
 }
 
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct ValidationContext {
     #[serde(default)]
     pub now: Option<String>,
@@ -114,6 +130,7 @@ pub struct ValidationResult {
 pub enum RegistryError {
     Json(serde_json::Error),
     UnsupportedSchema(String),
+    InvalidPolicy(String),
 }
 
 impl fmt::Display for RegistryError {
@@ -123,18 +140,94 @@ impl fmt::Display for RegistryError {
             Self::UnsupportedSchema(schema) => {
                 write!(f, "unsupported contract registry schema {schema:?}")
             }
+            Self::InvalidPolicy(message) => write!(f, "{message}"),
         }
     }
 }
 
 impl std::error::Error for RegistryError {}
 
+pub fn decode_registry_json(document: &str) -> Result<Registry, RegistryError> {
+    let registry: Registry = serde_json::from_str(document).map_err(RegistryError::Json)?;
+    validate_registry_policy(&registry)?;
+    Ok(registry)
+}
+
 pub fn load_registry() -> Result<Registry, RegistryError> {
-    let registry: Registry = serde_json::from_str(REGISTRY_JSON).map_err(RegistryError::Json)?;
+    decode_registry_json(REGISTRY_JSON)
+}
+
+fn validate_registry_policy(registry: &Registry) -> Result<(), RegistryError> {
     if registry.schema != "techguytool-huawei.contract-registry.v1"
         || registry.registry_version != 1
     {
-        return Err(RegistryError::UnsupportedSchema(registry.schema));
+        return Err(RegistryError::UnsupportedSchema(registry.schema.clone()));
     }
-    Ok(registry)
+    if registry.canonical_json.array_order != "preserved"
+        || registry.canonical_json.encoding != "utf-8"
+        || registry.canonical_json.numbers != "json-integer-only"
+        || registry.canonical_json.object_keys != "lexicographic"
+        || registry.canonical_json.whitespace != "none"
+    {
+        return Err(RegistryError::InvalidPolicy(
+            "unsupported canonical JSON policy".to_owned(),
+        ));
+    }
+    if registry.envelope.required.is_empty() || registry.envelope.fields.is_empty() {
+        return Err(RegistryError::InvalidPolicy(
+            "registry envelope must define required fields".to_owned(),
+        ));
+    }
+    for required in &registry.envelope.required {
+        if !registry.envelope.fields.contains_key(required) {
+            return Err(RegistryError::InvalidPolicy(format!(
+                "registry envelope references undefined field {required:?}"
+            )));
+        }
+    }
+    let contract_type_values = registry
+        .envelope
+        .fields
+        .get("contract_type")
+        .and_then(|spec| spec.enum_values.as_ref())
+        .ok_or_else(|| {
+            RegistryError::InvalidPolicy(
+                "registry contract_type field must define an enum".to_owned(),
+            )
+        })?;
+    let enum_names = contract_type_values
+        .iter()
+        .map(Value::as_str)
+        .collect::<Option<Vec<_>>>()
+        .ok_or_else(|| {
+            RegistryError::InvalidPolicy(
+                "registry contract_type enum must contain strings".to_owned(),
+            )
+        })?;
+    if enum_names.len() != registry.contracts.len()
+        || enum_names
+            .iter()
+            .any(|name| !registry.contracts.contains_key(*name))
+    {
+        return Err(RegistryError::InvalidPolicy(
+            "registry contract_type enum must match registered contracts".to_owned(),
+        ));
+    }
+    for (name, definition) in &registry.contracts {
+        if definition.payload_required.is_empty() || definition.payload_fields.is_empty() {
+            return Err(RegistryError::InvalidPolicy(format!(
+                "contract {name:?} must define payload fields"
+            )));
+        }
+        if definition
+            .payload_required
+            .iter()
+            .any(|field| !definition.payload_fields.contains_key(field))
+        {
+            return Err(RegistryError::InvalidPolicy(format!(
+                "contract {name:?} references an undefined payload field"
+            )));
+        }
+    }
+    Ok(())
 }
