@@ -64,7 +64,8 @@ fn handle_client(
         let request: GatewayRequest = match serde_json::from_str(line.trim_end()) {
             Ok(request) => request,
             Err(error) => {
-                let gateway_error = GatewayError::Protocol(format!("invalid request JSON: {error}"));
+                let gateway_error =
+                    GatewayError::Protocol(format!("invalid request JSON: {error}"));
                 write_response(
                     &mut stream,
                     &GatewayResponse::failure("unknown".to_owned(), &gateway_error),
