@@ -18,6 +18,7 @@ from techguy_huawei.contract_validation import validate_contract
 
 VALID_FIXTURES = ROOT / "contracts" / "fixtures" / "valid_contracts.json"
 INVALID_FIXTURES = ROOT / "contracts" / "fixtures" / "invalid_contracts.json"
+EDGE_FIXTURES = ROOT / "contracts" / "fixtures" / "review_edge_cases.json"
 DEFAULT_RUST_BINARY = (
     ROOT
     / "rust"
@@ -26,6 +27,10 @@ DEFAULT_RUST_BINARY = (
     / "debug"
     / ("ttg-contracts.exe" if os.name == "nt" else "ttg-contracts")
 )
+EXPECTED_VALID = 17
+EXPECTED_INVALID = 34
+EXPECTED_RAW = 1
+EXPECTED_EDGE = 3
 
 
 def _load(path: Path) -> dict[str, Any]:
@@ -97,6 +102,8 @@ def _rust_result(
             cwd=ROOT,
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="strict",
             check=False,
         )
         if completed.returncode not in {0, 1}:
@@ -131,24 +138,13 @@ def _assert_equivalent(name: str, python: dict[str, Any], rust: dict[str, Any]) 
             )
 
 
-def prove(binary: Path) -> dict[str, Any]:
-    if not binary.is_file():
-        raise FileNotFoundError(f"Rust validator binary not found: {binary}")
-
-    valid_root = _load(VALID_FIXTURES)
-    invalid_root = _load(INVALID_FIXTURES)
-    valid = {case["name"]: case for case in valid_root["contracts"]}
-    checked_valid = 0
-    checked_invalid = 0
-    checked_raw = 0
-
-    for case in valid_root["contracts"]:
-        python = _python_result(case["contract"], case.get("context", {}))
-        rust = _rust_result(binary, case["contract"], case.get("context", {}))
-        _assert_equivalent(case["name"], python, rust)
-        checked_valid += 1
-
-    for case in invalid_root["cases"]:
+def _prove_mutation_cases(
+    binary: Path,
+    valid: dict[str, dict[str, Any]],
+    cases: list[dict[str, Any]],
+) -> int:
+    checked = 0
+    for case in cases:
         document = copy.deepcopy(valid[case["base"]]["contract"])
         for mutation in case["mutations"]:
             _apply_mutation(document, mutation)
@@ -160,7 +156,31 @@ def prove(binary: Path) -> dict[str, Any]:
             raise AssertionError(
                 f"{case['name']}: fixture expects {expected}, validator returned {_codes(python)}"
             )
-        checked_invalid += 1
+        checked += 1
+    return checked
+
+
+def prove(binary: Path) -> dict[str, Any]:
+    if not binary.is_file():
+        raise FileNotFoundError(f"Rust validator binary not found: {binary}")
+
+    valid_root = _load(VALID_FIXTURES)
+    invalid_root = _load(INVALID_FIXTURES)
+    edge_root = _load(EDGE_FIXTURES)
+    valid = {case["name"]: case for case in valid_root["contracts"]}
+    checked_valid = 0
+    checked_invalid = 0
+    checked_raw = 0
+    checked_edge = 0
+
+    for case in valid_root["contracts"]:
+        python = _python_result(case["contract"], case.get("context", {}))
+        rust = _rust_result(binary, case["contract"], case.get("context", {}))
+        _assert_equivalent(case["name"], python, rust)
+        checked_valid += 1
+
+    checked_invalid = _prove_mutation_cases(binary, valid, invalid_root["cases"])
+    checked_edge = _prove_mutation_cases(binary, valid, edge_root["cases"])
 
     for case in invalid_root["raw_cases"]:
         python = _python_result(case["raw_json"], case.get("context", {}), raw=True)
@@ -171,7 +191,21 @@ def prove(binary: Path) -> dict[str, Any]:
             raw=True,
         )
         _assert_equivalent(case["name"], python, rust)
+        expected = sorted(case["expected_error_codes"])
+        if _codes(python) != expected:
+            raise AssertionError(
+                f"{case['name']}: fixture expects {expected}, validator returned {_codes(python)}"
+            )
         checked_raw += 1
+
+    observed = (checked_valid, checked_invalid, checked_raw, checked_edge)
+    expected_counts = (EXPECTED_VALID, EXPECTED_INVALID, EXPECTED_RAW, EXPECTED_EDGE)
+    if observed != expected_counts:
+        raise AssertionError(
+            "fixture counts changed: "
+            f"valid={checked_valid} invalid={checked_invalid} raw={checked_raw} "
+            f"edge={checked_edge}; expected={expected_counts}"
+        )
 
     return {
         "schema": "techguytool-huawei.contract-equivalence-proof.v1",
@@ -180,7 +214,8 @@ def prove(binary: Path) -> dict[str, Any]:
         "valid_contracts": checked_valid,
         "invalid_contracts": checked_invalid,
         "raw_invalid_contracts": checked_raw,
-        "total_cases": checked_valid + checked_invalid + checked_raw,
+        "review_edge_contracts": checked_edge,
+        "total_cases": checked_valid + checked_invalid + checked_raw + checked_edge,
     }
 
 
