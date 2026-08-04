@@ -203,7 +203,6 @@ def _validate_definition(
                     f"required payload field {name!r} is missing",
                 )
             )
-        )
     for name in sorted(set(payload) - set(field_specs)):
         errors.append(
             ContractError(
