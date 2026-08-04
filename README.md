@@ -24,10 +24,10 @@ The repository contains the frozen source checkpoint for the Qt/QML host applica
 - 17 versioned contract types;
 - deterministic canonical UTF-8 JSON and SHA-256 identity;
 - identical Python and Rust validation behavior;
-- fail-closed authority, session, expiry, single-use, recipe, and artifact checks;
+- fail-closed authority, session, expiry, single-use, recipe, artifact, and validation-context checks;
 - automatic promotion forbidden for write targets, offsets, destructive recipes, and expanded authority;
-- 17 valid fixtures, 34 invalid mutation fixtures, and one malformed-JSON fixture;
-- exact 52-case Python/Rust equivalence proof;
+- 17 valid fixtures, 34 invalid mutation fixtures, one malformed-JSON fixture, and one invalid-context fixture;
+- exact 53-case Python/Rust equivalence proof;
 - Rust 1.75 formatting, Clippy with warnings denied, compilation, and tests;
 - complete Python regression and source-freeze verification.
 
@@ -78,6 +78,7 @@ cargo clippy --manifest-path rust\contracts_core\Cargo.toml --all-targets -- -D 
 cargo test --manifest-path rust\contracts_core\Cargo.toml --all-targets
 cargo build --manifest-path rust\contracts_core\Cargo.toml --bin ttg-contracts
 python tools\prove_contract_equivalence.py --rust-bin rust\contracts_core\target\debug\ttg-contracts.exe
+python tools\prove_context_equivalence.py --rust-bin rust\contracts_core\target\debug\ttg-contracts.exe
 python tools\build_source_inventory.py
 python -m pytest -q
 python tools\verify_source_freeze.py --json
