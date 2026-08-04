@@ -10,6 +10,9 @@ EXCLUDED = {
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json",
 }
+IGNORED_ROOTS = {"build", "dist", "proof", "wheelhouse"}
+IGNORED_PARTS = {"__pycache__", ".pytest_cache", ".venv", "venv"}
+IGNORED_EXACT = {"techguy_huawei/resources_rc.py"}
 PHASE1_PREFIXES = (
     "docs/",
     "manifests/",
@@ -33,17 +36,20 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def is_ignored(path: Path) -> bool:
+    rel = path.relative_to(ROOT).as_posix()
+    parts = path.relative_to(ROOT).parts
+    return (
+        rel.startswith(".git/")
+        or rel in EXCLUDED
+        or rel in IGNORED_EXACT
+        or bool(parts and parts[0] in IGNORED_ROOTS)
+        or any(part in IGNORED_PARTS or part.endswith(".egg-info") for part in parts)
+    )
+
+
 def source_files() -> list[Path]:
-    files: list[Path] = []
-    for path in ROOT.rglob("*"):
-        if not path.is_file():
-            continue
-        rel = path.relative_to(ROOT).as_posix()
-        if rel.startswith(".git/") or rel in EXCLUDED:
-            continue
-        if any(part in {"__pycache__", ".pytest_cache", ".venv", "venv"} for part in path.parts):
-            continue
-        files.append(path)
+    files = [path for path in ROOT.rglob("*") if path.is_file() and not is_ignored(path)]
     return sorted(files, key=lambda item: item.relative_to(ROOT).as_posix())
 
 
