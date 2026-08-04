@@ -10,13 +10,13 @@
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 83,
+  "file_count": 85,
   "files": [
     {
       "origin": "phase2_shared_contracts",
       "path": ".github/workflows/phase2-contracts.yml",
-      "sha256": "3f34758cad0a922285cd8c490de5548d41d5afd5f592762d038810a97366d32a",
-      "size_bytes": 4947
+      "sha256": "0ea4113b58fcb8032e0885645bbc5b2d53d2cf43966a15da946b28ed3e37d105",
+      "size_bytes": 5301
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -39,8 +39,8 @@
     {
       "origin": "phase1_recovery_and_freeze",
       "path": "README.md",
-      "sha256": "87ba5cf1c596589f7f57e69a1ae1142107cf6265290a04b84ba5eb486d1631b0",
-      "size_bytes": 4739
+      "sha256": "39b66f34ffa64c122fbb087d27bf49ceed7fccb76307766a63e47857aa926221",
+      "size_bytes": 4892
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -117,8 +117,8 @@
     {
       "origin": "phase2_shared_contracts",
       "path": "docs/PHASE_2_SHARED_CONTRACTS.md",
-      "sha256": "3b9af76bf8bc89aa0e98721fee6f2d3e57a2b8e930e06169f87e7ed6e05833ad",
-      "size_bytes": 4136
+      "sha256": "b1becd4e4c7e7a2bc6de86125e4d6373118c1a8a77bbc72c1cd6f7248df78e84",
+      "size_bytes": 4565
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -338,6 +338,12 @@
     },
     {
       "origin": "phase2_shared_contracts",
+      "path": "rust/contracts_core/tests/context.rs",
+      "sha256": "83b425e68306c757065ef144b26e1bb318f6fa1d2f092c2d0bb9832190b3445c",
+      "size_bytes": 2116
+    },
+    {
+      "origin": "phase2_shared_contracts",
       "path": "rust/contracts_core/tests/fixtures.rs",
       "sha256": "4e6b805b136ff0fc2ed33156e628c28c0acd69bc3bc744d0689f540172a5abf7",
       "size_bytes": 7163
@@ -447,8 +453,8 @@
     {
       "origin": "phase2_shared_contracts",
       "path": "tests/test_shared_contracts.py",
-      "sha256": "65af7332b70c0fa54ffe47a7ad1242b12b9556c2d449ebe3a9bc7d25256ceb1d",
-      "size_bytes": 5584
+      "sha256": "d787b123788b7b5c2ec136fc4e439409df4c42dbb33641962b9466c938afba6b",
+      "size_bytes": 6289
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -459,14 +465,14 @@
     {
       "origin": "phase2_shared_contracts",
       "path": "tools/build_phase2_receipt.py",
-      "sha256": "66bed8e2ed3bf2322859d8152c73b0848defdaec17fecd68307b8ef06936cf9d",
-      "size_bytes": 3012
+      "sha256": "7195db69e60ab07a613f3b68642fc5713de8a246578ddf6202de6d474e3cc09d",
+      "size_bytes": 3179
     },
     {
       "origin": "phase2_shared_contracts",
       "path": "tools/build_source_inventory.py",
-      "sha256": "aba26a9ffd252b03552e236a8cde2352802ea62d1d6d5b44303949c0e5683a0d",
-      "size_bytes": 4103
+      "sha256": "53ceaffc1732637df21a9c486fcd9222f784502ff4423b915b44099e573a1263",
+      "size_bytes": 4145
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -479,6 +485,12 @@
       "path": "tools/generate_qrc.py",
       "sha256": "6434a2e2ce3d3ac323bd75a407cb3074555027511e5fe924be5e3658cce969cc",
       "size_bytes": 560
+    },
+    {
+      "origin": "phase2_shared_contracts",
+      "path": "tools/prove_context_equivalence.py",
+      "sha256": "73f8b36b364247f802b3c3fa0e1bd044875210bea83f6920900aba8acdfc3161",
+      "size_bytes": 3839
     },
     {
       "origin": "phase2_shared_contracts",
@@ -511,7 +523,7 @@
       "size_bytes": 5920
     }
   ],
-  "prepared_at": "2026-08-04T14:30:00Z",
+  "prepared_at": "2026-08-04T15:40:00Z",
   "private_recovery_authority": {
     "archive_sha256": "d98d44364387431f86d4bad2e725bb5e6612f32a1f1884436a4285872c87efc4",
     "copied_into_public_source": false,

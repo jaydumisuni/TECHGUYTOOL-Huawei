@@ -4,14 +4,15 @@
     "branch": "phase2/shared-contracts",
     "contract_types": 17,
     "device_authority": "none",
-    "equivalence_cases": 52,
+    "equivalence_cases": 53,
+    "invalid_context_fixtures": 1,
     "invalid_mutation_fixtures": 34,
     "malformed_json_fixtures": 1,
-    "phase2_file_count": 25,
+    "phase2_file_count": 27,
     "valid_fixtures": 17,
     "xray_authority": "read_only"
   },
-  "prepared_at": "2026-08-04T15:20:00Z",
+  "prepared_at": "2026-08-04T15:40:00Z",
   "private_recovery_archive": {
     "drive_file_id": "1qH4K0m1lX_3o0XLvCkJMXsDajOkfu2cs",
     "sha256": "d98d44364387431f86d4bad2e725bb5e6612f32a1f1884436a4285872c87efc4",
@@ -24,16 +25,18 @@
     "complete_python_regression": "PASS",
     "python_fixture_suite": "PASS",
     "python_rust_canonical_equivalence": "PASS",
+    "python_rust_error_code_equivalence": "PASS",
     "python_rust_sha256_equivalence": "PASS",
+    "python_rust_validation_context_equivalence": "PASS",
     "rust_fixture_suite": "PASS",
     "rust_toolchain": "1.75.0",
     "source_freeze_verifier": "PASS"
   },
   "schema": "techguytool-huawei.source-inventory-receipt.v2",
   "source_inventory": {
-    "file_count": 83,
+    "file_count": 85,
     "path": "manifests/source_inventory.json",
-    "sha256": "d67ed2e0b0e7c37fdba5d49b127e800d2bda192753c7dddf6d946101e76555e0"
+    "sha256": "a425efffa2ccb6259f410227fb0260e4b842d34d5fe8e56fa7d3283eb04cc648"
   },
   "status": "PHASE2_SHARED_CONTRACTS_FROZEN",
   "truth_boundary": "This receipt proves only the deterministic shared contract layer after the hosted workflow completed every listed proof gate. It does not authorize or prove loader transfer, partition writes, OEMINFO modification, flashing, reboot, drivers, signed packaging, or physical Huawei repair."
