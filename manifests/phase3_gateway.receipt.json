@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-05T07:30:44Z",
+  "generated_at": "2026-08-05T07:35:32Z",
   "hosted_proof": {
-    "run_id": 30985208674,
-    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/30985208674",
-    "tested_revision": "13fb97b0565951a92879ee39f5369d88ab0ada3d"
+    "run_id": 30985522977,
+    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/30985522977",
+    "tested_revision": "2745c2285c6b1834f67d7e3959c8c676f77f2193"
   },
   "phase2_merge_commit": "ea6e66dd91031485d6db39d47da294de6ff2e771",
   "phase3": {
@@ -41,7 +41,7 @@
   "source_inventory": {
     "file_count": 107,
     "path": "manifests/source_inventory.json",
-    "sha256": "c04b3c4810a1295362d14c53cce3961dcdc0a2c1de7c27d3c425346253266e97"
+    "sha256": "adf23a62e93ee28e28f06fe5e7c1d71c1e18b791919a627ccce8ff6022146e0a"
   },
   "status": "PHASE3_DEVICE_GATEWAY_FROZEN",
   "truth_boundary": "This receipt proves only the persistent, device-inert TTG Device Gateway control plane at the tested revision and hosted run. It proves durable sessions, operation stage recovery, loopback UI reconnection, provider/capability policy, watchdog state, atomic state/audit commits, bounded protocol framing, diagnostics, and a hash-chained journal. It does not authorize or prove loader transfer, partition writes, OEMINFO modification, flashing, reboot, drivers, signed packaging, or physical Huawei repair."

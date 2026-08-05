@@ -22,8 +22,8 @@
     {
       "origin": "phase3_device_gateway",
       "path": ".github/workflows/phase3-gateway.yml",
-      "sha256": "abccbebba10ba3834bd06e234cd044c46771a186ff588297ec4436c59b992eef",
-      "size_bytes": 7189
+      "sha256": "dffff2774dbcbf15d0dd18737119697eaa66e8ed1b09153a37a871ace1d74ed9",
+      "size_bytes": 7443
     },
     {
       "origin": "phase1_recovery_and_freeze",
