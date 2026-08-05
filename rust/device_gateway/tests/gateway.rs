@@ -1,6 +1,7 @@
 use chrono::{Duration as ChronoDuration, SecondsFormat, Utc};
 use serde_json::{json, Value};
 use std::fs;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Barrier};
 use std::thread;
 use std::time::Duration;
@@ -252,6 +253,33 @@ fn concurrent_transition_has_one_accurate_audit_event() {
 }
 
 #[test]
+fn snapshot_is_consistent_during_concurrent_writes() {
+    let root = tempdir().expect("tempdir");
+    let gateway = Arc::new(Gateway::open(root.path().join("gateway.sqlite3")).expect("gateway"));
+    let finished = Arc::new(AtomicBool::new(false));
+    let writer_gateway = Arc::clone(&gateway);
+    let writer_finished = Arc::clone(&finished);
+    let writer = thread::spawn(move || {
+        for index in 0..64_u64 {
+            let session = writer_gateway
+                .open_physical_session(&format!("{index:064x}"))
+                .expect("session");
+            writer_gateway
+                .open_operation(&session.session_id, &format!("{:064x}", index + 1_000))
+                .expect("operation");
+        }
+        writer_finished.store(true, Ordering::Release);
+    });
+
+    while !finished.load(Ordering::Acquire) {
+        assert_snapshot_consistent(&gateway.snapshot().expect("snapshot"));
+        thread::yield_now();
+    }
+    writer.join().expect("writer");
+    assert_snapshot_consistent(&gateway.snapshot().expect("final snapshot"));
+}
+
+#[test]
 fn journal_tampering_is_detected() {
     let root = tempdir().expect("tempdir");
     let database = root.path().join("gateway.sqlite3");
@@ -302,6 +330,11 @@ fn source_has_no_device_execution_surface() {
             "forbidden surface: {forbidden}"
         );
     }
+}
+
+fn assert_snapshot_consistent(snapshot: &techguy_device_gateway::GatewaySnapshot) {
+    let expected_events = 1 + snapshot.physical_sessions.len() + snapshot.operation_sessions.len();
+    assert_eq!(snapshot.last_event_sequence as usize, expected_events);
 }
 
 fn future_timestamp(seconds: i64) -> String {

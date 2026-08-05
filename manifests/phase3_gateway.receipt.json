@@ -1,9 +1,15 @@
 {
-  "generated_at": "2026-08-04T22:14:39Z",
+  "generated_at": "2026-08-05T07:35:32Z",
   "hosted_proof": {
-    "run_id": 30955522783,
-    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/30955522783",
-    "tested_revision": "fe3f70b4ef8784f44f17d60ac035c1c36eea3439"
+    "run_id": 30985522977,
+    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/30985522977",
+    "tested_revision": "2745c2285c6b1834f67d7e3959c8c676f77f2193"
+  },
+  "owner_verification": {
+    "authority_commit": "738b16cb8a5008d65c9eb7df8dd1ed2dbcfcb185",
+    "source_proof_run_id": 30985522977,
+    "source_revision": "2745c2285c6b1834f67d7e3959c8c676f77f2193",
+    "status": "CONFIRMED"
   },
   "phase2_merge_commit": "ea6e66dd91031485d6db39d47da294de6ff2e771",
   "phase3": {
@@ -11,17 +17,21 @@
     "database_schema_version": 1,
     "device_authority": "none",
     "phase3_file_count": 23,
-    "python_gateway_client_tests": 3,
+    "python_gateway_client_tests": 4,
     "reconnect_proof_cases": 1,
-    "rust_gateway_tests": 7,
+    "rust_gateway_tests": 11,
     "xray_authority": "read_only"
   },
   "proof": {
+    "atomic_state_and_journal_commit": "PASS",
+    "bounded_protocol_framing": "PASS",
+    "bounded_worker_lease": "PASS",
     "cargo_clippy_warnings_denied": "PASS",
     "cargo_fmt": "PASS",
     "cargo_lock_resolved": "PASS",
     "cargo_test": "PASS",
     "complete_python_regression": "PASS",
+    "concurrent_transition_audit": "PASS",
     "forbidden_device_capability_rejection": "PASS",
     "gateway_binary_build": "PASS",
     "gateway_restart_recovery": "PASS",
@@ -29,6 +39,7 @@
     "phase2_contract_regression": "PASS",
     "python_gateway_client_suite": "PASS",
     "rust_toolchain": "1.75.0",
+    "snapshot_consistency_under_concurrency": "PASS",
     "source_freeze_verifier": "PASS",
     "ui_reconnect_proof": "PASS"
   },
@@ -36,8 +47,8 @@
   "source_inventory": {
     "file_count": 107,
     "path": "manifests/source_inventory.json",
-    "sha256": "5bba4cc43b5bbd24b40567b0b223a3c57e9bed4a3f48adc03575f414035ff204"
+    "sha256": "adf23a62e93ee28e28f06fe5e7c1d71c1e18b791919a627ccce8ff6022146e0a"
   },
   "status": "PHASE3_DEVICE_GATEWAY_FROZEN",
-  "truth_boundary": "This receipt proves only the persistent, device-inert TTG Device Gateway control plane at the tested revision and hosted run. It proves durable sessions, operation stage recovery, loopback UI reconnection, provider/capability policy, watchdog state, diagnostics, and a hash-chained journal. It does not authorize or prove loader transfer, partition writes, OEMINFO modification, flashing, reboot, drivers, signed packaging, or physical Huawei repair."
+  "truth_boundary": "This receipt proves only the persistent, device-inert TTG Device Gateway control plane at the tested revision and hosted run. It proves durable sessions, operation stage recovery, loopback UI reconnection, provider/capability policy, watchdog state, atomic state/audit commits, bounded protocol framing, diagnostics, and a hash-chained journal. It does not authorize or prove loader transfer, partition writes, OEMINFO modification, flashing, reboot, drivers, signed packaging, or physical Huawei repair."
 }

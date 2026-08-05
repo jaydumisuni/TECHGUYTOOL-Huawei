@@ -118,6 +118,10 @@ impl Gateway {
         self.storage.get_physical_session(session_id)
     }
 
+    pub fn list_physical_sessions(&self) -> Result<Vec<PhysicalDeviceSession>, GatewayError> {
+        self.storage.list_physical_sessions()
+    }
+
     pub fn close_physical_session(
         &self,
         session_id: &str,
@@ -166,6 +170,10 @@ impl Gateway {
         self.storage.get_operation(operation_id)
     }
 
+    pub fn list_operations(&self) -> Result<Vec<OperationSession>, GatewayError> {
+        self.storage.list_operations()
+    }
+
     pub fn transition_operation(
         &self,
         operation_id: &str,
@@ -199,6 +207,10 @@ impl Gateway {
             self.notify_event(&event);
         }
         Ok(registered)
+    }
+
+    pub fn list_providers(&self) -> Result<Vec<ProviderManifest>, GatewayError> {
+        self.storage.list_providers()
     }
 
     pub fn publish_contract(
@@ -307,6 +319,14 @@ impl Gateway {
             .heartbeat_worker(worker_id, deadline_at, &now)?;
         self.notify_event(&event);
         Ok(worker)
+    }
+
+    pub fn get_worker(&self, worker_id: &str) -> Result<WorkerRecord, GatewayError> {
+        self.storage.get_worker(worker_id)
+    }
+
+    pub fn list_workers(&self) -> Result<Vec<WorkerRecord>, GatewayError> {
+        self.storage.list_workers()
     }
 
     pub fn sweep_workers(&self) -> Result<Vec<WorkerRecord>, GatewayError> {

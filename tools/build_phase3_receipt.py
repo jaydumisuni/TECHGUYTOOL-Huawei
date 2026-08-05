@@ -77,7 +77,7 @@ def build(
         "phase3": {
             "branch": "phase3/device-gateway",
             "database_schema_version": 1,
-            "rust_gateway_tests": 10,
+            "rust_gateway_tests": 11,
             "python_gateway_client_tests": 4,
             "reconnect_proof_cases": 1,
             "device_authority": "none",
@@ -94,6 +94,7 @@ def build(
             "ui_reconnect_proof": "PASS",
             "gateway_restart_recovery": "PASS",
             "journal_chain_verification": "PASS",
+            "snapshot_consistency_under_concurrency": "PASS",
             "atomic_state_and_journal_commit": "PASS",
             "concurrent_transition_audit": "PASS",
             "bounded_protocol_framing": "PASS",

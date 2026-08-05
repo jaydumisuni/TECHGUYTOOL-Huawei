@@ -22,8 +22,8 @@
     {
       "origin": "phase3_device_gateway",
       "path": ".github/workflows/phase3-gateway.yml",
-      "sha256": "abccbebba10ba3834bd06e234cd044c46771a186ff588297ec4436c59b992eef",
-      "size_bytes": 7189
+      "sha256": "dffff2774dbcbf15d0dd18737119697eaa66e8ed1b09153a37a871ace1d74ed9",
+      "size_bytes": 7443
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -400,8 +400,8 @@
     {
       "origin": "phase3_device_gateway",
       "path": "rust/device_gateway/src/gateway.rs",
-      "sha256": "904f3578e80cd02651cca8f0543dd56727d8904b55caf8fd8060573fdd185c69",
-      "size_bytes": 14049
+      "sha256": "5e6d05c9bde7fa9c0c7f7d9103dfdf1b419e0ba39212834854a87b003ed02b85",
+      "size_bytes": 12844
     },
     {
       "origin": "phase3_device_gateway",
@@ -412,8 +412,8 @@
     {
       "origin": "phase3_device_gateway",
       "path": "rust/device_gateway/src/main.rs",
-      "sha256": "8af1439c1f1cdc48bd9504aeb51fce236cac74ea782cc4eba445679f13b4ac73",
-      "size_bytes": 2963
+      "sha256": "ae913091b092379593cbd0a5dcec81f90399bfa94f624b67066e7c674ccf8a49",
+      "size_bytes": 3017
     },
     {
       "origin": "phase3_device_gateway",
@@ -424,38 +424,38 @@
     {
       "origin": "phase3_device_gateway",
       "path": "rust/device_gateway/src/policy.rs",
-      "sha256": "887b230ccf198b0e356b09b3bb48994915595a20decd4c1c81d25105bf55a323",
-      "size_bytes": 6863
+      "sha256": "d16009f8a6ab9597f04062269ce3871282d7e7ba296741b9c96064b5623f7f83",
+      "size_bytes": 8036
     },
     {
       "origin": "phase3_device_gateway",
       "path": "rust/device_gateway/src/protocol.rs",
-      "sha256": "61a51a43f7e33cb783b26d83ed50949ca0192e69169c2bca7824de87341a0faf",
-      "size_bytes": 7007
+      "sha256": "840085210748a03a2bae2b8650feb82d2ce40a17d13727f4537c7ee0f59b54eb",
+      "size_bytes": 6943
     },
     {
       "origin": "phase3_device_gateway",
       "path": "rust/device_gateway/src/server.rs",
-      "sha256": "ab78af490eeada10038dda26fc5303f135a66ae1d0cfee8a55e099abeaab3c1e",
-      "size_bytes": 3110
+      "sha256": "9a568f11352d5133f42a9b96f09a4f72792fc4468b47bf6710c7c67eedd2cd76",
+      "size_bytes": 5205
     },
     {
       "origin": "phase3_device_gateway",
       "path": "rust/device_gateway/src/storage.rs",
-      "sha256": "92f78613c5c89ef508bf67aaf126b40a3bc12d7c44f4ae1c97e8604dbaed57e6",
-      "size_bytes": 38564
+      "sha256": "69890de15d6ac51c560d58c12ba65e2a322e685b451dd296578eb4595ce438d6",
+      "size_bytes": 45694
     },
     {
       "origin": "phase3_device_gateway",
       "path": "rust/device_gateway/tests/gateway.rs",
-      "sha256": "b201ed91be75d803984b1e0fc84987b9b75cb874849fcb9d6a348086f6e89b3a",
-      "size_bytes": 8274
+      "sha256": "af5a222cab6f45021365dddfd101c3cf8d9d5c8154299c33d2e169a15c4556ed",
+      "size_bytes": 12750
     },
     {
       "origin": "phase3_device_gateway",
       "path": "rust/device_gateway/tests/protocol.rs",
-      "sha256": "6b92c9a31aaf61f9565770ad209936146fc3541ec2de8603c13ab5f454ce01f0",
-      "size_bytes": 2927
+      "sha256": "701b5e3023191d71cc4b17b04934e5c9bbac7123bb083d28acf51a85ce29251e",
+      "size_bytes": 4180
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -532,8 +532,8 @@
     {
       "origin": "phase3_device_gateway",
       "path": "techguy_huawei/gateway_client.py",
-      "sha256": "460a4c3465d97064767136c79dec135a905741a62e3806f243e66137d4f8ecf0",
-      "size_bytes": 6922
+      "sha256": "12fae1cb528518d0e7a1ba1d0d8cefe7642ee412fb828c2171450108471899d0",
+      "size_bytes": 6986
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -562,8 +562,8 @@
     {
       "origin": "phase3_device_gateway",
       "path": "tests/test_gateway_client.py",
-      "sha256": "9f4d61a7c1df8640e30633c369afb7ed1d74fe16feac68aad29b4e2cc2b511e1",
-      "size_bytes": 2500
+      "sha256": "523c918ad1e684f3056051fbed1d75b9890e54dd76f44d02ceb848be0e1e2dfa",
+      "size_bytes": 3096
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -586,14 +586,14 @@
     {
       "origin": "phase3_device_gateway",
       "path": "tools/build_phase2_receipt.py",
-      "sha256": "df549657e645b321967528a51c69aa9e309b7f7bb1283a1badab132d7bdf82ae",
-      "size_bytes": 9517
+      "sha256": "94e45b9a7ad215cf24beed1382f400ef1c963d0abfbc78427c4b2a18772ba9e6",
+      "size_bytes": 9768
     },
     {
       "origin": "phase3_device_gateway",
       "path": "tools/build_phase3_receipt.py",
-      "sha256": "2b8d202e4b5f5da56cf3afbb16438eaec95aaba8bb34651ccf849807549a4c51",
-      "size_bytes": 9412
+      "sha256": "9f7126ed33c4452d5e12a79f3a9abc21c93e0f9c347d4e44780b7546debe8cf3",
+      "size_bytes": 9978
     },
     {
       "origin": "phase3_device_gateway",
@@ -628,8 +628,8 @@
     {
       "origin": "phase3_device_gateway",
       "path": "tools/prove_gateway_reconnect.py",
-      "sha256": "208c9bdfc084dbea08d858dfa1e4f41dc70af0ddebb9dc6900ac71f27d8de141",
-      "size_bytes": 7328
+      "sha256": "3ab6d7a19bfba0ed42af888d847fdeca0ea6f938d6b1d63491d43e10233f641b",
+      "size_bytes": 9981
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",

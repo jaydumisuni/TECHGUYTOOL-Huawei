@@ -820,22 +820,25 @@ impl Storage {
     }
 
     pub fn snapshot(&self) -> Result<GatewaySnapshot, GatewayError> {
-        let connection = self.connect()?;
-        let last_event_sequence = connection.query_row(
+        let mut connection = self.connect()?;
+        let transaction = connection.transaction_with_behavior(TransactionBehavior::Deferred)?;
+        let last_event_sequence = transaction.query_row(
             "SELECT COALESCE(MAX(sequence), 0) FROM journal_events",
             [],
             |row| row.get(0),
         )?;
-        Ok(GatewaySnapshot {
+        let snapshot = GatewaySnapshot {
             schema_version: GATEWAY_SCHEMA_VERSION,
-            physical_sessions: list_physical_sessions_on(&connection)?,
-            operation_sessions: list_operations_on(&connection)?,
-            providers: list_providers_on(&connection)?,
-            workers: list_workers_on(&connection)?,
+            physical_sessions: list_physical_sessions_on(&transaction)?,
+            operation_sessions: list_operations_on(&transaction)?,
+            providers: list_providers_on(&transaction)?,
+            workers: list_workers_on(&transaction)?,
             last_event_sequence,
             device_authority: DEVICE_AUTHORITY.to_owned(),
             xray_authority: XRAY_AUTHORITY.to_owned(),
-        })
+        };
+        transaction.commit()?;
+        Ok(snapshot)
     }
 }
 
