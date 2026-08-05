@@ -11,7 +11,7 @@
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 108,
+  "file_count": 107,
   "files": [
     {
       "origin": "phase2_shared_contracts",
@@ -24,12 +24,6 @@
       "path": ".github/workflows/phase3-gateway.yml",
       "sha256": "abccbebba10ba3834bd06e234cd044c46771a186ff588297ec4436c59b992eef",
       "size_bytes": 7189
-    },
-    {
-      "origin": "github_actions:huawei-source-workspace:8833608382",
-      "path": ".github/workflows/phase3-review-fixes-once.yml",
-      "sha256": "2cb976431379f79114ca9b736f7dc73a3b580b362b2cc6f35ec6c9cc0688afe8",
-      "size_bytes": 11453
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -406,8 +400,8 @@
     {
       "origin": "phase3_device_gateway",
       "path": "rust/device_gateway/src/gateway.rs",
-      "sha256": "d1d5aa12a9223ba934c4373086c85735277385e9f5e45c01024343e495e1e864",
-      "size_bytes": 12210
+      "sha256": "5e6d05c9bde7fa9c0c7f7d9103dfdf1b419e0ba39212834854a87b003ed02b85",
+      "size_bytes": 12844
     },
     {
       "origin": "phase3_device_gateway",
@@ -448,14 +442,14 @@
     {
       "origin": "phase3_device_gateway",
       "path": "rust/device_gateway/src/storage.rs",
-      "sha256": "5110e898ad6cb2b237d0bd36c4f1d9a82522f78a0221b74421d1a9dcf3fea1a5",
-      "size_bytes": 45489
+      "sha256": "69890de15d6ac51c560d58c12ba65e2a322e685b451dd296578eb4595ce438d6",
+      "size_bytes": 45694
     },
     {
       "origin": "phase3_device_gateway",
       "path": "rust/device_gateway/tests/gateway.rs",
-      "sha256": "d35c08f2d9b177afcc7a8f8d55c56055a2f9bf06bb1271b4fb12d57d0450654c",
-      "size_bytes": 11371
+      "sha256": "af5a222cab6f45021365dddfd101c3cf8d9d5c8154299c33d2e169a15c4556ed",
+      "size_bytes": 12750
     },
     {
       "origin": "phase3_device_gateway",
@@ -598,8 +592,8 @@
     {
       "origin": "phase3_device_gateway",
       "path": "tools/build_phase3_receipt.py",
-      "sha256": "a1500b6e78e022146991d2da1bf967ce95e0c6382a32026413e70fd8002ff233",
-      "size_bytes": 9916
+      "sha256": "9f7126ed33c4452d5e12a79f3a9abc21c93e0f9c347d4e44780b7546debe8cf3",
+      "size_bytes": 9978
     },
     {
       "origin": "phase3_device_gateway",
