@@ -98,6 +98,7 @@ jobs:
         env:
           EVENT_NAME: ${{ github.event_name }}
           IS_FREEZE_COMMIT: ${{ startsWith(github.event.head_commit.message, 'Freeze Phase 3 gateway inventory and proof receipt') }}
+          IS_OWNER_VERIFICATION: ${{ startsWith(github.event.head_commit.message, 'Confirm Phase 3 owner verification') }}
         run: |
           set -euo pipefail
           python tools/verify_source_freeze.py --json
@@ -109,7 +110,7 @@ jobs:
             echo "$unexpected" >&2
             exit 1
           }
-          if [[ "$EVENT_NAME" == "pull_request" || "$IS_FREEZE_COMMIT" == "true" ]]; then
+          if [[ "$EVENT_NAME" == "pull_request" || "$IS_FREEZE_COMMIT" == "true" || "$IS_OWNER_VERIFICATION" == "true" ]]; then
             git diff --exit-code -- manifests/source_inventory.json rust/device_gateway/Cargo.lock
             python tools/build_phase3_receipt.py --verify
           fi
@@ -119,7 +120,8 @@ jobs:
       github.event_name == 'push' &&
       github.ref == 'refs/heads/phase3/device-gateway' &&
       github.actor == 'jaydumisuni' &&
-      !startsWith(github.event.head_commit.message, 'Freeze Phase 3 gateway inventory and proof receipt')
+      !startsWith(github.event.head_commit.message, 'Freeze Phase 3 gateway inventory and proof receipt') &&
+      !startsWith(github.event.head_commit.message, 'Confirm Phase 3 owner verification')
     needs: gateway-proof
     runs-on: ubuntu-latest
     permissions:
