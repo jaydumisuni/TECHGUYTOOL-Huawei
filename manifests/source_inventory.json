@@ -11,7 +11,7 @@
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 107,
+  "file_count": 108,
   "files": [
     {
       "origin": "phase2_shared_contracts",
@@ -24,6 +24,12 @@
       "path": ".github/workflows/phase3-gateway.yml",
       "sha256": "abccbebba10ba3834bd06e234cd044c46771a186ff588297ec4436c59b992eef",
       "size_bytes": 7189
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": ".github/workflows/phase3-review-fixes-once.yml",
+      "sha256": "5fcbbec23dddb303f86bedd57782770790119d857b3d88d4064a12fa8be1470f",
+      "size_bytes": 11756
     },
     {
       "origin": "phase1_recovery_and_freeze",
