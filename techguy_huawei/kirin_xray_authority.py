@@ -93,8 +93,8 @@ def validate_replay_authority(
 def _source_identity(value: Any) -> tuple[str, str, str]:
     if not isinstance(value, Mapping):
         raise ValueError("source authority record must be an object")
-    expected = {"classification", "path", "sha256"}
-    if set(value) != expected:
+    required = {"classification", "path", "sha256"}
+    if not required <= set(value):
         raise ValueError("source authority record must contain classification, path and sha256")
     classification = value.get("classification")
     path = value.get("path")
