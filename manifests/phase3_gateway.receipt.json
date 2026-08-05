@@ -5,6 +5,12 @@
     "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/30982669849",
     "tested_revision": "0a4cdb0988c14b8e6296f639464026cc5c58efff"
   },
+  "owner_verification": {
+    "authority_commit": "ce777ba10173add0176af55fd9c26f19b6268272",
+    "source_proof_run_id": 30982669849,
+    "source_revision": "0a4cdb0988c14b8e6296f639464026cc5c58efff",
+    "status": "CONFIRMED"
+  },
   "phase2_merge_commit": "ea6e66dd91031485d6db39d47da294de6ff2e771",
   "phase3": {
     "branch": "phase3/device-gateway",
