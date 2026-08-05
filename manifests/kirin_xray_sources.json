@@ -1,0 +1,42 @@
+{
+  "donor": {
+    "commit": "d26152d38c197ba0bf98f41a66bed7ceb0575ce1",
+    "repository": "jaydumisuni/kirin",
+    "version": "0.2.0"
+  },
+  "prepared_at": "2026-08-05T08:45:00Z",
+  "private_archive": {
+    "drive_file_id": "1qH4K0m1lX_3o0XLvCkJMXsDajOkfu2cs",
+    "publish_raw_contents": false,
+    "sha256": "d98d44364387431f86d4bad2e725bb5e6612f32a1f1884436a4285872c87efc4"
+  },
+  "schema": "techguytool-huawei.phase4-kirin-xray-sources.v1",
+  "sources": [
+    {
+      "classification": "golden_workflow_study",
+      "path": "huawei Revive/system/P10Revive reference study.md",
+      "sha256": "a359bd3db40f1aac387b758a3bd0307c72ea8b03bd6976eb3cb8d0cda78af37f"
+    },
+    {
+      "classification": "private_recovery_handoff",
+      "path": "huawei Revive/CHAT-HANDOFF-20260802.md",
+      "sha256": "93c5a4a24b0f84e6bebab0b84be4bc37261c3a00ece1f234fe4ca9fbcf59db28"
+    },
+    {
+      "classification": "historical_board_recipe_evidence",
+      "path": "huawei Revive/plans/p30-pro-workflow.json",
+      "sha256": "57772084b3aee50cffa92fb9729c3df08084c4d1afc96acf8eb2ab23320ba739"
+    },
+    {
+      "classification": "historical_package_proof",
+      "path": "huawei Revive/plans/p30-pro-package-proof.json",
+      "sha256": "ff78bd796bfb6a10a4c90e1693e78f1addeded3da34964454e98f663630d96aa"
+    },
+    {
+      "classification": "private_hardware_operation_evidence",
+      "path": "huawei Revive/logs/vog-l29-c185-full-flash-20260802.json",
+      "sha256": "459b2671c27f6333d68253541389833035596fda1a3b5834fea0b4ef0f51e2b1"
+    }
+  ],
+  "truth_boundary": "Only reviewed paths, classifications and SHA-256 identities are public. Raw private archive contents, device identifiers and operation logs remain private. These source records authorize deterministic read-only replay only; they do not authorize device execution."
+}
