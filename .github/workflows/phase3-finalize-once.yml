@@ -3,6 +3,8 @@ name: Phase 3 Finalize One-Shot
 on:
   push:
     branches: ["phase3/device-gateway"]
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: write
@@ -17,7 +19,7 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Apply exact reviewed source transformations
         shell: bash
