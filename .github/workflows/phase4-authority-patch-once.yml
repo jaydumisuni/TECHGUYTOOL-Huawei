@@ -19,7 +19,7 @@ jobs:
           persist-credentials: false
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Apply exact authority integration
+      - name: Apply exact source-authority integration
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -51,28 +51,17 @@ jobs:
               '    "techguy_huawei/kirin_xray.py",\n    "tests/test_kirin_xray.py",',
               '    "techguy_huawei/kirin_xray.py",\n    "techguy_huawei/kirin_xray_authority.py",\n    "tests/test_kirin_xray.py",\n    "tests/test_kirin_xray_authority.py",',
           )
-          replace_once(
-              ".github/workflows/phase4-kirin-xray.yml",
-              "python -m compileall -q techguy_huawei/kirin_xray.py tests/test_kirin_xray.py tools/prove_kirin_xray_replay.py",
-              "python -m compileall -q techguy_huawei/kirin_xray.py techguy_huawei/kirin_xray_authority.py tests/test_kirin_xray.py tests/test_kirin_xray_authority.py tools/prove_kirin_xray_replay.py",
-          )
-          replace_once(
-              ".github/workflows/phase4-kirin-xray.yml",
-              "python -m pytest tests/test_kirin_xray.py -q",
-              "python -m pytest tests/test_kirin_xray.py tests/test_kirin_xray_authority.py -q",
-          )
           PY
           python -m compileall -q techguy_huawei/kirin_xray.py techguy_huawei/kirin_xray_authority.py tests/test_kirin_xray_authority.py
           python tools/build_source_inventory.py
-          rm .github/workflows/phase4-authority-patch-once.yml
           git diff --check
 
-      - name: Commit patched authority
+      - name: Commit non-workflow authority source
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           git config user.name "THETECHGUY Phase 4 Builder"
           git config user.email "actions@users.noreply.github.com"
-          git add -A
+          git add docs/PHASE_4_KIRIN_XRAY.md manifests/source_inventory.json techguy_huawei/kirin_xray.py tools/build_source_inventory.py
           git commit -m "Bind Kirin replay to frozen source authority"
           git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:phase4/harden-kirin-xray
