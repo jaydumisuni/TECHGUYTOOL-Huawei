@@ -302,11 +302,11 @@ impl Gateway {
     ) -> Result<WorkerRecord, GatewayError> {
         let now = now_utc();
         validate_worker_deadline(&now, deadline_at)?;
-        let (worker, event) = self
+        let (_worker, event) = self
             .storage
             .heartbeat_worker(worker_id, deadline_at, &now)?;
         self.notify_event(&event);
-        Ok(worker)
+        self.storage.get_worker(worker_id)
     }
 
     pub fn sweep_workers(&self) -> Result<Vec<WorkerRecord>, GatewayError> {

@@ -828,10 +828,10 @@ impl Storage {
         )?;
         Ok(GatewaySnapshot {
             schema_version: GATEWAY_SCHEMA_VERSION,
-            physical_sessions: list_physical_sessions_on(&connection)?,
-            operation_sessions: list_operations_on(&connection)?,
-            providers: list_providers_on(&connection)?,
-            workers: list_workers_on(&connection)?,
+            physical_sessions: self.list_physical_sessions()?,
+            operation_sessions: self.list_operations()?,
+            providers: self.list_providers()?,
+            workers: self.list_workers()?,
             last_event_sequence,
             device_authority: DEVICE_AUTHORITY.to_owned(),
             xray_authority: XRAY_AUTHORITY.to_owned(),
