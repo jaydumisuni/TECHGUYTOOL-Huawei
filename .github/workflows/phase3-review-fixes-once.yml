@@ -1,0 +1,277 @@
+name: Phase 3 Review Fixes One-Shot
+
+on:
+  push:
+    branches: ["phase3/device-gateway"]
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor == 'jaydumisuni' && github.event.head_commit.message == 'Apply Phase 3 review fixes once'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out exact branch revision
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.sha }}
+
+      - name: Apply evidence-backed review corrections
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              file = Path(path)
+              text = file.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one authority block, found {count}")
+              file.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          replace_once(
+              "rust/device_gateway/src/storage.rs",
+              '''    pub fn snapshot(&self) -> Result<GatewaySnapshot, GatewayError> {
+                  let connection = self.connect()?;
+                  let last_event_sequence = connection.query_row(
+                      "SELECT COALESCE(MAX(sequence), 0) FROM journal_events",
+                      [],
+                      |row| row.get(0),
+                  )?;
+                  Ok(GatewaySnapshot {
+                      schema_version: GATEWAY_SCHEMA_VERSION,
+                      physical_sessions: self.list_physical_sessions()?,
+                      operation_sessions: self.list_operations()?,
+                      providers: self.list_providers()?,
+                      workers: self.list_workers()?,
+                      last_event_sequence,
+                      device_authority: DEVICE_AUTHORITY.to_owned(),
+                      xray_authority: XRAY_AUTHORITY.to_owned(),
+                  })
+              }''',
+              '''    pub fn snapshot(&self) -> Result<GatewaySnapshot, GatewayError> {
+                  let mut connection = self.connect()?;
+                  let transaction =
+                      connection.transaction_with_behavior(TransactionBehavior::Deferred)?;
+                  let last_event_sequence = transaction.query_row(
+                      "SELECT COALESCE(MAX(sequence), 0) FROM journal_events",
+                      [],
+                      |row| row.get(0),
+                  )?;
+                  let snapshot = GatewaySnapshot {
+                      schema_version: GATEWAY_SCHEMA_VERSION,
+                      physical_sessions: list_physical_sessions_on(&transaction)?,
+                      operation_sessions: list_operations_on(&transaction)?,
+                      providers: list_providers_on(&transaction)?,
+                      workers: list_workers_on(&transaction)?,
+                      last_event_sequence,
+                      device_authority: DEVICE_AUTHORITY.to_owned(),
+                      xray_authority: XRAY_AUTHORITY.to_owned(),
+                  };
+                  transaction.commit()?;
+                  Ok(snapshot)
+              }''',
+          )
+
+          replace_once(
+              "rust/device_gateway/src/gateway.rs",
+              '''    pub fn get_physical_session(
+                  &self,
+                  session_id: &str,
+              ) -> Result<PhysicalDeviceSession, GatewayError> {
+                  self.storage.get_physical_session(session_id)
+              }
+''',
+              '''    pub fn get_physical_session(
+                  &self,
+                  session_id: &str,
+              ) -> Result<PhysicalDeviceSession, GatewayError> {
+                  self.storage.get_physical_session(session_id)
+              }
+
+              pub fn list_physical_sessions(&self) -> Result<Vec<PhysicalDeviceSession>, GatewayError> {
+                  self.storage.list_physical_sessions()
+              }
+''',
+          )
+          replace_once(
+              "rust/device_gateway/src/gateway.rs",
+              '''    pub fn get_operation(&self, operation_id: &str) -> Result<OperationSession, GatewayError> {
+                  self.storage.get_operation(operation_id)
+              }
+''',
+              '''    pub fn get_operation(&self, operation_id: &str) -> Result<OperationSession, GatewayError> {
+                  self.storage.get_operation(operation_id)
+              }
+
+              pub fn list_operations(&self) -> Result<Vec<OperationSession>, GatewayError> {
+                  self.storage.list_operations()
+              }
+''',
+          )
+          replace_once(
+              "rust/device_gateway/src/gateway.rs",
+              '''    pub fn register_provider(
+                  &self,
+                  manifest: ProviderManifest,
+              ) -> Result<ProviderManifest, GatewayError> {
+                  validate_provider_manifest(&manifest)?;
+                  let now = now_utc();
+                  let (registered, event) = self.storage.register_provider(&manifest, &now)?;
+                  if let Some(event) = event {
+                      self.notify_event(&event);
+                  }
+                  Ok(registered)
+              }
+''',
+              '''    pub fn register_provider(
+                  &self,
+                  manifest: ProviderManifest,
+              ) -> Result<ProviderManifest, GatewayError> {
+                  validate_provider_manifest(&manifest)?;
+                  let now = now_utc();
+                  let (registered, event) = self.storage.register_provider(&manifest, &now)?;
+                  if let Some(event) = event {
+                      self.notify_event(&event);
+                  }
+                  Ok(registered)
+              }
+
+              pub fn list_providers(&self) -> Result<Vec<ProviderManifest>, GatewayError> {
+                  self.storage.list_providers()
+              }
+''',
+          )
+          replace_once(
+              "rust/device_gateway/src/gateway.rs",
+              '''        let (_worker, event) = self
+                  .storage
+                  .heartbeat_worker(worker_id, deadline_at, &now)?;
+              self.notify_event(&event);
+              self.storage.get_worker(worker_id)
+          }
+
+          pub fn sweep_workers(&self) -> Result<Vec<WorkerRecord>, GatewayError> {''',
+              '''        let (worker, event) = self
+                  .storage
+                  .heartbeat_worker(worker_id, deadline_at, &now)?;
+              self.notify_event(&event);
+              Ok(worker)
+          }
+
+          pub fn get_worker(&self, worker_id: &str) -> Result<WorkerRecord, GatewayError> {
+              self.storage.get_worker(worker_id)
+          }
+
+          pub fn list_workers(&self) -> Result<Vec<WorkerRecord>, GatewayError> {
+              self.storage.list_workers()
+          }
+
+          pub fn sweep_workers(&self) -> Result<Vec<WorkerRecord>, GatewayError> {''',
+          )
+
+          replace_once(
+              "rust/device_gateway/tests/gateway.rs",
+              '''use std::fs;
+          use std::sync::{Arc, Barrier};''',
+              '''use std::fs;
+          use std::sync::atomic::{AtomicBool, Ordering};
+          use std::sync::{Arc, Barrier};''',
+          )
+          replace_once(
+              "rust/device_gateway/tests/gateway.rs",
+              '''#[test]
+          fn journal_tampering_is_detected() {''',
+              '''#[test]
+          fn snapshot_is_consistent_during_concurrent_writes() {
+              let root = tempdir().expect("tempdir");
+              let gateway = Arc::new(Gateway::open(root.path().join("gateway.sqlite3")).expect("gateway"));
+              let finished = Arc::new(AtomicBool::new(false));
+              let writer_gateway = Arc::clone(&gateway);
+              let writer_finished = Arc::clone(&finished);
+              let writer = thread::spawn(move || {
+                  for index in 0..64_u64 {
+                      let session = writer_gateway
+                          .open_physical_session(&format!("{index:064x}"))
+                          .expect("session");
+                      writer_gateway
+                          .open_operation(&session.session_id, &format!("{:064x}", index + 1_000))
+                          .expect("operation");
+                  }
+                  writer_finished.store(true, Ordering::Release);
+              });
+
+              while !finished.load(Ordering::Acquire) {
+                  assert_snapshot_consistent(&gateway.snapshot().expect("snapshot"));
+                  thread::yield_now();
+              }
+              writer.join().expect("writer");
+              assert_snapshot_consistent(&gateway.snapshot().expect("final snapshot"));
+          }
+
+          #[test]
+          fn journal_tampering_is_detected() {''',
+          )
+          replace_once(
+              "rust/device_gateway/tests/gateway.rs",
+              '''fn future_timestamp(seconds: i64) -> String {''',
+              '''fn assert_snapshot_consistent(snapshot: &techguy_device_gateway::GatewaySnapshot) {
+              let expected_events =
+                  1 + snapshot.physical_sessions.len() + snapshot.operation_sessions.len();
+              assert_eq!(snapshot.last_event_sequence as usize, expected_events);
+          }
+
+          fn future_timestamp(seconds: i64) -> String {''',
+          )
+
+          replace_once(
+              "tools/build_phase3_receipt.py",
+              '''            "rust_gateway_tests": 10,''',
+              '''            "rust_gateway_tests": 11,''',
+          )
+          replace_once(
+              "tools/build_phase3_receipt.py",
+              '''            "journal_chain_verification": "PASS",
+                  "phase2_contract_regression": "PASS",''',
+              '''            "journal_chain_verification": "PASS",
+                  "snapshot_consistency_under_concurrency": "PASS",
+                  "phase2_contract_regression": "PASS",''',
+          )
+          PY
+
+      - name: Validate exact reviewed correction
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.75.0 --profile minimal --component rustfmt --component clippy
+          rustup override set 1.75.0
+          cargo generate-lockfile --manifest-path rust/device_gateway/Cargo.toml
+          cargo fmt --manifest-path rust/device_gateway/Cargo.toml
+          cargo clippy --locked --manifest-path rust/device_gateway/Cargo.toml --all-targets -- -D warnings
+          cargo test --locked --manifest-path rust/device_gateway/Cargo.toml --all-targets
+          rm .github/workflows/phase3-review-fixes-once.yml
+          unexpected="$(git diff --name-only | grep -Ev '^(.github/workflows/phase3-review-fixes-once\.yml|rust/device_gateway/src/(storage|gateway)\.rs|rust/device_gateway/tests/gateway\.rs|tools/build_phase3_receipt\.py)$' || true)"
+          test -z "$unexpected" || {
+            echo "Unexpected changed paths:" >&2
+            echo "$unexpected" >&2
+            exit 1
+          }
+
+      - name: Commit and publish correction
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name "THETECHGUY Review Corrector"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "Resolve Phase 3 consistency review"
+          git fetch origin phase3/device-gateway
+          git rebase origin/phase3/device-gateway
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:phase3/device-gateway
