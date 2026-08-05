@@ -27,6 +27,11 @@ FIXTURES = (
 )
 SOURCE_AUTHORITY = ROOT / "manifests" / "kirin_xray_sources.json"
 PRIVATE_ARCHIVE = ROOT / "manifests" / "private_source_archive.json"
+_WRITE_FLAG_CONTRACTS = {
+    "physical_device_session",
+    "device_evidence",
+    "device_twin",
+}
 
 
 def test_provider_manifest_is_exactly_read_only() -> None:
@@ -111,7 +116,7 @@ def test_replay_is_byte_deterministic_and_phase2_valid(fixture: Path) -> None:
             "diagnosis",
             "verification",
         }
-        assert contract["payload"]["write_allowed"] is False
+        _assert_contract_is_read_only(contract)
         result = validate_contract(
             contract,
             context={
@@ -212,9 +217,24 @@ def test_gateway_publication_binds_runtime_session_and_preserves_authority() -> 
     assert gateway.registered_manifest == provider_manifest()
     assert len(gateway.endpoint_records) == 2
     assert len(result["receipts"]) == len(render_replay(FIXTURES[1]).contracts)
-    assert all(contract["physical_session_id"] == gateway.session_id for contract in gateway.contracts)
+    assert all(
+        contract["physical_session_id"] == gateway.session_id
+        for contract in gateway.contracts
+    )
     assert all(contract["producer"] == PROVIDER_ID for contract in gateway.contracts)
-    assert all(contract["payload"]["write_allowed"] is False for contract in gateway.contracts)
+    for contract in gateway.contracts:
+        _assert_contract_is_read_only(contract)
+
+
+def _assert_contract_is_read_only(contract: Mapping[str, Any]) -> None:
+    contract_type = contract["contract_type"]
+    payload = contract["payload"]
+    if contract_type in _WRITE_FLAG_CONTRACTS:
+        assert payload["write_allowed"] is False
+    else:
+        assert contract_type == "endpoint_observation"
+        assert "write_allowed" not in payload
+        assert contract["authority"] == "observation"
 
 
 class FakeGateway:
