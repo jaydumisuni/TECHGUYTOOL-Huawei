@@ -1,0 +1,76 @@
+name: Phase 4 Harden Kirin Xray
+
+on:
+  push:
+    branches: ["phase4/harden-kirin-xray"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase4-kirin-xray-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out reviewed revision
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Install Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+
+      - name: Install Rust 1.75
+        run: |
+          rustup toolchain install 1.75.0 --profile minimal --component rustfmt --component clippy
+          rustup override set 1.75.0
+
+      - name: Install pytest
+        run: python -m pip install pytest==8.3.5
+
+      - name: Compile Phase 4 Python
+        run: python -m compileall -q techguy_huawei/kirin_xray.py tests/test_kirin_xray.py tools/prove_kirin_xray_replay.py
+
+      - name: Test Kirin Xray replay
+        run: python -m pytest tests/test_kirin_xray.py -q
+
+      - name: Resolve Gateway lock
+        run: cargo generate-lockfile --manifest-path rust/device_gateway/Cargo.toml
+
+      - name: Check Gateway formatting
+        run: cargo fmt --manifest-path rust/device_gateway/Cargo.toml -- --check
+
+      - name: Check Gateway warnings
+        run: cargo clippy --locked --manifest-path rust/device_gateway/Cargo.toml --all-targets -- -D warnings
+
+      - name: Test Gateway
+        run: cargo test --locked --manifest-path rust/device_gateway/Cargo.toml --all-targets
+
+      - name: Build Gateway
+        run: cargo build --locked --manifest-path rust/device_gateway/Cargo.toml --bin ttg-device-gateway
+
+      - name: Prove real Gateway replay and restart
+        run: python tools/prove_kirin_xray_replay.py --gateway-bin rust/device_gateway/target/debug/ttg-device-gateway
+
+      - name: Re-prove Phase 2 and Phase 3
+        run: |
+          python -m pytest tests/test_shared_contracts.py tests/test_gateway_client.py -q
+          cargo test --manifest-path rust/contracts_core/Cargo.toml --locked --all-targets
+          python tools/build_phase2_receipt.py --verify
+          python tools/build_phase3_receipt.py --verify
+
+      - name: Run complete Python regression
+        run: python -m pytest -q
+
+      - name: Verify source freeze
+        run: python tools/verify_source_freeze.py --json
