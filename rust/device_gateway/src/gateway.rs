@@ -159,9 +159,9 @@ impl Gateway {
         request_sha256: &str,
     ) -> Result<OperationSession, GatewayError> {
         let now = now_utc();
-        let (operation, event) = self
-            .storage
-            .open_operation(physical_session_id, request_sha256, &now)?;
+        let (operation, event) =
+            self.storage
+                .open_operation(physical_session_id, request_sha256, &now)?;
         self.notify_event(&event);
         Ok(operation)
     }
@@ -180,9 +180,9 @@ impl Gateway {
         next: OperationStage,
     ) -> Result<OperationSession, GatewayError> {
         let now = now_utc();
-        let (_previous_stage, operation, event) = self
-            .storage
-            .transition_operation(operation_id, next, &now)?;
+        let (_previous_stage, operation, event) =
+            self.storage
+                .transition_operation(operation_id, next, &now)?;
         if let Some(event) = event {
             self.notify_event(&event);
         }
