@@ -1,0 +1,78 @@
+name: Phase 4 Authority Patch One-Shot
+
+on:
+  push:
+    branches: ["phase4/harden-kirin-xray"]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor == 'jaydumisuni' && github.event.head_commit.message == 'Apply Phase 4 authority patch once'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out exact branch revision
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.sha }}
+
+      - name: Apply exact authority integration
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              target = Path(path)
+              text = target.read_text(encoding="utf-8")
+              if text.count(old) != 1:
+                  raise SystemExit(f"{path}: expected one exact patch target")
+              target.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          replace_once(
+              "techguy_huawei/kirin_xray.py",
+              "from .contracts import canonical_json, canonical_sha256, parse_timestamp, validate_contract\n",
+              "from .contracts import canonical_json, canonical_sha256, parse_timestamp, validate_contract\nfrom .kirin_xray_authority import validate_replay_authority\n",
+          )
+          replace_once(
+              "techguy_huawei/kirin_xray.py",
+              "    _validate_replay_document(document)\n    return document\n",
+              "    _validate_replay_document(document)\n    validate_replay_authority(document, error_factory=KirinReplayError)\n    return document\n",
+          )
+          replace_once(
+              "docs/PHASE_4_KIRIN_XRAY.md",
+              "Every emitted payload fixes `write_allowed` to `false`.",
+              "The three frozen contract types that define `write_allowed` fix it to `false`. The frozen `endpoint_observation` schema has no write-authority field and remains observation-only.",
+          )
+          replace_once(
+              "tools/build_source_inventory.py",
+              '    "techguy_huawei/kirin_xray.py",\n    "tests/test_kirin_xray.py",',
+              '    "techguy_huawei/kirin_xray.py",\n    "techguy_huawei/kirin_xray_authority.py",\n    "tests/test_kirin_xray.py",\n    "tests/test_kirin_xray_authority.py",',
+          )
+          replace_once(
+              ".github/workflows/phase4-kirin-xray.yml",
+              "python -m compileall -q techguy_huawei/kirin_xray.py tests/test_kirin_xray.py tools/prove_kirin_xray_replay.py",
+              "python -m compileall -q techguy_huawei/kirin_xray.py techguy_huawei/kirin_xray_authority.py tests/test_kirin_xray.py tests/test_kirin_xray_authority.py tools/prove_kirin_xray_replay.py",
+          )
+          replace_once(
+              ".github/workflows/phase4-kirin-xray.yml",
+              "python -m pytest tests/test_kirin_xray.py -q",
+              "python -m pytest tests/test_kirin_xray.py tests/test_kirin_xray_authority.py -q",
+          )
+          PY
+          python -m compileall -q techguy_huawei/kirin_xray.py techguy_huawei/kirin_xray_authority.py tests/test_kirin_xray_authority.py
+          python tools/build_source_inventory.py
+          rm .github/workflows/phase4-authority-patch-once.yml
+          git diff --check
+
+      - name: Commit patched authority
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "THETECHGUY Phase 4 Builder"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "Bind Kirin replay to frozen source authority"
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:phase4/harden-kirin-xray
