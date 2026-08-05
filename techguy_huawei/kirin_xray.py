@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Mapping, Protocol, Sequence
 
 from .contracts import canonical_json, canonical_sha256, parse_timestamp, validate_contract
+from .kirin_xray_authority import validate_replay_authority
 
 PROVIDER_ID = "kirin.xray"
 PROVIDER_VERSION = "0.2.0"
@@ -173,6 +174,7 @@ def load_replay(source: Path | str | Mapping[str, Any]) -> dict[str, Any]:
     if not isinstance(document, dict):
         raise KirinReplayError("INVALID_REPLAY_TYPE", "replay document must be an object")
     _validate_replay_document(document)
+    validate_replay_authority(document, error_factory=KirinReplayError)
     return document
 
 

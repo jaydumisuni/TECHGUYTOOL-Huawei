@@ -57,7 +57,9 @@ PHASE4_PATHS = {
     "docs/PHASE_4_KIRIN_XRAY.md",
     "manifests/kirin_xray_sources.json",
     "techguy_huawei/kirin_xray.py",
+    "techguy_huawei/kirin_xray_authority.py",
     "tests/test_kirin_xray.py",
+    "tests/test_kirin_xray_authority.py",
     "tools/build_source_inventory.py",
     "tools/prove_kirin_xray_replay.py",
 }

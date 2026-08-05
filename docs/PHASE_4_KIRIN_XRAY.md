@@ -68,7 +68,7 @@ The provider may publish only:
 - `device_evidence`;
 - `device_twin`.
 
-Every emitted payload fixes `write_allowed` to `false`.
+The three frozen contract types that define `write_allowed` fix it to `false`. The frozen `endpoint_observation` schema has no write-authority field and remains observation-only.
 
 ## Replay adapter
 
