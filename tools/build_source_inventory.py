@@ -48,9 +48,18 @@ PHASE3_PATHS = {
     "tests/test_gateway_client.py",
     "tools/build_phase2_receipt.py",
     "tools/build_phase3_receipt.py",
-    "tools/build_source_inventory.py",
     "tools/prove_gateway_reconnect.py",
     "tools/verify_source_freeze.py",
+}
+PHASE4_PREFIXES = ("replay/kirin/",)
+PHASE4_PATHS = {
+    ".github/workflows/phase4-kirin-xray.yml",
+    "docs/PHASE_4_KIRIN_XRAY.md",
+    "manifests/kirin_xray_sources.json",
+    "techguy_huawei/kirin_xray.py",
+    "tests/test_kirin_xray.py",
+    "tools/build_source_inventory.py",
+    "tools/prove_kirin_xray_replay.py",
 }
 
 
@@ -80,6 +89,8 @@ def source_files() -> list[Path]:
 
 
 def origin_for(rel: str) -> str:
+    if rel in PHASE4_PATHS or rel.startswith(PHASE4_PREFIXES):
+        return "phase4_kirin_xray"
     if rel in PHASE3_PATHS or rel.startswith(PHASE3_PREFIXES):
         return "phase3_device_gateway"
     if rel in PHASE2_PATHS or rel.startswith(PHASE2_PREFIXES):
@@ -112,7 +123,7 @@ def build() -> dict[str, object]:
         "excluded_from_recursive_hashing": sorted(EXCLUDED),
         "file_count": len(records),
         "files": records,
-        "inventory_definition_date": "2026-08-04",
+        "inventory_definition_date": "2026-08-05",
         "private_recovery_authority": {
             "archive_sha256": "d98d44364387431f86d4bad2e725bb5e6612f32a1f1884436a4285872c87efc4",
             "copied_into_public_source": False,
