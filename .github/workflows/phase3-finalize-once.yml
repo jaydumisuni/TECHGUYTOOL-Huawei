@@ -27,36 +27,40 @@ jobs:
           set -euo pipefail
           python - <<'PY'
           from pathlib import Path
+          import re
 
           storage = Path('rust/device_gateway/src/storage.rs')
           text = storage.read_text(encoding='utf-8')
-          old = '''            physical_sessions: list_physical_sessions_on(&connection)?,
-              operation_sessions: list_operations_on(&connection)?,
-              providers: list_providers_on(&connection)?,
-              workers: list_workers_on(&connection)?,'''
-          new = '''            physical_sessions: self.list_physical_sessions()?,
-              operation_sessions: self.list_operations()?,
-              providers: self.list_providers()?,
-              workers: self.list_workers()?,'''
-          if old not in text:
-              raise SystemExit('storage snapshot authority block not found')
-          storage.write_text(text.replace(old, new, 1), encoding='utf-8')
+          replacements = {
+              'physical_sessions: list_physical_sessions_on(&connection)?': 'physical_sessions: self.list_physical_sessions()?',
+              'operation_sessions: list_operations_on(&connection)?': 'operation_sessions: self.list_operations()?',
+              'providers: list_providers_on(&connection)?': 'providers: self.list_providers()?',
+              'workers: list_workers_on(&connection)?': 'workers: self.list_workers()?',
+          }
+          for old, new in replacements.items():
+              if text.count(old) != 1:
+                  raise SystemExit(f'storage authority token count for {old!r} was {text.count(old)}')
+              text = text.replace(old, new, 1)
+          storage.write_text(text, encoding='utf-8')
 
           gateway = Path('rust/device_gateway/src/gateway.rs')
           text = gateway.read_text(encoding='utf-8')
-          old = '''        let (worker, event) = self
-              .storage
-              .heartbeat_worker(worker_id, deadline_at, &now)?;
-          self.notify_event(&event);
-          Ok(worker)'''
-          new = '''        let (_worker, event) = self
+          pattern = re.compile(
+              r'let \(worker, event\) = self\s*'
+              r'\.storage\s*'
+              r'\.heartbeat_worker\(worker_id, deadline_at, &now\)\?;\s*'
+              r'self\.notify_event\(&event\);\s*'
+              r'Ok\(worker\)'
+          )
+          replacement = '''let (_worker, event) = self
               .storage
               .heartbeat_worker(worker_id, deadline_at, &now)?;
           self.notify_event(&event);
           self.storage.get_worker(worker_id)'''
-          if old not in text:
-              raise SystemExit('gateway heartbeat authority block not found')
-          gateway.write_text(text.replace(old, new, 1), encoding='utf-8')
+          text, count = pattern.subn(replacement, text, count=1)
+          if count != 1:
+              raise SystemExit(f'gateway heartbeat authority block count was {count}')
+          gateway.write_text(text, encoding='utf-8')
           PY
 
       - name: Format and verify changed Rust source
