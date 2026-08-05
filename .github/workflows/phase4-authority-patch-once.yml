@@ -76,3 +76,5 @@ jobs:
           git add -A
           git commit -m "Bind Kirin replay to frozen source authority"
           git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:phase4/harden-kirin-xray
+
+# Triggered only after the one-shot workflow already existed on the branch.
