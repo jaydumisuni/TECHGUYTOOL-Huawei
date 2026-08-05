@@ -1,15 +1,9 @@
 {
-  "generated_at": "2026-08-05T06:50:39Z",
+  "generated_at": "2026-08-05T06:53:38Z",
   "hosted_proof": {
-    "run_id": 30982669849,
-    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/30982669849",
-    "tested_revision": "0a4cdb0988c14b8e6296f639464026cc5c58efff"
-  },
-  "owner_verification": {
-    "authority_commit": "ce777ba10173add0176af55fd9c26f19b6268272",
-    "source_proof_run_id": 30982669849,
-    "source_revision": "0a4cdb0988c14b8e6296f639464026cc5c58efff",
-    "status": "CONFIRMED"
+    "run_id": 30982861740,
+    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/30982861740",
+    "tested_revision": "a41958a3e624b8ad770228e1335b384b63ba1b70"
   },
   "phase2_merge_commit": "ea6e66dd91031485d6db39d47da294de6ff2e771",
   "phase3": {
