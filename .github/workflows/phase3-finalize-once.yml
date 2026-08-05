@@ -1,0 +1,84 @@
+name: Phase 3 Finalize One-Shot
+
+on:
+  push:
+    branches: ["phase3/device-gateway"]
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    if: github.actor == 'jaydumisuni' && github.event.head_commit.message != 'Use reviewed storage read surfaces'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out exact branch head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.sha }}
+
+      - name: Apply exact reviewed source transformations
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          storage = Path('rust/device_gateway/src/storage.rs')
+          text = storage.read_text(encoding='utf-8')
+          old = '''            physical_sessions: list_physical_sessions_on(&connection)?,
+              operation_sessions: list_operations_on(&connection)?,
+              providers: list_providers_on(&connection)?,
+              workers: list_workers_on(&connection)?,'''
+          new = '''            physical_sessions: self.list_physical_sessions()?,
+              operation_sessions: self.list_operations()?,
+              providers: self.list_providers()?,
+              workers: self.list_workers()?,'''
+          if old not in text:
+              raise SystemExit('storage snapshot authority block not found')
+          storage.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          gateway = Path('rust/device_gateway/src/gateway.rs')
+          text = gateway.read_text(encoding='utf-8')
+          old = '''        let (worker, event) = self
+              .storage
+              .heartbeat_worker(worker_id, deadline_at, &now)?;
+          self.notify_event(&event);
+          Ok(worker)'''
+          new = '''        let (_worker, event) = self
+              .storage
+              .heartbeat_worker(worker_id, deadline_at, &now)?;
+          self.notify_event(&event);
+          self.storage.get_worker(worker_id)'''
+          if old not in text:
+              raise SystemExit('gateway heartbeat authority block not found')
+          gateway.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+
+      - name: Format and verify changed Rust source
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.75.0 --profile minimal --component rustfmt
+          rustup override set 1.75.0
+          cargo fmt --manifest-path rust/device_gateway/Cargo.toml
+          unexpected="$(git diff --name-only | grep -Ev '^rust/device_gateway/src/(storage|gateway)\.rs$' || true)"
+          test -z "$unexpected" || {
+            echo "Unexpected changed paths:" >&2
+            echo "$unexpected" >&2
+            exit 1
+          }
+
+      - name: Commit reviewed correction
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name "THETECHGUY Phase Finalizer"
+          git config user.email "actions@users.noreply.github.com"
+          git add rust/device_gateway/src/storage.rs rust/device_gateway/src/gateway.rs
+          git commit -m "Use reviewed storage read surfaces"
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:phase3/device-gateway
