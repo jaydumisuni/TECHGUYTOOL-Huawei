@@ -237,10 +237,10 @@ jobs:
           replace_once(
               "tools/build_phase3_receipt.py",
               '''            "journal_chain_verification": "PASS",
-                  "phase2_contract_regression": "PASS",''',
+                  "atomic_state_and_journal_commit": "PASS",''',
               '''            "journal_chain_verification": "PASS",
                   "snapshot_consistency_under_concurrency": "PASS",
-                  "phase2_contract_regression": "PASS",''',
+                  "atomic_state_and_journal_commit": "PASS",''',
           )
           PY
 
