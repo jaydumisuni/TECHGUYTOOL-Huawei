@@ -3,13 +3,20 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import subprocess
+import urllib.request
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 INVENTORY = ROOT / "manifests" / "source_inventory.json"
 OUTPUT = ROOT / "manifests" / "phase4_kirin_xray.receipt.json"
+EXPECTED_REPOSITORY = "jaydumisuni/TECHGUYTOOL-Huawei"
+EXPECTED_WORKFLOW_NAME = "Phase 4 Harden Kirin Xray"
+PRELIMINARY_STATUS = "PHASE4_KIRIN_XRAY_PROVEN_PENDING_OWNER"
+FROZEN_STATUS = "PHASE4_KIRIN_XRAY_FROZEN"
 _SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 _TIMESTAMP_RE = re.compile(
     r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
@@ -18,6 +25,24 @@ _ALLOWED_POST_PROOF_CHANGES = {
     "manifests/phase4_kirin_xray.receipt.json",
     "manifests/source_inventory.json",
     "rust/device_gateway/Cargo.lock",
+}
+_REQUIRED_PROOF = {
+    "phase4_python_compile",
+    "phase4_unit_and_authority_tests",
+    "p10_deterministic_replay",
+    "p30_deterministic_replay",
+    "phase2_contract_validation",
+    "real_gateway_publication",
+    "gateway_journal_verification",
+    "gateway_restart_recovery",
+    "provider_read_only_boundary",
+    "forbidden_write_authority_rejection",
+    "phase2_regression",
+    "phase3_regression",
+    "complete_python_regression",
+    "source_freeze_verifier",
+    "srg_20_for_2",
+    "rust_toolchain",
 }
 
 
@@ -41,11 +66,43 @@ def _validate_proof_identity(
         raise ValueError("proof run identifier must be a positive integer")
     if _TIMESTAMP_RE.fullmatch(generated_at) is None:
         raise ValueError("generation timestamp must use YYYY-MM-DDTHH:MM:SSZ")
-    expected_suffix = f"/actions/runs/{proof_run_id}"
-    if not proof_run_url.startswith("https://github.com/") or not proof_run_url.endswith(
-        expected_suffix
-    ):
-        raise ValueError("proof run URL must identify the supplied GitHub Actions run")
+    expected_url = (
+        f"https://github.com/{EXPECTED_REPOSITORY}/actions/runs/{proof_run_id}"
+    )
+    if proof_run_url != expected_url:
+        raise ValueError("proof run URL does not identify the canonical repository/run")
+
+
+def _load_hosted_run(proof_run_id: str) -> dict[str, Any]:
+    url = (
+        f"https://api.github.com/repos/{EXPECTED_REPOSITORY}/actions/runs/"
+        f"{proof_run_id}"
+    )
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "TECHGUYTOOL-Huawei-phase4-verifier",
+    }
+    token = os.environ.get("GITHUB_TOKEN")
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    request = urllib.request.Request(url, headers=headers)
+    with urllib.request.urlopen(request, timeout=20) as response:
+        return json.load(response)
+
+
+def verify_hosted_run(proof_run_id: str, tested_revision: str) -> None:
+    run = _load_hosted_run(proof_run_id)
+    repository = run.get("repository")
+    full_name = repository.get("full_name") if isinstance(repository, dict) else None
+    if full_name != EXPECTED_REPOSITORY:
+        raise ValueError("hosted proof run belongs to a different repository")
+    if run.get("head_sha") != tested_revision:
+        raise ValueError("hosted proof run head SHA does not match tested_revision")
+    if run.get("name") != EXPECTED_WORKFLOW_NAME:
+        raise ValueError("hosted proof run is not the Phase 4 workflow")
+    if str(run.get("id")) != proof_run_id:
+        raise ValueError("hosted proof run ID does not match the receipt")
 
 
 def build(
@@ -62,15 +119,32 @@ def build(
         for item in inventory.get("files", [])
         if item.get("origin") == "phase4_kirin_xray"
     ]
-    if not phase4_files:
-        raise ValueError("source inventory contains no Phase 4 Kirin Xray files")
+    required_paths = {
+        ".github/workflows/phase4-kirin-xray.yml",
+        "docs/PHASE_4_KIRIN_XRAY.md",
+        "manifests/kirin_xray_sources.json",
+        "replay/kirin/p10_golden_workflow.json",
+        "replay/kirin/p30_main_version_mode_hazard.json",
+        "techguy_huawei/kirin_xray.py",
+        "techguy_huawei/kirin_xray_authority.py",
+        "tests/test_kirin_xray.py",
+        "tests/test_kirin_xray_authority.py",
+        "tools/build_phase4_receipt.py",
+        "tools/prove_kirin_xray_replay.py",
+    }
+    actual_paths = {str(item.get("path")) for item in phase4_files}
+    missing = sorted(required_paths - actual_paths)
+    if missing:
+        raise ValueError("source inventory is missing Phase 4 proof/source files: " + ", ".join(missing))
 
     return {
         "schema": "techguytool-huawei.phase4-kirin-xray-receipt.v1",
-        "status": "PHASE4_KIRIN_XRAY_FROZEN",
+        "status": PRELIMINARY_STATUS,
         "generated_at": generated_at,
         "phase3_merge_commit": "40bb352f3f2ea2da1f7ec6cc977a30ba4dc2d3dd",
         "hosted_proof": {
+            "repository": EXPECTED_REPOSITORY,
+            "workflow": EXPECTED_WORKFLOW_NAME,
             "tested_revision": tested_revision,
             "run_id": int(proof_run_id),
             "run_url": proof_run_url,
@@ -119,21 +193,28 @@ def build(
     }
 
 
-def verify() -> None:
+def verify(*, verify_run: bool = False) -> None:
     receipt = json.loads(OUTPUT.read_text(encoding="utf-8"))
     if receipt.get("schema") != "techguytool-huawei.phase4-kirin-xray-receipt.v1":
         raise ValueError("unsupported Phase 4 receipt schema")
-    if receipt.get("status") != "PHASE4_KIRIN_XRAY_FROZEN":
-        raise ValueError("Phase 4 receipt is not frozen")
+    status = receipt.get("status")
+    if status not in {PRELIMINARY_STATUS, FROZEN_STATUS}:
+        raise ValueError("unsupported Phase 4 receipt status")
 
     hosted = receipt.get("hosted_proof")
     if not isinstance(hosted, dict):
         raise ValueError("Phase 4 receipt is missing hosted proof identity")
+    if hosted.get("repository") != EXPECTED_REPOSITORY:
+        raise ValueError("Phase 4 receipt repository identity changed")
+    if hosted.get("workflow") != EXPECTED_WORKFLOW_NAME:
+        raise ValueError("Phase 4 receipt workflow identity changed")
     tested_revision = str(hosted.get("tested_revision"))
     run_id = str(hosted.get("run_id"))
     run_url = str(hosted.get("run_url"))
     generated_at = str(receipt.get("generated_at"))
     _validate_proof_identity(tested_revision, run_id, generated_at, run_url)
+    if verify_run:
+        verify_hosted_run(run_id, tested_revision)
 
     phase4 = receipt.get("phase4")
     if not isinstance(phase4, dict):
@@ -146,6 +227,13 @@ def verify() -> None:
     proof = receipt.get("proof")
     if not isinstance(proof, dict):
         raise ValueError("Phase 4 receipt is missing proof results")
+    proof_keys = set(proof)
+    missing_keys = sorted(_REQUIRED_PROOF - proof_keys)
+    unknown_keys = sorted(proof_keys - _REQUIRED_PROOF)
+    if missing_keys or unknown_keys:
+        raise ValueError(
+            f"Phase 4 proof key mismatch; missing={missing_keys} unknown={unknown_keys}"
+        )
     failed = [
         name
         for name, value in proof.items()
@@ -153,9 +241,9 @@ def verify() -> None:
     ]
     if failed:
         raise ValueError("Phase 4 receipt contains non-PASS proof fields: " + ", ".join(failed))
-    if proof.get("rust_toolchain") != "1.75.0":
+    if proof["rust_toolchain"] != "1.75.0":
         raise ValueError("Phase 4 receipt records an unsupported Rust toolchain")
-    if proof.get("srg_20_for_2") != "40/40 PASS":
+    if proof["srg_20_for_2"] != "40/40 PASS":
         raise ValueError("Phase 4 receipt does not prove the SRG 20-for-2 gate")
 
     inventory = receipt.get("source_inventory")
@@ -163,11 +251,9 @@ def verify() -> None:
         raise ValueError("Phase 4 receipt is missing source inventory identity")
 
     owner = receipt.get("owner_verification")
-    if owner is not None and not isinstance(owner, dict):
-        raise ValueError("owner_verification must be an object when present")
-    if isinstance(owner, dict):
-        if owner.get("status") != "CONFIRMED":
-            raise ValueError("owner verification is not confirmed")
+    if status == FROZEN_STATUS:
+        if not isinstance(owner, dict) or owner.get("status") != "CONFIRMED":
+            raise ValueError("frozen Phase 4 receipt requires confirmed owner verification")
         authority_commit = str(owner.get("authority_commit"))
         source_revision = str(owner.get("source_revision"))
         source_run_id = str(owner.get("source_proof_run_id"))
@@ -182,6 +268,8 @@ def verify() -> None:
             raise ValueError("Phase 4 receipt does not match its authority inventory")
         changed = _changed_files(tested_revision, authority_commit)
     else:
+        if owner is not None:
+            raise ValueError("preliminary Phase 4 receipt must not claim owner verification")
         _require_ancestor(tested_revision, "HEAD")
         if inventory.get("sha256") != sha256(INVENTORY):
             raise ValueError("Phase 4 receipt does not match the committed source inventory")
@@ -228,6 +316,7 @@ def _git_file_bytes(revision: str, path: str) -> bytes:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Build or verify the Phase 4 proof receipt")
     parser.add_argument("--verify", action="store_true")
+    parser.add_argument("--verify-hosted-run", action="store_true")
     parser.add_argument("--tested-revision")
     parser.add_argument("--proof-run-id")
     parser.add_argument("--generated-at")
@@ -237,7 +326,7 @@ def main() -> int:
     if not INVENTORY.is_file():
         raise SystemExit("source inventory must be generated first")
     if args.verify:
-        verify()
+        verify(verify_run=args.verify_hosted_run)
         print(f"VERIFIED {OUTPUT.relative_to(ROOT)}")
         return 0
 
@@ -251,11 +340,19 @@ def main() -> int:
     if missing:
         raise SystemExit("missing required hosted proof arguments: " + ", ".join(missing))
 
+    _validate_proof_identity(
+        str(args.tested_revision),
+        str(args.proof_run_id),
+        str(args.generated_at),
+        str(args.proof_run_url),
+    )
+    if args.verify_hosted_run:
+        verify_hosted_run(str(args.proof_run_id), str(args.tested_revision))
     payload = build(
-        tested_revision=args.tested_revision,
-        proof_run_id=args.proof_run_id,
-        generated_at=args.generated_at,
-        proof_run_url=args.proof_run_url,
+        tested_revision=str(args.tested_revision),
+        proof_run_id=str(args.proof_run_id),
+        generated_at=str(args.generated_at),
+        proof_run_url=str(args.proof_run_url),
     )
     OUTPUT.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(f"WROTE {OUTPUT.relative_to(ROOT)}")
