@@ -29,8 +29,8 @@
     {
       "origin": "phase4_kirin_xray",
       "path": ".github/workflows/phase4-kirin-xray.yml",
-      "sha256": "8ea4702510a5d0954791ea3608260e86a633c9703fc95c490fe84d48118aebf5",
-      "size_bytes": 7837
+      "sha256": "c8e265571f2c89efda288e3ea6382b3a2e1226ed3666784254e08dd74ea06320",
+      "size_bytes": 8084
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -413,7 +413,7 @@
     {
       "origin": "phase3_device_gateway",
       "path": "rust/device_gateway/Cargo.lock",
-      "sha256": "5bec1249e0102b5860e1e55708d5398f8a74d786421b59039af63153fc13252f",
+      "sha256": "df2e48f6f4d2c51f49a36c3cf21f806ca22235f4b4ed49e2925c7a55ba5d2f03",
       "size_bytes": 20419
     },
     {
