@@ -73,6 +73,7 @@ _REQUIRED_PHASE4_PATHS = {
     "tests/test_kirin_xray.py",
     "tests/test_kirin_xray_authority.py",
     "tools/build_phase4_receipt.py",
+    "tools/build_source_inventory.py",
     "tools/prove_kirin_xray_replay.py",
 }
 
@@ -135,11 +136,15 @@ def verify_hosted_run(proof_run_id: str, tested_revision: str) -> None:
         raise ValueError("hosted Phase 4 proof run did not conclude successfully")
 
 
-def _inventory_payload() -> dict[str, Any]:
-    inventory = json.loads(INVENTORY.read_text(encoding="utf-8"))
+def _parse_inventory_bytes(value: bytes) -> dict[str, Any]:
+    inventory = json.loads(value.decode("utf-8"))
     if inventory.get("schema") != "techguytool-huawei.source-inventory.v1":
         raise ValueError("unsupported source inventory schema")
     return inventory
+
+
+def _inventory_payload() -> dict[str, Any]:
+    return _parse_inventory_bytes(INVENTORY.read_bytes())
 
 
 def _phase4_files(inventory: dict[str, Any]) -> list[dict[str, Any]]:
@@ -157,6 +162,20 @@ def _phase4_files(inventory: dict[str, Any]) -> list[dict[str, Any]]:
     return phase4_files
 
 
+def _expected_phase4(inventory: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "branch": PHASE4_BRANCH,
+        "provider_id": PROVIDER_ID,
+        "provider_version": PROVIDER_VERSION,
+        "specialist_donor_commit": SPECIALIST_DONOR_COMMIT,
+        "replay_cases": REPLAY_CASES,
+        "phase4_unit_tests": PHASE4_UNIT_TESTS,
+        "device_authority": DEVICE_AUTHORITY,
+        "xray_authority": XRAY_AUTHORITY,
+        "phase4_file_count": len(_phase4_files(inventory)),
+    }
+
+
 def build(
     *,
     tested_revision: str,
@@ -166,7 +185,7 @@ def build(
 ) -> dict[str, object]:
     _validate_proof_identity(tested_revision, proof_run_id, generated_at, proof_run_url)
     inventory = _inventory_payload()
-    phase4_files = _phase4_files(inventory)
+    phase4 = _expected_phase4(inventory)
 
     return {
         "schema": "techguytool-huawei.phase4-kirin-xray-receipt.v1",
@@ -180,17 +199,7 @@ def build(
             "run_id": int(proof_run_id),
             "run_url": proof_run_url,
         },
-        "phase4": {
-            "branch": PHASE4_BRANCH,
-            "provider_id": PROVIDER_ID,
-            "provider_version": PROVIDER_VERSION,
-            "specialist_donor_commit": SPECIALIST_DONOR_COMMIT,
-            "replay_cases": REPLAY_CASES,
-            "phase4_unit_tests": PHASE4_UNIT_TESTS,
-            "device_authority": DEVICE_AUTHORITY,
-            "xray_authority": XRAY_AUTHORITY,
-            "phase4_file_count": len(phase4_files),
-        },
+        "phase4": phase4,
         "proof": {
             "phase4_python_compile": "PASS",
             "phase4_unit_and_authority_tests": "PASS",
@@ -245,22 +254,47 @@ def verify(*, verify_run: bool = False) -> None:
     if verify_run:
         verify_hosted_run(run_id, tested_revision)
 
-    inventory = _inventory_payload()
-    phase4_files = _phase4_files(inventory)
-    phase4 = receipt.get("phase4")
-    expected_phase4 = {
-        "branch": PHASE4_BRANCH,
-        "provider_id": PROVIDER_ID,
-        "provider_version": PROVIDER_VERSION,
-        "specialist_donor_commit": SPECIALIST_DONOR_COMMIT,
-        "replay_cases": REPLAY_CASES,
-        "phase4_unit_tests": PHASE4_UNIT_TESTS,
-        "device_authority": DEVICE_AUTHORITY,
-        "xray_authority": XRAY_AUTHORITY,
-        "phase4_file_count": len(phase4_files),
-    }
-    if phase4 != expected_phase4:
-        raise ValueError("Phase 4 immutable metadata does not match the build authority")
+    inventory_claim = receipt.get("source_inventory")
+    if not isinstance(inventory_claim, dict):
+        raise ValueError("Phase 4 receipt is missing source inventory identity")
+    if inventory_claim.get("path") != INVENTORY_PATH:
+        raise ValueError("Phase 4 receipt source inventory path changed")
+
+    owner = receipt.get("owner_verification")
+    if status == FROZEN_STATUS:
+        if not isinstance(owner, dict) or owner.get("status") != "CONFIRMED":
+            raise ValueError("frozen Phase 4 receipt requires confirmed owner verification")
+        authority_commit = str(owner.get("authority_commit"))
+        source_revision = str(owner.get("source_revision"))
+        source_run_id = str(owner.get("source_proof_run_id"))
+        if _SHA_RE.fullmatch(authority_commit) is None:
+            raise ValueError("owner verification authority_commit is invalid")
+        if source_revision != tested_revision or source_run_id != run_id:
+            raise ValueError("owner verification does not match hosted proof identity")
+        _require_ancestor(tested_revision, authority_commit)
+        _require_ancestor(authority_commit, "HEAD")
+        authority_inventory_bytes = _git_file_bytes(authority_commit, INVENTORY_PATH)
+        authority_inventory = _parse_inventory_bytes(authority_inventory_bytes)
+        if inventory_claim.get("sha256") != sha256_bytes(authority_inventory_bytes):
+            raise ValueError("Phase 4 receipt does not match its authority inventory")
+        if inventory_claim.get("file_count") != authority_inventory.get("file_count"):
+            raise ValueError("Phase 4 receipt authority inventory file count changed")
+        expected_phase4 = _expected_phase4(authority_inventory)
+        changed = _changed_files(tested_revision, authority_commit)
+    else:
+        if owner is not None:
+            raise ValueError("preliminary Phase 4 receipt must not claim owner verification")
+        _require_ancestor(tested_revision, "HEAD")
+        current_inventory = _inventory_payload()
+        if inventory_claim.get("sha256") != sha256(INVENTORY):
+            raise ValueError("Phase 4 receipt does not match the committed source inventory")
+        if inventory_claim.get("file_count") != current_inventory.get("file_count"):
+            raise ValueError("Phase 4 receipt source inventory file count changed")
+        expected_phase4 = _expected_phase4(current_inventory)
+        changed = _changed_files(tested_revision, "HEAD")
+
+    if receipt.get("phase4") != expected_phase4:
+        raise ValueError("Phase 4 immutable metadata does not match its authority inventory")
 
     proof = receipt.get("proof")
     if not isinstance(proof, dict):
@@ -283,39 +317,6 @@ def verify(*, verify_run: bool = False) -> None:
         raise ValueError("Phase 4 receipt records an unsupported Rust toolchain")
     if proof["srg_20_for_2"] != "40/40 PASS":
         raise ValueError("Phase 4 receipt does not prove the SRG 20-for-2 gate")
-
-    inventory_claim = receipt.get("source_inventory")
-    if not isinstance(inventory_claim, dict):
-        raise ValueError("Phase 4 receipt is missing source inventory identity")
-    if inventory_claim.get("path") != INVENTORY_PATH:
-        raise ValueError("Phase 4 receipt source inventory path changed")
-    if inventory_claim.get("file_count") != inventory.get("file_count"):
-        raise ValueError("Phase 4 receipt source inventory file count changed")
-
-    owner = receipt.get("owner_verification")
-    if status == FROZEN_STATUS:
-        if not isinstance(owner, dict) or owner.get("status") != "CONFIRMED":
-            raise ValueError("frozen Phase 4 receipt requires confirmed owner verification")
-        authority_commit = str(owner.get("authority_commit"))
-        source_revision = str(owner.get("source_revision"))
-        source_run_id = str(owner.get("source_proof_run_id"))
-        if _SHA_RE.fullmatch(authority_commit) is None:
-            raise ValueError("owner verification authority_commit is invalid")
-        if source_revision != tested_revision or source_run_id != run_id:
-            raise ValueError("owner verification does not match hosted proof identity")
-        _require_ancestor(tested_revision, authority_commit)
-        _require_ancestor(authority_commit, "HEAD")
-        inventory_bytes = _git_file_bytes(authority_commit, INVENTORY_PATH)
-        if inventory_claim.get("sha256") != sha256_bytes(inventory_bytes):
-            raise ValueError("Phase 4 receipt does not match its authority inventory")
-        changed = _changed_files(tested_revision, authority_commit)
-    else:
-        if owner is not None:
-            raise ValueError("preliminary Phase 4 receipt must not claim owner verification")
-        _require_ancestor(tested_revision, "HEAD")
-        if inventory_claim.get("sha256") != sha256(INVENTORY):
-            raise ValueError("Phase 4 receipt does not match the committed source inventory")
-        changed = _changed_files(tested_revision, "HEAD")
 
     unexpected = sorted(set(changed) - _ALLOWED_POST_PROOF_CHANGES)
     if unexpected:
