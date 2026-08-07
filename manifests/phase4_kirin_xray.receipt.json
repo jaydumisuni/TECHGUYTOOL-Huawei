@@ -7,6 +7,12 @@
     "tested_revision": "b5acb07f8ba49405556c82cafde68ba8196de59a",
     "workflow": "Phase 4 Harden Kirin Xray"
   },
+  "owner_verification": {
+    "authority_commit": "0de8e2f0d23f75d2314a625d8694841c28c0f6f8",
+    "source_proof_run_id": 31163675620,
+    "source_revision": "b5acb07f8ba49405556c82cafde68ba8196de59a",
+    "status": "CONFIRMED"
+  },
   "phase3_merge_commit": "40bb352f3f2ea2da1f7ec6cc977a30ba4dc2d3dd",
   "phase4": {
     "branch": "phase4/harden-kirin-xray",
@@ -43,6 +49,6 @@
     "path": "manifests/source_inventory.json",
     "sha256": "e35d757d7ddec2be63a956b8c8710f884e93203de234bd10882832a9ab1118ad"
   },
-  "status": "PHASE4_KIRIN_XRAY_PROVEN_PENDING_OWNER",
+  "status": "PHASE4_KIRIN_XRAY_FROZEN",
   "truth_boundary": "This receipt proves only Phase 4 deterministic read-only Kirin Xray replay, provider authority, frozen Phase 2 contract emission, real Gateway publication, journal integrity and restart recovery. It does not prove live Huawei USB discovery, loader compatibility, OEMINFO construction or modification, partition writes, flashing, reboot, unlock/relock, physical VOG recovery, Windows packaging or signing."
 }
