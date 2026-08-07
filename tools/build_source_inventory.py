@@ -54,6 +54,7 @@ PHASE3_PATHS = {
 }
 PHASE4_PREFIXES = ("replay/kirin/",)
 PHASE4_PATHS = {
+    ".github/workflows/phase4-authority.yml",
     ".github/workflows/phase4-kirin-xray.yml",
     "docs/PHASE_4_KIRIN_XRAY.md",
     "manifests/kirin_xray_sources.json",
