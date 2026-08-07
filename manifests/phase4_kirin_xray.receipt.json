@@ -1,0 +1,48 @@
+{
+  "generated_at": "2026-08-07T08:56:00Z",
+  "hosted_proof": {
+    "repository": "jaydumisuni/TECHGUYTOOL-Huawei",
+    "run_id": 31163675620,
+    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/31163675620",
+    "tested_revision": "b5acb07f8ba49405556c82cafde68ba8196de59a",
+    "workflow": "Phase 4 Harden Kirin Xray"
+  },
+  "phase3_merge_commit": "40bb352f3f2ea2da1f7ec6cc977a30ba4dc2d3dd",
+  "phase4": {
+    "branch": "phase4/harden-kirin-xray",
+    "device_authority": "none",
+    "phase4_file_count": 12,
+    "phase4_unit_tests": 15,
+    "provider_id": "kirin.xray",
+    "provider_version": "0.2.0",
+    "replay_cases": 2,
+    "specialist_donor_commit": "d26152d38c197ba0bf98f41a66bed7ceb0575ce1",
+    "xray_authority": "read_only"
+  },
+  "proof": {
+    "complete_python_regression": "PASS",
+    "forbidden_write_authority_rejection": "PASS",
+    "gateway_journal_verification": "PASS",
+    "gateway_restart_recovery": "PASS",
+    "p10_deterministic_replay": "PASS",
+    "p30_deterministic_replay": "PASS",
+    "phase2_contract_validation": "PASS",
+    "phase2_regression": "PASS",
+    "phase3_regression": "PASS",
+    "phase4_python_compile": "PASS",
+    "phase4_unit_and_authority_tests": "PASS",
+    "provider_read_only_boundary": "PASS",
+    "real_gateway_publication": "PASS",
+    "rust_toolchain": "1.75.0",
+    "source_freeze_verifier": "PASS",
+    "srg_20_for_2": "40/40 PASS"
+  },
+  "schema": "techguytool-huawei.phase4-kirin-xray-receipt.v1",
+  "source_inventory": {
+    "file_count": 118,
+    "path": "manifests/source_inventory.json",
+    "sha256": "e35d757d7ddec2be63a956b8c8710f884e93203de234bd10882832a9ab1118ad"
+  },
+  "status": "PHASE4_KIRIN_XRAY_PROVEN_PENDING_OWNER",
+  "truth_boundary": "This receipt proves only Phase 4 deterministic read-only Kirin Xray replay, provider authority, frozen Phase 2 contract emission, real Gateway publication, journal integrity and restart recovery. It does not prove live Huawei USB discovery, loader compatibility, OEMINFO construction or modification, partition writes, flashing, reboot, unlock/relock, physical VOG recovery, Windows packaging or signing."
+}

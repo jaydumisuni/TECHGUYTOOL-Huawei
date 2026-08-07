@@ -8,10 +8,11 @@
   },
   "excluded_from_recursive_hashing": [
     "manifests/phase3_gateway.receipt.json",
+    "manifests/phase4_kirin_xray.receipt.json",
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 117,
+  "file_count": 118,
   "files": [
     {
       "origin": "phase2_shared_contracts",
@@ -28,8 +29,8 @@
     {
       "origin": "phase4_kirin_xray",
       "path": ".github/workflows/phase4-kirin-xray.yml",
-      "sha256": "f2635219898929a79addee6e78224a15c32767280dd5fd49e1aa2fe099178d32",
-      "size_bytes": 5793
+      "sha256": "8ea4702510a5d0954791ea3608260e86a633c9703fc95c490fe84d48118aebf5",
+      "size_bytes": 7837
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -651,9 +652,15 @@
     },
     {
       "origin": "phase4_kirin_xray",
+      "path": "tools/build_phase4_receipt.py",
+      "sha256": "8e3069997e2559dbb35a112d05d68d6126ecbdedd27a893be1fcf515cca98857",
+      "size_bytes": 14338
+    },
+    {
+      "origin": "phase4_kirin_xray",
       "path": "tools/build_source_inventory.py",
-      "sha256": "2f01d8dfcda1af38ad5eb5fac07867a1c5436bc73397beb0bdbba82ee74ab323",
-      "size_bytes": 5147
+      "sha256": "03fc7d45d945d71ebc325bb98094f0af2cd05994ebcfdf57aba001dad8f6d069",
+      "size_bytes": 5232
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -688,8 +695,8 @@
     {
       "origin": "phase4_kirin_xray",
       "path": "tools/prove_kirin_xray_replay.py",
-      "sha256": "35f62a6d2d14a64e7df9a93146dff4dfc5473c964d9414618786dc91703549ff",
-      "size_bytes": 6402
+      "sha256": "fc457f0ae52c7826ae52017fb0ba819807f948b022854de6f78472a7ff83f0d3",
+      "size_bytes": 9701
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -712,11 +719,11 @@
     {
       "origin": "phase3_device_gateway",
       "path": "tools/verify_source_freeze.py",
-      "sha256": "1208a9310b84c2c44baeaa7ff741de9f383b48bb4dca5a1229a43645d8c43cd7",
-      "size_bytes": 6368
+      "sha256": "00210eb0aacbe70dc3536c233924b171d963cf46998916eed24983cc0d8d140f",
+      "size_bytes": 6522
     }
   ],
-  "inventory_definition_date": "2026-08-05",
+  "inventory_definition_date": "2026-08-07",
   "private_recovery_authority": {
     "archive_sha256": "d98d44364387431f86d4bad2e725bb5e6612f32a1f1884436a4285872c87efc4",
     "copied_into_public_source": false,
