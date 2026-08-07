@@ -9,10 +9,11 @@
   "excluded_from_recursive_hashing": [
     "manifests/phase3_gateway.receipt.json",
     "manifests/phase4_kirin_xray.receipt.json",
+    "manifests/phase5_decision_corps.receipt.json",
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 119,
+  "file_count": 135,
   "files": [
     {
       "origin": "phase2_shared_contracts",
@@ -37,6 +38,18 @@
       "path": ".github/workflows/phase4-kirin-xray.yml",
       "sha256": "bb1ccbfb0b2fc38554c09d9f11460cd3d674f1cc7729f8876e43d4105278c48e",
       "size_bytes": 4437
+    },
+    {
+      "origin": "phase5_repair_decision_corps",
+      "path": ".github/workflows/phase5-authority.yml",
+      "sha256": "61d80e4f61a5ef1f8162cabcadac378f07c42e98c35e109d211889527e9b3ffd",
+      "size_bytes": 6980
+    },
+    {
+      "origin": "phase5_repair_decision_corps",
+      "path": ".github/workflows/phase5-decision-corps.yml",
+      "sha256": "f4220b6d7a5ed955b6bafdb356a2028159d4d7549f24482b8ffb85269700a434",
+      "size_bytes": 4585
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -157,6 +170,12 @@
       "path": "docs/PHASE_4_KIRIN_XRAY.md",
       "sha256": "02469ca4cd59ff1081b1a40385eef425b0e176fb3805dc83a48b712c65634da0",
       "size_bytes": 5480
+    },
+    {
+      "origin": "phase5_repair_decision_corps",
+      "path": "docs/PHASE_5_REPAIR_DECISION_CORPS.md",
+      "sha256": "61e616ddc2f8ee1c3fa836d8b6015385072d84bd5fc13d7dcfb32da9a33b0059",
+      "size_bytes": 4927
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -325,6 +344,60 @@
       "path": "resources.qrc",
       "sha256": "04ca6dee5521e580db23ae7c9241fc445b9c809c7fdc4c81fedb9ab0e39733b9",
       "size_bytes": 1659
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "resources/expexted ui/Register device popup.png",
+      "sha256": "904deca0183ab85d8e56481b9a3e18f2122686881fe7dff05d0a8c18e40b773d",
+      "size_bytes": 1533014
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "resources/expexted ui/Service Center.png",
+      "sha256": "06515c366fc888f7aba39c3442cbf4fae7f08d3debf48aa54f69d3347373d47d",
+      "size_bytes": 1696557
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "resources/expexted ui/about popup.png",
+      "sha256": "184842a198f830958f6338329597386a24066ea8474c39ed58cd2831a2b8164a",
+      "size_bytes": 1543791
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "resources/expexted ui/firmware flash.png",
+      "sha256": "69f972177a92ae1b8340fa186285dc910e71a5b7e362abd7184e566df4e53414",
+      "size_bytes": 1620911
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "resources/expexted ui/fix driver popup.png",
+      "sha256": "82771a58d3d2478fd3355cd7b61dce67fa41b26ef27149f3e07598a1aa2a22e0",
+      "size_bytes": 1579032
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "resources/expexted ui/gear popup.png",
+      "sha256": "797ef6189f0f9174a025fa908d7438d376a38a491d4aff305c1614776f52f397",
+      "size_bytes": 1760950
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "resources/ghost hoody.png",
+      "sha256": "d3f0cf6e3c1b645f6659a9dd0d14a6a00469acfbae89496f16aedbde906fe955",
+      "size_bytes": 2035220
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "resources/other ghost.png",
+      "sha256": "09a35f5e2a4a23aad215f92f9ef33a55b4bbf4f5b733f80a1e58043287c941b5",
+      "size_bytes": 846877
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "resources/tool icon.png",
+      "sha256": "abdf56a71759684b974c52da28791631fd57561fe7bedff7211e396b788526f2",
+      "size_bytes": 914143
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -555,6 +628,12 @@
       "size_bytes": 500
     },
     {
+      "origin": "phase5_repair_decision_corps",
+      "path": "techguy_huawei/decision_corps.py",
+      "sha256": "a5c80b4c4f1638316baf895415608a82ed6a3d24cb0dc252a317f90f698b8d7f",
+      "size_bytes": 25455
+    },
+    {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "techguy_huawei/device_engine.py",
       "sha256": "e398812ca6a0e6e62a5dadfcf0922af46af6c91b39bedd100cfa1a5cbc5e44b2",
@@ -595,6 +674,12 @@
       "path": "tests/test_action_health.py",
       "sha256": "56da431eb2f7bea5bffacbd35a3795b7ce3adde16d294c289d118514997a569d",
       "size_bytes": 2091
+    },
+    {
+      "origin": "phase5_repair_decision_corps",
+      "path": "tests/test_decision_corps.py",
+      "sha256": "b1945f4fe1986713131a178f201b6429bd32fcf7f1afffac71ae5f63ac7f1133",
+      "size_bytes": 13859
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -659,14 +744,20 @@
     {
       "origin": "phase4_kirin_xray",
       "path": "tools/build_phase4_receipt.py",
-      "sha256": "6486b4ae9a5a65f476c5d4f3a2a39d57b22509f6c8c2ccc1dee4ed32a5973613",
-      "size_bytes": 16092
+      "sha256": "6759a50518235ab3fd7dd304e932ab3fe5290c71295ccb11661435bbe6bdd389",
+      "size_bytes": 16232
+    },
+    {
+      "origin": "phase5_repair_decision_corps",
+      "path": "tools/build_phase5_receipt.py",
+      "sha256": "33bc3b80e30ad6d398a8492f6bf702d8ec25706ad8ab9713d00fb6c46dbbe785",
+      "size_bytes": 15969
     },
     {
       "origin": "phase4_kirin_xray",
       "path": "tools/build_source_inventory.py",
-      "sha256": "d34a2777dc4d6081f18b39e637240ca31224565235f1133fff6c67fda0bc6ea4",
-      "size_bytes": 5278
+      "sha256": "8482227787f136351889177c7d49e966d3aad4e68592ac03661ea6eaea3f3886",
+      "size_bytes": 5715
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -691,6 +782,12 @@
       "path": "tools/prove_contract_equivalence.py",
       "sha256": "5b8fe5c817ec569789f37d3932c97cc24f2b27caa848e11dd40deeecd048e853",
       "size_bytes": 8143
+    },
+    {
+      "origin": "phase5_repair_decision_corps",
+      "path": "tools/prove_decision_corps.py",
+      "sha256": "b447d2f351f935b4eadb26ff2d9c06167a3fe5c704ca6165e7ecdefe0b23f4d8",
+      "size_bytes": 4536
     },
     {
       "origin": "phase3_device_gateway",
