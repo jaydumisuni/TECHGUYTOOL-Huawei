@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "manifests" / "source_inventory.json"
 EXCLUDED = {
     "manifests/phase3_gateway.receipt.json",
+    "manifests/phase4_kirin_xray.receipt.json",
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json",
 }
@@ -60,6 +61,7 @@ PHASE4_PATHS = {
     "techguy_huawei/kirin_xray_authority.py",
     "tests/test_kirin_xray.py",
     "tests/test_kirin_xray_authority.py",
+    "tools/build_phase4_receipt.py",
     "tools/build_source_inventory.py",
     "tools/prove_kirin_xray_replay.py",
 }
@@ -125,7 +127,7 @@ def build() -> dict[str, object]:
         "excluded_from_recursive_hashing": sorted(EXCLUDED),
         "file_count": len(records),
         "files": records,
-        "inventory_definition_date": "2026-08-05",
+        "inventory_definition_date": "2026-08-07",
         "private_recovery_authority": {
             "archive_sha256": "d98d44364387431f86d4bad2e725bb5e6612f32a1f1884436a4285872c87efc4",
             "copied_into_public_source": False,
