@@ -1,0 +1,96 @@
+{
+  "clock": {
+    "basis": "deterministic_replay_not_capture_time",
+    "created_at": "2032-01-10T00:00:00Z",
+    "fresh_until": "2032-01-10T02:00:00Z",
+    "last_observed_at": "2032-01-10T00:20:00Z",
+    "validation_now": "2032-01-10T00:30:00Z"
+  },
+  "donor": {
+    "commit": "d26152d38c197ba0bf98f41a66bed7ceb0575ce1",
+    "repository": "jaydumisuni/kirin",
+    "version": "0.2.0"
+  },
+  "endpoints": [],
+  "evidence": [
+    {
+      "confidence_bps": 10000,
+      "evidence_kind": "firmware",
+      "source_indexes": [
+        0
+      ],
+      "subject_id": "p10-referenced-small-metadata-files",
+      "verdict": "missing"
+    },
+    {
+      "confidence_bps": 9600,
+      "evidence_kind": "version",
+      "source_indexes": [
+        0
+      ],
+      "subject_id": "p10-complete-oeminfo-version-state",
+      "verdict": "coherent"
+    },
+    {
+      "confidence_bps": 9800,
+      "evidence_kind": "transport",
+      "source_indexes": [
+        0
+      ],
+      "subject_id": "p10-service-environment-retention",
+      "verdict": "coherent"
+    },
+    {
+      "confidence_bps": 9500,
+      "evidence_kind": "firmware",
+      "source_indexes": [
+        0
+      ],
+      "subject_id": "p10-golden-workflow-theorem",
+      "verdict": "observed"
+    }
+  ],
+  "safety": {
+    "explanation": "The recovered P10 study supports a whole-workflow theorem: retain the service environment, restore complete model-correct OEMINFO version identity, continue the target firmware, and restore stock recovery or Fastboot only at finalization. The named small metadata images were absent from the studied package, so their names do not prove standalone writable partitions.",
+    "reason_codes": [
+      "COMPLETE_OEMINFO_WORKFLOW_REQUIRED",
+      "SERVICE_ENVIRONMENT_MUST_BE_RETAINED"
+    ],
+    "release_blocked": true
+  },
+  "scenario_id": "kirin-p10-golden-workflow-v1",
+  "schema": "techguytool-huawei.kirin-xray-replay.v1",
+  "session": {
+    "candidate_id": "p10-golden-workflow-study",
+    "confidence_bps": 9600,
+    "session_state": "investigate"
+  },
+  "sources": [
+    {
+      "classification": "golden_workflow_study",
+      "path": "huawei Revive/system/P10Revive reference study.md",
+      "sha256": "a359bd3db40f1aac387b758a3bd0307c72ea8b03bd6976eb3cb8d0cda78af37f"
+    }
+  ],
+  "twin": {
+    "confidence_bps": 9000,
+    "firmware_material": {
+      "donor": "P10Revive",
+      "small_metadata_images_present": false,
+      "workflow_scope": "complete-firmware-sequence"
+    },
+    "identity_material": {
+      "device_specific_identity_preservation_required": true,
+      "model_family": "P10-reference"
+    },
+    "source_indexes": [
+      0
+    ],
+    "storage_material": {
+      "oeminfo_role": "complete-version-and-regional-state",
+      "standalone-verlist-partition-proven": false
+    },
+    "twin_state": "pre_operation",
+    "verification_status": "investigate"
+  }
+}

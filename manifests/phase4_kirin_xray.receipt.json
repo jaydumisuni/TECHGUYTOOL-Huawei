@@ -1,0 +1,54 @@
+{
+  "generated_at": "2026-08-07T09:25:24Z",
+  "hosted_proof": {
+    "repository": "jaydumisuni/TECHGUYTOOL-Huawei",
+    "run_id": 31165672766,
+    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/31165672766",
+    "tested_revision": "25a53e045a21b732538685a0a89902ede5dc03d7",
+    "workflow": "Phase 4 Harden Kirin Xray"
+  },
+  "owner_verification": {
+    "authority_commit": "d3fe4a988fb63405fcba19d2f8e48326c69a9762",
+    "source_proof_run_id": 31165672766,
+    "source_revision": "25a53e045a21b732538685a0a89902ede5dc03d7",
+    "status": "CONFIRMED"
+  },
+  "phase3_merge_commit": "40bb352f3f2ea2da1f7ec6cc977a30ba4dc2d3dd",
+  "phase4": {
+    "branch": "phase4/harden-kirin-xray",
+    "device_authority": "none",
+    "phase4_file_count": 13,
+    "phase4_unit_tests": 15,
+    "provider_id": "kirin.xray",
+    "provider_version": "0.2.0",
+    "replay_cases": 2,
+    "specialist_donor_commit": "d26152d38c197ba0bf98f41a66bed7ceb0575ce1",
+    "xray_authority": "read_only"
+  },
+  "proof": {
+    "complete_python_regression": "PASS",
+    "forbidden_write_authority_rejection": "PASS",
+    "gateway_journal_verification": "PASS",
+    "gateway_restart_recovery": "PASS",
+    "p10_deterministic_replay": "PASS",
+    "p30_deterministic_replay": "PASS",
+    "phase2_contract_validation": "PASS",
+    "phase2_regression": "PASS",
+    "phase3_regression": "PASS",
+    "phase4_python_compile": "PASS",
+    "phase4_unit_and_authority_tests": "PASS",
+    "provider_read_only_boundary": "PASS",
+    "real_gateway_publication": "PASS",
+    "rust_toolchain": "1.75.0",
+    "source_freeze_verifier": "PASS",
+    "srg_20_for_2": "40/40 PASS"
+  },
+  "schema": "techguytool-huawei.phase4-kirin-xray-receipt.v1",
+  "source_inventory": {
+    "file_count": 119,
+    "path": "manifests/source_inventory.json",
+    "sha256": "bcbebdce9a75aa22d49c613c8c9c21cfa5c09f3595f8f33b7d802600c57d705b"
+  },
+  "status": "PHASE4_KIRIN_XRAY_FROZEN",
+  "truth_boundary": "This receipt proves only Phase 4 deterministic read-only Kirin Xray replay, provider authority, frozen Phase 2 contract emission, real Gateway publication, journal integrity and restart recovery. It does not prove live Huawei USB discovery, loader compatibility, OEMINFO construction or modification, partition writes, flashing, reboot, unlock/relock, physical VOG recovery, Windows packaging or signing."
+}

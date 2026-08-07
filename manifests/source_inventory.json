@@ -8,10 +8,11 @@
   },
   "excluded_from_recursive_hashing": [
     "manifests/phase3_gateway.receipt.json",
+    "manifests/phase4_kirin_xray.receipt.json",
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 107,
+  "file_count": 119,
   "files": [
     {
       "origin": "phase2_shared_contracts",
@@ -24,6 +25,18 @@
       "path": ".github/workflows/phase3-gateway.yml",
       "sha256": "dffff2774dbcbf15d0dd18737119697eaa66e8ed1b09153a37a871ace1d74ed9",
       "size_bytes": 7443
+    },
+    {
+      "origin": "phase4_kirin_xray",
+      "path": ".github/workflows/phase4-authority.yml",
+      "sha256": "04d6fb4a20350dc616bec73b05fed85a8af40cdf2a358fc5dc4a68c2fd72152f",
+      "size_bytes": 6952
+    },
+    {
+      "origin": "phase4_kirin_xray",
+      "path": ".github/workflows/phase4-kirin-xray.yml",
+      "sha256": "bb1ccbfb0b2fc38554c09d9f11460cd3d674f1cc7729f8876e43d4105278c48e",
+      "size_bytes": 4437
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -140,6 +153,12 @@
       "size_bytes": 6033
     },
     {
+      "origin": "phase4_kirin_xray",
+      "path": "docs/PHASE_4_KIRIN_XRAY.md",
+      "sha256": "02469ca4cd59ff1081b1a40385eef425b0e176fb3805dc83a48b712c65634da0",
+      "size_bytes": 5480
+    },
+    {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "main.py",
       "sha256": "4d3884f3d7643931fef4ccf666b296e83a20b19f663c35d49c7d41cb6f2439c9",
@@ -150,6 +169,12 @@
       "path": "manifests/external_artifacts.json",
       "sha256": "e49aef2b74c8ff2989ac756e778419b36c8c6c6ec25538fff8efe5ece11dbc70",
       "size_bytes": 4251
+    },
+    {
+      "origin": "phase4_kirin_xray",
+      "path": "manifests/kirin_xray_sources.json",
+      "sha256": "3e25a0c12eb35c431b3a4dd805eea49de2ae48947b325ca3e322b4dcac3f02e0",
+      "size_bytes": 1829
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -278,6 +303,18 @@
       "size_bytes": 30
     },
     {
+      "origin": "phase4_kirin_xray",
+      "path": "replay/kirin/p10_golden_workflow.json",
+      "sha256": "3a6e56fe696a04fb8b9a930ca0c452d00fa7535271bb90f82e3a6d890f3f1ea4",
+      "size_bytes": 2882
+    },
+    {
+      "origin": "phase4_kirin_xray",
+      "path": "replay/kirin/p30_main_version_mode_hazard.json",
+      "sha256": "659d1611258f07a652de6e2be89f694ce15e6cccb6484f68d158c1fc9b155267",
+      "size_bytes": 5375
+    },
+    {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "requirements.txt",
       "sha256": "c1f73e86a8ee5454b62dab6909045e72c45f35d0f9fe6f727700a498c5f9bec6",
@@ -382,7 +419,7 @@
     {
       "origin": "phase3_device_gateway",
       "path": "rust/device_gateway/Cargo.lock",
-      "sha256": "5bec1249e0102b5860e1e55708d5398f8a74d786421b59039af63153fc13252f",
+      "sha256": "df2e48f6f4d2c51f49a36c3cf21f806ca22235f4b4ed49e2925c7a55ba5d2f03",
       "size_bytes": 20419
     },
     {
@@ -536,6 +573,18 @@
       "size_bytes": 6986
     },
     {
+      "origin": "phase4_kirin_xray",
+      "path": "techguy_huawei/kirin_xray.py",
+      "sha256": "5d6a20fbafa757b9eec591f4a4620a5a8f547c1edbbe6ce403ca8eb4f4147a96",
+      "size_bytes": 24964
+    },
+    {
+      "origin": "phase4_kirin_xray",
+      "path": "techguy_huawei/kirin_xray_authority.py",
+      "sha256": "7bf32dd405b606fdd9c5c43eb80c3d961decf56f94fcdbb8a00f0af467afa9a3",
+      "size_bytes": 4724
+    },
+    {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "techguy_huawei/storage.py",
       "sha256": "45d35a8381b79307399dc884b9755b15111c4730957c6a5738bb32c69f0b6caa",
@@ -564,6 +613,18 @@
       "path": "tests/test_gateway_client.py",
       "sha256": "523c918ad1e684f3056051fbed1d75b9890e54dd76f44d02ceb848be0e1e2dfa",
       "size_bytes": 3096
+    },
+    {
+      "origin": "phase4_kirin_xray",
+      "path": "tests/test_kirin_xray.py",
+      "sha256": "73bd9fe5f9ba786cafba45c169af0e3b7b238bbc5c983d9735ebefe08ef366ef",
+      "size_bytes": 10931
+    },
+    {
+      "origin": "phase4_kirin_xray",
+      "path": "tests/test_kirin_xray_authority.py",
+      "sha256": "4d9befde4ef566c013c469afa7dd87b45e8881ecc7c7c1dd19978d8eba90b605",
+      "size_bytes": 764
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -596,10 +657,16 @@
       "size_bytes": 9978
     },
     {
-      "origin": "phase3_device_gateway",
+      "origin": "phase4_kirin_xray",
+      "path": "tools/build_phase4_receipt.py",
+      "sha256": "6486b4ae9a5a65f476c5d4f3a2a39d57b22509f6c8c2ccc1dee4ed32a5973613",
+      "size_bytes": 16092
+    },
+    {
+      "origin": "phase4_kirin_xray",
       "path": "tools/build_source_inventory.py",
-      "sha256": "66e1816194e54c0634a45ba7f28fd1d9caacde0dc47f03b30e1695f3c8b74131",
-      "size_bytes": 4675
+      "sha256": "d34a2777dc4d6081f18b39e637240ca31224565235f1133fff6c67fda0bc6ea4",
+      "size_bytes": 5278
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -632,6 +699,12 @@
       "size_bytes": 9981
     },
     {
+      "origin": "phase4_kirin_xray",
+      "path": "tools/prove_kirin_xray_replay.py",
+      "sha256": "fc457f0ae52c7826ae52017fb0ba819807f948b022854de6f78472a7ff83f0d3",
+      "size_bytes": 9701
+    },
+    {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "tools/review_20_for_2.py",
       "sha256": "202210df400ebc34004d419f628d6ef2aee596c33aa16a3c8d8fae6c6bacbc30",
@@ -652,11 +725,11 @@
     {
       "origin": "phase3_device_gateway",
       "path": "tools/verify_source_freeze.py",
-      "sha256": "1208a9310b84c2c44baeaa7ff741de9f383b48bb4dca5a1229a43645d8c43cd7",
-      "size_bytes": 6368
+      "sha256": "00210eb0aacbe70dc3536c233924b171d963cf46998916eed24983cc0d8d140f",
+      "size_bytes": 6522
     }
   ],
-  "inventory_definition_date": "2026-08-04",
+  "inventory_definition_date": "2026-08-07",
   "private_recovery_authority": {
     "archive_sha256": "d98d44364387431f86d4bad2e725bb5e6612f32a1f1884436a4285872c87efc4",
     "copied_into_public_source": false,
