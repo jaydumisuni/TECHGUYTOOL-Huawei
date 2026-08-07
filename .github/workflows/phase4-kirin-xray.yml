@@ -19,25 +19,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out reviewed revision
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
           persist-credentials: false
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Install Python 3.11
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.11"
 
       - name: Install Rust 1.75
+        shell: bash
         run: |
+          set -euo pipefail
           rustup toolchain install 1.75.0 --profile minimal --component rustfmt --component clippy
           rustup override set 1.75.0
           rustc --version
           cargo --version
 
-      - name: Install pytest
+      - name: Install proof dependencies
         run: python -m pip install --disable-pip-version-check pytest==8.3.5
 
       - name: Compile Phase 4 Python
@@ -48,6 +50,7 @@ jobs:
           tests/test_kirin_xray.py
           tests/test_kirin_xray_authority.py
           tools/prove_kirin_xray_replay.py
+          tools/build_phase4_receipt.py
           tools/build_source_inventory.py
 
       - name: Test Kirin Xray replay and source authority
@@ -55,6 +58,9 @@ jobs:
           python -m pytest
           tests/test_kirin_xray.py
           tests/test_kirin_xray_authority.py -q
+
+      - name: SRG 20-for-2 independent review gate
+        run: python tools/review_20_for_2.py --strict
 
       - name: Resolve Gateway lock
         run: cargo generate-lockfile --manifest-path rust/device_gateway/Cargo.toml
@@ -98,11 +104,12 @@ jobs:
       - name: Verify source freeze
         run: python tools/verify_source_freeze.py --json
 
-      - name: Verify generated paths
+      - name: Verify generated paths and Phase 4 authority
         shell: bash
         env:
           EVENT_NAME: ${{ github.event_name }}
-          IS_INVENTORY_FREEZE: ${{ startsWith(github.event.head_commit.message, 'Freeze Phase 4 source inventory') }}
+          IS_AUTHORITY_FREEZE: ${{ startsWith(github.event.head_commit.message, 'Freeze Phase 4 Kirin Xray authority') }}
+          IS_OWNER_VERIFICATION: ${{ startsWith(github.event.head_commit.message, 'Confirm Phase 4 owner verification') }}
         run: |
           set -euo pipefail
           git diff --check
@@ -112,55 +119,74 @@ jobs:
             echo "$unexpected" >&2
             exit 1
           }
-          if [[ "$EVENT_NAME" == "pull_request" || "$IS_INVENTORY_FREEZE" == "true" ]]; then
+          if [[ "$EVENT_NAME" == "pull_request" || "$IS_AUTHORITY_FREEZE" == "true" || "$IS_OWNER_VERIFICATION" == "true" ]]; then
             git diff --exit-code -- manifests/source_inventory.json rust/device_gateway/Cargo.lock
+            python tools/build_phase4_receipt.py --verify
           fi
 
-  freeze-inventory:
+  freeze-authority:
     if: >-
       github.event_name == 'push' &&
       github.ref == 'refs/heads/phase4/harden-kirin-xray' &&
       github.actor == 'jaydumisuni' &&
-      !startsWith(github.event.head_commit.message, 'Freeze Phase 4 source inventory')
+      !startsWith(github.event.head_commit.message, 'Freeze Phase 4 Kirin Xray authority') &&
+      !startsWith(github.event.head_commit.message, 'Confirm Phase 4 owner verification')
     needs: proof
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - name: Check out proven source revision
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
           persist-credentials: false
           ref: ${{ github.sha }}
 
       - name: Install Python 3.11
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.11"
 
-      - name: Generate exact source inventory
+      - name: Generate traceable Phase 4 authority files
+        shell: bash
+        env:
+          TESTED_REVISION: ${{ github.sha }}
+          PROOF_RUN_ID: ${{ github.run_id }}
+          PROOF_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
+          set -euo pipefail
+          generated_at="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           python tools/build_source_inventory.py
+          python tools/build_phase4_receipt.py \
+            --tested-revision "$TESTED_REVISION" \
+            --proof-run-id "$PROOF_RUN_ID" \
+            --generated-at "$generated_at" \
+            --proof-run-url "$PROOF_RUN_URL"
           python tools/verify_source_freeze.py --json
+          python tools/build_phase2_receipt.py --verify
+          python tools/build_phase3_receipt.py --verify
+          python tools/build_phase4_receipt.py --verify
           git diff --check
-          unexpected="$(git diff --name-only | grep -Ev '^manifests/source_inventory\.json$' || true)"
+          unexpected="$(git diff --name-only | grep -Ev '^(manifests/phase4_kirin_xray\.receipt\.json|manifests/source_inventory\.json)$' || true)"
           test -z "$unexpected" || {
             echo "Refusing to freeze unexpected files:" >&2
             echo "$unexpected" >&2
             exit 1
           }
 
-      - name: Freeze inventory on branch
+      - name: Freeze Phase 4 authority on branch
+        shell: bash
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          if git diff --quiet -- manifests/source_inventory.json; then
-            echo "Phase 4 source inventory is already current."
+          set -euo pipefail
+          if git diff --quiet -- manifests/phase4_kirin_xray.receipt.json manifests/source_inventory.json; then
+            echo "Phase 4 authority is already frozen."
             exit 0
           fi
           git config user.name "THETECHGUY Phase 4 Freezer"
           git config user.email "actions@users.noreply.github.com"
-          git add manifests/source_inventory.json
-          git commit -m "Freeze Phase 4 source inventory"
+          git add manifests/phase4_kirin_xray.receipt.json manifests/source_inventory.json
+          git commit -m "Freeze Phase 4 Kirin Xray authority"
           git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:phase4/harden-kirin-xray
