@@ -12,7 +12,7 @@
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 118,
+  "file_count": 119,
   "files": [
     {
       "origin": "phase2_shared_contracts",
@@ -28,9 +28,15 @@
     },
     {
       "origin": "phase4_kirin_xray",
+      "path": ".github/workflows/phase4-authority.yml",
+      "sha256": "04d6fb4a20350dc616bec73b05fed85a8af40cdf2a358fc5dc4a68c2fd72152f",
+      "size_bytes": 6952
+    },
+    {
+      "origin": "phase4_kirin_xray",
       "path": ".github/workflows/phase4-kirin-xray.yml",
-      "sha256": "c8e265571f2c89efda288e3ea6382b3a2e1226ed3666784254e08dd74ea06320",
-      "size_bytes": 8084
+      "sha256": "bb1ccbfb0b2fc38554c09d9f11460cd3d674f1cc7729f8876e43d4105278c48e",
+      "size_bytes": 4437
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -653,14 +659,14 @@
     {
       "origin": "phase4_kirin_xray",
       "path": "tools/build_phase4_receipt.py",
-      "sha256": "8e3069997e2559dbb35a112d05d68d6126ecbdedd27a893be1fcf515cca98857",
-      "size_bytes": 14338
+      "sha256": "6486b4ae9a5a65f476c5d4f3a2a39d57b22509f6c8c2ccc1dee4ed32a5973613",
+      "size_bytes": 16092
     },
     {
       "origin": "phase4_kirin_xray",
       "path": "tools/build_source_inventory.py",
-      "sha256": "03fc7d45d945d71ebc325bb98094f0af2cd05994ebcfdf57aba001dad8f6d069",
-      "size_bytes": 5232
+      "sha256": "d34a2777dc4d6081f18b39e637240ca31224565235f1133fff6c67fda0bc6ea4",
+      "size_bytes": 5278
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
