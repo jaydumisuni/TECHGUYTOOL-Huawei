@@ -1,0 +1,91 @@
+name: Phase 4 Kirin Xray Authority Freezer
+
+on:
+  workflow_run:
+    workflows: ["Phase 4 Harden Kirin Xray"]
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: phase4-kirin-xray-authority
+  cancel-in-progress: false
+
+jobs:
+  freeze:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'phase4/harden-kirin-xray' &&
+      github.event.workflow_run.actor.login == 'jaydumisuni' &&
+      !startsWith(github.event.workflow_run.head_commit.message, 'Freeze Phase 4 Kirin Xray proof authority') &&
+      !startsWith(github.event.workflow_run.head_commit.message, 'Confirm Phase 4 owner verification')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the completed proven source revision
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Install Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+
+      - name: Install reviewed Rust lock generator
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.75.0 --profile minimal
+          rustup override set 1.75.0
+          cargo --version
+
+      - name: Build authority only from the completed successful proof run
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TESTED_REVISION: ${{ github.event.workflow_run.head_sha }}
+          PROOF_RUN_ID: ${{ github.event.workflow_run.id }}
+          PROOF_RUN_URL: ${{ github.event.workflow_run.html_url }}
+        run: |
+          set -euo pipefail
+          generated_at="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          cargo generate-lockfile --manifest-path rust/device_gateway/Cargo.toml
+          python tools/build_source_inventory.py
+          python tools/build_phase4_receipt.py \
+            --verify-hosted-run \
+            --tested-revision "$TESTED_REVISION" \
+            --proof-run-id "$PROOF_RUN_ID" \
+            --generated-at "$generated_at" \
+            --proof-run-url "$PROOF_RUN_URL"
+          python tools/verify_source_freeze.py --json
+          python tools/build_phase2_receipt.py --verify
+          python tools/build_phase3_receipt.py --verify
+          python tools/build_phase4_receipt.py --verify --verify-hosted-run
+          git diff --check
+          unexpected="$(git diff --name-only | grep -Ev '^(manifests/phase4_kirin_xray\.receipt\.json|manifests/source_inventory\.json|rust/device_gateway/Cargo\.lock)$' || true)"
+          test -z "$unexpected" || {
+            echo "Refusing to freeze unexpected files:" >&2
+            echo "$unexpected" >&2
+            exit 1
+          }
+
+      - name: Freeze traceable Phase 4 proof authority
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name "THETECHGUY Phase 4 Freezer"
+          git config user.email "actions@users.noreply.github.com"
+          git add manifests/phase4_kirin_xray.receipt.json manifests/source_inventory.json rust/device_gateway/Cargo.lock
+          if git diff --cached --quiet; then
+            echo "Phase 4 authority already matches the completed proof run."
+            exit 0
+          fi
+          git commit -m "Freeze Phase 4 Kirin Xray proof authority"
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:phase4/harden-kirin-xray
