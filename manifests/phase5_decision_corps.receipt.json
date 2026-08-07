@@ -1,5 +1,63 @@
 {
+  "generated_at": "2026-08-07T10:00:10Z",
+  "hosted_proof": {
+    "repository": "jaydumisuni/TECHGUYTOOL-Huawei",
+    "run_id": 31168012686,
+    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/31168012686",
+    "tested_revision": "4f3dc75506be638110fc71c2f54f62a73b1d6a44",
+    "workflow": "Phase 5 Repair Decision Corps"
+  },
+  "phase4_merge_commit": "775d922a9fe31acb0df316d03b5c6b149a3eb8f2",
+  "phase5": {
+    "branch": "phase5/repair-decision-corps-v2",
+    "decision_authority": "governance_only",
+    "device_authority": "none",
+    "execution_authority": "none",
+    "officer_order": [
+      "identity.officer",
+      "mode.officer",
+      "firmware.officer",
+      "artifact.officer",
+      "recovery.officer",
+      "route.planner",
+      "safety.challenger",
+      "verification.judge"
+    ],
+    "phase5_file_count": 7,
+    "replay_cases": 2,
+    "veto_officers": [
+      "identity.officer",
+      "recovery.officer",
+      "safety.challenger",
+      "verification.judge"
+    ]
+  },
+  "proof": {
+    "complete_python_regression": "PASS",
+    "historical_stock_fastboot_exit_gate": "PASS",
+    "no_execution_surface": "PASS",
+    "p10_finalization_block": "PASS",
+    "p30_reboot_block": "PASS",
+    "p30_repair_stage_selection": "PASS",
+    "phase2_contract_validation": "PASS",
+    "phase2_regression": "PASS",
+    "phase3_regression": "PASS",
+    "phase4_regression": "PASS",
+    "phase5_decision_tests": "PASS",
+    "phase5_python_compile": "PASS",
+    "rust_toolchain": "1.75.0",
+    "session_binding": "PASS",
+    "source_freeze_verifier": "PASS",
+    "srg_20_for_2": "40/40 PASS",
+    "unauthorized_service_endpoint_rejection": "PASS",
+    "veto_precedence": "PASS"
+  },
   "schema": "techguytool-huawei.phase5-decision-corps-receipt.v1",
-  "status": "PHASE5_DECISION_CORPS_UNFROZEN"
+  "source_inventory": {
+    "file_count": 135,
+    "path": "manifests/source_inventory.json",
+    "sha256": "0ae0a66e909b531b818eae4fd6312dfcacd76bbbb706bec52716ff14602d7f9d"
+  },
+  "status": "PHASE5_DECISION_CORPS_PROVEN_PENDING_OWNER",
+  "truth_boundary": "This receipt proves Phase 5 deterministic governance over frozen read-only Xray replay, including veto precedence and the historical stock-Fastboot exit gate. It does not grant mode-lease, execution-lease, USB/serial, partition-write, flashing, reboot, loader-transfer, OEMINFO-write, or physical-device execution authority."
 }
-
