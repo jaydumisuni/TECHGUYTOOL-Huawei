@@ -118,12 +118,12 @@ def test_p30_missing_artifact_stops_before_any_execution_authority() -> None:
     assert report.to_dict()["execution_authority"] == "none"
 
 
-def test_read_route_is_available_but_identity_conflict_keeps_p30_investigative() -> None:
+def test_read_only_inspection_continues_despite_identity_contradiction() -> None:
     report = evaluate_replay_decision(P30, operation="read_device", requested_action="inspect")
-    assert report.governor_decision.verdict == "investigate"
+    assert report.governor_decision.verdict == "allow_stage"
     by_officer = {decision.officer_id: decision for decision in report.officer_decisions}
     assert by_officer["route.planner"].reason_code == "DIRECT_READ_ROUTE_AVAILABLE"
-    assert by_officer["identity.officer"].reason_code == "IDENTITY_EVIDENCE_CONTRADICTORY"
+    assert by_officer["identity.officer"].reason_code == "IDENTITY_CONTRADICTION_READ_ONLY_CONTEXT"
 
 
 def test_p10_without_endpoint_needs_technician_for_read_route() -> None:
