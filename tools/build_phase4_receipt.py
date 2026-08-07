@@ -15,6 +15,23 @@ INVENTORY = ROOT / "manifests" / "source_inventory.json"
 OUTPUT = ROOT / "manifests" / "phase4_kirin_xray.receipt.json"
 EXPECTED_REPOSITORY = "jaydumisuni/TECHGUYTOOL-Huawei"
 EXPECTED_WORKFLOW_NAME = "Phase 4 Harden Kirin Xray"
+PHASE3_MERGE_COMMIT = "40bb352f3f2ea2da1f7ec6cc977a30ba4dc2d3dd"
+PHASE4_BRANCH = "phase4/harden-kirin-xray"
+PROVIDER_ID = "kirin.xray"
+PROVIDER_VERSION = "0.2.0"
+SPECIALIST_DONOR_COMMIT = "d26152d38c197ba0bf98f41a66bed7ceb0575ce1"
+REPLAY_CASES = 2
+PHASE4_UNIT_TESTS = 15
+DEVICE_AUTHORITY = "none"
+XRAY_AUTHORITY = "read_only"
+INVENTORY_PATH = "manifests/source_inventory.json"
+TRUTH_BOUNDARY = (
+    "This receipt proves only Phase 4 deterministic read-only Kirin Xray replay, "
+    "provider authority, frozen Phase 2 contract emission, real Gateway publication, "
+    "journal integrity and restart recovery. It does not prove live Huawei USB discovery, "
+    "loader compatibility, OEMINFO construction or modification, partition writes, "
+    "flashing, reboot, unlock/relock, physical VOG recovery, Windows packaging or signing."
+)
 PRELIMINARY_STATUS = "PHASE4_KIRIN_XRAY_PROVEN_PENDING_OWNER"
 FROZEN_STATUS = "PHASE4_KIRIN_XRAY_FROZEN"
 _SHA_RE = re.compile(r"^[0-9a-f]{40}$")
@@ -44,6 +61,20 @@ _REQUIRED_PROOF = {
     "srg_20_for_2",
     "rust_toolchain",
 }
+_REQUIRED_PHASE4_PATHS = {
+    ".github/workflows/phase4-authority.yml",
+    ".github/workflows/phase4-kirin-xray.yml",
+    "docs/PHASE_4_KIRIN_XRAY.md",
+    "manifests/kirin_xray_sources.json",
+    "replay/kirin/p10_golden_workflow.json",
+    "replay/kirin/p30_main_version_mode_hazard.json",
+    "techguy_huawei/kirin_xray.py",
+    "techguy_huawei/kirin_xray_authority.py",
+    "tests/test_kirin_xray.py",
+    "tests/test_kirin_xray_authority.py",
+    "tools/build_phase4_receipt.py",
+    "tools/prove_kirin_xray_replay.py",
+}
 
 
 def sha256_bytes(value: bytes) -> str:
@@ -66,18 +97,13 @@ def _validate_proof_identity(
         raise ValueError("proof run identifier must be a positive integer")
     if _TIMESTAMP_RE.fullmatch(generated_at) is None:
         raise ValueError("generation timestamp must use YYYY-MM-DDTHH:MM:SSZ")
-    expected_url = (
-        f"https://github.com/{EXPECTED_REPOSITORY}/actions/runs/{proof_run_id}"
-    )
+    expected_url = f"https://github.com/{EXPECTED_REPOSITORY}/actions/runs/{proof_run_id}"
     if proof_run_url != expected_url:
         raise ValueError("proof run URL does not identify the canonical repository/run")
 
 
 def _load_hosted_run(proof_run_id: str) -> dict[str, Any]:
-    url = (
-        f"https://api.github.com/repos/{EXPECTED_REPOSITORY}/actions/runs/"
-        f"{proof_run_id}"
-    )
+    url = f"https://api.github.com/repos/{EXPECTED_REPOSITORY}/actions/runs/{proof_run_id}"
     headers = {
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
@@ -103,6 +129,32 @@ def verify_hosted_run(proof_run_id: str, tested_revision: str) -> None:
         raise ValueError("hosted proof run is not the Phase 4 workflow")
     if str(run.get("id")) != proof_run_id:
         raise ValueError("hosted proof run ID does not match the receipt")
+    if run.get("status") != "completed":
+        raise ValueError("hosted Phase 4 proof run is not completed")
+    if run.get("conclusion") != "success":
+        raise ValueError("hosted Phase 4 proof run did not conclude successfully")
+
+
+def _inventory_payload() -> dict[str, Any]:
+    inventory = json.loads(INVENTORY.read_text(encoding="utf-8"))
+    if inventory.get("schema") != "techguytool-huawei.source-inventory.v1":
+        raise ValueError("unsupported source inventory schema")
+    return inventory
+
+
+def _phase4_files(inventory: dict[str, Any]) -> list[dict[str, Any]]:
+    phase4_files = [
+        item
+        for item in inventory.get("files", [])
+        if item.get("origin") == "phase4_kirin_xray"
+    ]
+    actual_paths = {str(item.get("path")) for item in phase4_files}
+    missing = sorted(_REQUIRED_PHASE4_PATHS - actual_paths)
+    if missing:
+        raise ValueError(
+            "source inventory is missing Phase 4 proof/source files: " + ", ".join(missing)
+        )
+    return phase4_files
 
 
 def build(
@@ -113,35 +165,14 @@ def build(
     proof_run_url: str,
 ) -> dict[str, object]:
     _validate_proof_identity(tested_revision, proof_run_id, generated_at, proof_run_url)
-    inventory = json.loads(INVENTORY.read_text(encoding="utf-8"))
-    phase4_files = [
-        item
-        for item in inventory.get("files", [])
-        if item.get("origin") == "phase4_kirin_xray"
-    ]
-    required_paths = {
-        ".github/workflows/phase4-kirin-xray.yml",
-        "docs/PHASE_4_KIRIN_XRAY.md",
-        "manifests/kirin_xray_sources.json",
-        "replay/kirin/p10_golden_workflow.json",
-        "replay/kirin/p30_main_version_mode_hazard.json",
-        "techguy_huawei/kirin_xray.py",
-        "techguy_huawei/kirin_xray_authority.py",
-        "tests/test_kirin_xray.py",
-        "tests/test_kirin_xray_authority.py",
-        "tools/build_phase4_receipt.py",
-        "tools/prove_kirin_xray_replay.py",
-    }
-    actual_paths = {str(item.get("path")) for item in phase4_files}
-    missing = sorted(required_paths - actual_paths)
-    if missing:
-        raise ValueError("source inventory is missing Phase 4 proof/source files: " + ", ".join(missing))
+    inventory = _inventory_payload()
+    phase4_files = _phase4_files(inventory)
 
     return {
         "schema": "techguytool-huawei.phase4-kirin-xray-receipt.v1",
         "status": PRELIMINARY_STATUS,
         "generated_at": generated_at,
-        "phase3_merge_commit": "40bb352f3f2ea2da1f7ec6cc977a30ba4dc2d3dd",
+        "phase3_merge_commit": PHASE3_MERGE_COMMIT,
         "hosted_proof": {
             "repository": EXPECTED_REPOSITORY,
             "workflow": EXPECTED_WORKFLOW_NAME,
@@ -150,14 +181,14 @@ def build(
             "run_url": proof_run_url,
         },
         "phase4": {
-            "branch": "phase4/harden-kirin-xray",
-            "provider_id": "kirin.xray",
-            "provider_version": "0.2.0",
-            "specialist_donor_commit": "d26152d38c197ba0bf98f41a66bed7ceb0575ce1",
-            "replay_cases": 2,
-            "phase4_unit_tests": 15,
-            "device_authority": "none",
-            "xray_authority": "read_only",
+            "branch": PHASE4_BRANCH,
+            "provider_id": PROVIDER_ID,
+            "provider_version": PROVIDER_VERSION,
+            "specialist_donor_commit": SPECIALIST_DONOR_COMMIT,
+            "replay_cases": REPLAY_CASES,
+            "phase4_unit_tests": PHASE4_UNIT_TESTS,
+            "device_authority": DEVICE_AUTHORITY,
+            "xray_authority": XRAY_AUTHORITY,
             "phase4_file_count": len(phase4_files),
         },
         "proof": {
@@ -179,17 +210,11 @@ def build(
             "rust_toolchain": "1.75.0",
         },
         "source_inventory": {
-            "path": "manifests/source_inventory.json",
+            "path": INVENTORY_PATH,
             "file_count": inventory.get("file_count"),
             "sha256": sha256(INVENTORY),
         },
-        "truth_boundary": (
-            "This receipt proves only Phase 4 deterministic read-only Kirin Xray replay, "
-            "provider authority, frozen Phase 2 contract emission, real Gateway publication, "
-            "journal integrity and restart recovery. It does not prove live Huawei USB discovery, "
-            "loader compatibility, OEMINFO construction or modification, partition writes, "
-            "flashing, reboot, unlock/relock, physical VOG recovery, Windows packaging or signing."
-        ),
+        "truth_boundary": TRUTH_BOUNDARY,
     }
 
 
@@ -200,6 +225,10 @@ def verify(*, verify_run: bool = False) -> None:
     status = receipt.get("status")
     if status not in {PRELIMINARY_STATUS, FROZEN_STATUS}:
         raise ValueError("unsupported Phase 4 receipt status")
+    if receipt.get("phase3_merge_commit") != PHASE3_MERGE_COMMIT:
+        raise ValueError("Phase 3 merge authority changed")
+    if receipt.get("truth_boundary") != TRUTH_BOUNDARY:
+        raise ValueError("Phase 4 truth boundary changed")
 
     hosted = receipt.get("hosted_proof")
     if not isinstance(hosted, dict):
@@ -216,13 +245,22 @@ def verify(*, verify_run: bool = False) -> None:
     if verify_run:
         verify_hosted_run(run_id, tested_revision)
 
+    inventory = _inventory_payload()
+    phase4_files = _phase4_files(inventory)
     phase4 = receipt.get("phase4")
-    if not isinstance(phase4, dict):
-        raise ValueError("Phase 4 receipt is missing phase metadata")
-    if phase4.get("device_authority") != "none":
-        raise ValueError("Phase 4 may not carry device authority")
-    if phase4.get("xray_authority") != "read_only":
-        raise ValueError("Phase 4 Xray authority must remain read_only")
+    expected_phase4 = {
+        "branch": PHASE4_BRANCH,
+        "provider_id": PROVIDER_ID,
+        "provider_version": PROVIDER_VERSION,
+        "specialist_donor_commit": SPECIALIST_DONOR_COMMIT,
+        "replay_cases": REPLAY_CASES,
+        "phase4_unit_tests": PHASE4_UNIT_TESTS,
+        "device_authority": DEVICE_AUTHORITY,
+        "xray_authority": XRAY_AUTHORITY,
+        "phase4_file_count": len(phase4_files),
+    }
+    if phase4 != expected_phase4:
+        raise ValueError("Phase 4 immutable metadata does not match the build authority")
 
     proof = receipt.get("proof")
     if not isinstance(proof, dict):
@@ -246,9 +284,13 @@ def verify(*, verify_run: bool = False) -> None:
     if proof["srg_20_for_2"] != "40/40 PASS":
         raise ValueError("Phase 4 receipt does not prove the SRG 20-for-2 gate")
 
-    inventory = receipt.get("source_inventory")
-    if not isinstance(inventory, dict):
+    inventory_claim = receipt.get("source_inventory")
+    if not isinstance(inventory_claim, dict):
         raise ValueError("Phase 4 receipt is missing source inventory identity")
+    if inventory_claim.get("path") != INVENTORY_PATH:
+        raise ValueError("Phase 4 receipt source inventory path changed")
+    if inventory_claim.get("file_count") != inventory.get("file_count"):
+        raise ValueError("Phase 4 receipt source inventory file count changed")
 
     owner = receipt.get("owner_verification")
     if status == FROZEN_STATUS:
@@ -263,15 +305,15 @@ def verify(*, verify_run: bool = False) -> None:
             raise ValueError("owner verification does not match hosted proof identity")
         _require_ancestor(tested_revision, authority_commit)
         _require_ancestor(authority_commit, "HEAD")
-        inventory_bytes = _git_file_bytes(authority_commit, "manifests/source_inventory.json")
-        if inventory.get("sha256") != sha256_bytes(inventory_bytes):
+        inventory_bytes = _git_file_bytes(authority_commit, INVENTORY_PATH)
+        if inventory_claim.get("sha256") != sha256_bytes(inventory_bytes):
             raise ValueError("Phase 4 receipt does not match its authority inventory")
         changed = _changed_files(tested_revision, authority_commit)
     else:
         if owner is not None:
             raise ValueError("preliminary Phase 4 receipt must not claim owner verification")
         _require_ancestor(tested_revision, "HEAD")
-        if inventory.get("sha256") != sha256(INVENTORY):
+        if inventory_claim.get("sha256") != sha256(INVENTORY):
             raise ValueError("Phase 4 receipt does not match the committed source inventory")
         changed = _changed_files(tested_revision, "HEAD")
 
