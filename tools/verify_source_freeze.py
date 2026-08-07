@@ -59,12 +59,17 @@ def digest(path: Path) -> str:
     return value.hexdigest()
 
 
+def is_phase_receipt(rel: str) -> bool:
+    return rel.startswith("manifests/phase") and rel.endswith(".receipt.json")
+
+
 def is_ignored(path: Path) -> bool:
     rel = path.relative_to(ROOT).as_posix()
     parts = path.relative_to(ROOT).parts
     return (
         rel.startswith(".git/")
         or rel in SELF_EXCLUDED
+        or is_phase_receipt(rel)
         or rel in IGNORED_EXACT
         or bool(parts and parts[0] in IGNORED_ROOTS)
         or any(part in IGNORED_PARTS or part.endswith(".egg-info") for part in parts)
