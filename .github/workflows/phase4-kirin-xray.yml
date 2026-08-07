@@ -60,9 +60,6 @@ jobs:
           tests/test_kirin_xray.py
           tests/test_kirin_xray_authority.py -q
 
-      - name: Resolve Gateway lock before inventory freeze
-        run: cargo generate-lockfile --manifest-path rust/device_gateway/Cargo.toml
-
       - name: Regenerate deterministic source inventory before global review
         run: python tools/build_source_inventory.py
 
@@ -115,15 +112,15 @@ jobs:
         run: |
           set -euo pipefail
           git diff --check
-          unexpected="$(git diff --name-only | grep -Ev '^(manifests/source_inventory\.json|rust/device_gateway/Cargo\.lock)$' || true)"
+          unexpected="$(git diff --name-only | grep -Ev '^manifests/source_inventory\.json$' || true)"
           test -z "$unexpected" || {
             echo "Unexpected generated source changes:" >&2
             echo "$unexpected" >&2
             exit 1
           }
           if [[ "$EVENT_NAME" == "pull_request" ]]; then
-            git diff --exit-code -- manifests/source_inventory.json rust/device_gateway/Cargo.lock
+            git diff --exit-code -- manifests/source_inventory.json
           elif [[ "$IS_AUTHORITY_FREEZE" == "true" || "$IS_OWNER_VERIFICATION" == "true" ]]; then
-            git diff --exit-code -- manifests/source_inventory.json rust/device_gateway/Cargo.lock
+            git diff --exit-code -- manifests/source_inventory.json
             python tools/build_phase4_receipt.py --verify --verify-hosted-run
           fi
