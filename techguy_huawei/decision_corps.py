@@ -401,11 +401,20 @@ def _identity_officer(
             recipe_hash,
         )
     if contradiction:
+        read_only_context = requested_action == "inspect" or operation == "read_device"
         repair_context = operation in {
             "repair_main_version",
             "repair_oeminfo",
             "restore_branding",
         }
+        if read_only_context:
+            return _d(
+                "identity.officer",
+                "allow_stage",
+                "IDENTITY_CONTRADICTION_READ_ONLY_CONTEXT",
+                False,
+                recipe_hash,
+            )
         return _d(
             "identity.officer",
             "allow_stage" if repair_context else "investigate",
