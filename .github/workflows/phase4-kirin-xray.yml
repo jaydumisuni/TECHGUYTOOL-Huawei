@@ -8,6 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: read
 
 concurrency:
@@ -59,6 +60,9 @@ jobs:
           tests/test_kirin_xray.py
           tests/test_kirin_xray_authority.py -q
 
+      - name: Regenerate deterministic source inventory before global review
+        run: python tools/build_source_inventory.py
+
       - name: SRG 20-for-2 independent review gate
         run: python tools/review_20_for_2.py --strict
 
@@ -95,9 +99,6 @@ jobs:
           python tools/build_phase2_receipt.py --verify
           python tools/build_phase3_receipt.py --verify
 
-      - name: Regenerate deterministic source inventory
-        run: python tools/build_source_inventory.py
-
       - name: Run complete Python regression
         run: python -m pytest -q
 
@@ -108,7 +109,8 @@ jobs:
         shell: bash
         env:
           EVENT_NAME: ${{ github.event_name }}
-          IS_AUTHORITY_FREEZE: ${{ startsWith(github.event.head_commit.message, 'Freeze Phase 4 Kirin Xray authority') }}
+          GITHUB_TOKEN: ${{ github.token }}
+          IS_AUTHORITY_FREEZE: ${{ startsWith(github.event.head_commit.message, 'Freeze Phase 4 Kirin Xray proof authority') }}
           IS_OWNER_VERIFICATION: ${{ startsWith(github.event.head_commit.message, 'Confirm Phase 4 owner verification') }}
         run: |
           set -euo pipefail
@@ -119,9 +121,14 @@ jobs:
             echo "$unexpected" >&2
             exit 1
           }
-          if [[ "$EVENT_NAME" == "pull_request" || "$IS_AUTHORITY_FREEZE" == "true" || "$IS_OWNER_VERIFICATION" == "true" ]]; then
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
             git diff --exit-code -- manifests/source_inventory.json rust/device_gateway/Cargo.lock
-            python tools/build_phase4_receipt.py --verify
+            if [[ -f manifests/phase4_kirin_xray.receipt.json ]]; then
+              python tools/build_phase4_receipt.py --verify --verify-hosted-run
+            fi
+          elif [[ "$IS_AUTHORITY_FREEZE" == "true" || "$IS_OWNER_VERIFICATION" == "true" ]]; then
+            git diff --exit-code -- manifests/source_inventory.json rust/device_gateway/Cargo.lock
+            python tools/build_phase4_receipt.py --verify --verify-hosted-run
           fi
 
   freeze-authority:
@@ -129,11 +136,12 @@ jobs:
       github.event_name == 'push' &&
       github.ref == 'refs/heads/phase4/harden-kirin-xray' &&
       github.actor == 'jaydumisuni' &&
-      !startsWith(github.event.head_commit.message, 'Freeze Phase 4 Kirin Xray authority') &&
+      !startsWith(github.event.head_commit.message, 'Freeze Phase 4 Kirin Xray proof authority') &&
       !startsWith(github.event.head_commit.message, 'Confirm Phase 4 owner verification')
     needs: proof
     runs-on: ubuntu-latest
     permissions:
+      actions: read
       contents: write
     steps:
       - name: Check out proven source revision
@@ -148,9 +156,10 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Generate traceable Phase 4 authority files
+      - name: Generate traceable Phase 4 proof authority
         shell: bash
         env:
+          GITHUB_TOKEN: ${{ github.token }}
           TESTED_REVISION: ${{ github.sha }}
           PROOF_RUN_ID: ${{ github.run_id }}
           PROOF_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
@@ -159,6 +168,7 @@ jobs:
           generated_at="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           python tools/build_source_inventory.py
           python tools/build_phase4_receipt.py \
+            --verify-hosted-run \
             --tested-revision "$TESTED_REVISION" \
             --proof-run-id "$PROOF_RUN_ID" \
             --generated-at "$generated_at" \
@@ -166,7 +176,7 @@ jobs:
           python tools/verify_source_freeze.py --json
           python tools/build_phase2_receipt.py --verify
           python tools/build_phase3_receipt.py --verify
-          python tools/build_phase4_receipt.py --verify
+          python tools/build_phase4_receipt.py --verify --verify-hosted-run
           git diff --check
           unexpected="$(git diff --name-only | grep -Ev '^(manifests/phase4_kirin_xray\.receipt\.json|manifests/source_inventory\.json)$' || true)"
           test -z "$unexpected" || {
@@ -175,18 +185,18 @@ jobs:
             exit 1
           }
 
-      - name: Freeze Phase 4 authority on branch
+      - name: Freeze Phase 4 proof authority on branch
         shell: bash
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           if git diff --quiet -- manifests/phase4_kirin_xray.receipt.json manifests/source_inventory.json; then
-            echo "Phase 4 authority is already frozen."
+            echo "Phase 4 proof authority is already current."
             exit 0
           fi
           git config user.name "THETECHGUY Phase 4 Freezer"
           git config user.email "actions@users.noreply.github.com"
           git add manifests/phase4_kirin_xray.receipt.json manifests/source_inventory.json
-          git commit -m "Freeze Phase 4 Kirin Xray authority"
+          git commit -m "Freeze Phase 4 Kirin Xray proof authority"
           git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:phase4/harden-kirin-xray
