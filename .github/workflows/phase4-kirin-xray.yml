@@ -60,14 +60,14 @@ jobs:
           tests/test_kirin_xray.py
           tests/test_kirin_xray_authority.py -q
 
+      - name: Resolve Gateway lock before inventory freeze
+        run: cargo generate-lockfile --manifest-path rust/device_gateway/Cargo.toml
+
       - name: Regenerate deterministic source inventory before global review
         run: python tools/build_source_inventory.py
 
       - name: SRG 20-for-2 independent review gate
         run: python tools/review_20_for_2.py --strict
-
-      - name: Resolve Gateway lock
-        run: cargo generate-lockfile --manifest-path rust/device_gateway/Cargo.toml
 
       - name: Check Gateway formatting
         run: cargo fmt --manifest-path rust/device_gateway/Cargo.toml -- --check
