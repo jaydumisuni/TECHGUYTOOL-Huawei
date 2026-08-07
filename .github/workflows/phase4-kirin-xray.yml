@@ -123,9 +123,6 @@ jobs:
           }
           if [[ "$EVENT_NAME" == "pull_request" ]]; then
             git diff --exit-code -- manifests/source_inventory.json rust/device_gateway/Cargo.lock
-            if [[ -f manifests/phase4_kirin_xray.receipt.json ]]; then
-              python tools/build_phase4_receipt.py --verify --verify-hosted-run
-            fi
           elif [[ "$IS_AUTHORITY_FREEZE" == "true" || "$IS_OWNER_VERIFICATION" == "true" ]]; then
             git diff --exit-code -- manifests/source_inventory.json rust/device_gateway/Cargo.lock
             python tools/build_phase4_receipt.py --verify --verify-hosted-run
