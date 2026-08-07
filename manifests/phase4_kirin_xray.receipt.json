@@ -1,23 +1,17 @@
 {
-  "generated_at": "2026-08-07T09:04:21Z",
+  "generated_at": "2026-08-07T09:25:24Z",
   "hosted_proof": {
     "repository": "jaydumisuni/TECHGUYTOOL-Huawei",
-    "run_id": 31164222512,
-    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/31164222512",
-    "tested_revision": "e4a48427f7572b3a4e7ad313b5a28b1b9742c9a0",
+    "run_id": 31165672766,
+    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/31165672766",
+    "tested_revision": "25a53e045a21b732538685a0a89902ede5dc03d7",
     "workflow": "Phase 4 Harden Kirin Xray"
-  },
-  "owner_verification": {
-    "authority_commit": "6d6cf9392994f9e3c96f2e82cb1a0ce59417bff4",
-    "source_proof_run_id": 31164222512,
-    "source_revision": "e4a48427f7572b3a4e7ad313b5a28b1b9742c9a0",
-    "status": "CONFIRMED"
   },
   "phase3_merge_commit": "40bb352f3f2ea2da1f7ec6cc977a30ba4dc2d3dd",
   "phase4": {
     "branch": "phase4/harden-kirin-xray",
     "device_authority": "none",
-    "phase4_file_count": 12,
+    "phase4_file_count": 13,
     "phase4_unit_tests": 15,
     "provider_id": "kirin.xray",
     "provider_version": "0.2.0",
@@ -45,11 +39,10 @@
   },
   "schema": "techguytool-huawei.phase4-kirin-xray-receipt.v1",
   "source_inventory": {
-    "file_count": 118,
+    "file_count": 119,
     "path": "manifests/source_inventory.json",
-    "sha256": "fb9e9028f18188db59eb05d1601ca4416bd1c566dc6fc0726cbbf0a497dfa555"
+    "sha256": "bcbebdce9a75aa22d49c613c8c9c21cfa5c09f3595f8f33b7d802600c57d705b"
   },
-  "status": "PHASE4_KIRIN_XRAY_FROZEN",
+  "status": "PHASE4_KIRIN_XRAY_PROVEN_PENDING_OWNER",
   "truth_boundary": "This receipt proves only Phase 4 deterministic read-only Kirin Xray replay, provider authority, frozen Phase 2 contract emission, real Gateway publication, journal integrity and restart recovery. It does not prove live Huawei USB discovery, loader compatibility, OEMINFO construction or modification, partition writes, flashing, reboot, unlock/relock, physical VOG recovery, Windows packaging or signing."
 }
-
