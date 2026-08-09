@@ -1,10 +1,10 @@
 {
-  "branch": "phase12/kirin-capability-packs",
-  "name": "Phase 12 Kirin Capability Packs",
-  "phase": 12,
-  "predecessor_merge": "c88e2736cba860bef67212d3c7926804ab502e6e",
-  "proof_script": "tools/prove_phase12_kirin_capability_packs.py",
-  "receipt_path": "manifests/phase12_kirin_packs.receipt.json",
-  "slug": "kirin_capability_packs",
+  "branch": "phase13/ttg-xray-promotion",
+  "name": "Phase 13 TTG Device X-Ray Promotion",
+  "phase": 13,
+  "predecessor_merge": "93a8bd705bd9e8d8bade40f0e15181644211812e",
+  "proof_script": "tools/prove_phase13_ttg_xray_promotion.py",
+  "receipt_path": "manifests/phase13_ttg_xray_promotion.receipt.json",
+  "slug": "ttg_xray_promotion",
   "status": "WORKING"
 }

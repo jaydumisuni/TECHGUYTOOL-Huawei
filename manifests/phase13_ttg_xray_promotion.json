@@ -1,0 +1,53 @@
+{
+  "schema": "techguytool-huawei.phase13-ttg-xray-promotion.v1",
+  "source": {
+    "repository": "jaydumisuni/TECHGUYTOOL-Huawei",
+    "phase12_merge": "93a8bd705bd9e8d8bade40f0e15181644211812e",
+    "kirin_manifest_path": "packs/kirin/manifest.json",
+    "kirin_manifest_sha256": "3859e0e71495a4847c8698714494b5ce94264d12d6d8eaa663d4d56c45b8fc9f",
+    "maturity": "replay_supported",
+    "includes_execution": false
+  },
+  "target": {
+    "repository": "jaydumisuni/TTG-Device-X-Ray",
+    "pull_request": 24,
+    "reviewed_head": "359db4522f185c8e0430e4c2a4c5a06281f52e25",
+    "merge_commit": "34feb55ab937fa865726cbb22c44b09b52084114",
+    "ci_run_id": 31339256277,
+    "ci_conclusion": "success",
+    "promoted_paths": [
+      "src/ttg_device_xray/capability_packs/kirin/vog_replay_v1.json",
+      "src/ttg_device_xray/profiles/huawei/vog_l29_c185_kirin.json",
+      "src/ttg_device_xray/promoted_kirin.py",
+      "scripts/validate_kirin_promotion.py",
+      "tests/test_kirin_vog_promotion.py",
+      "docs/kirin-vog-capability-promotion.md"
+    ]
+  },
+  "proof": {
+    "profile_validation": "PASS",
+    "read_only_boundary": "PASS",
+    "public_privacy": "PASS",
+    "python_3_10": "PASS",
+    "python_3_11": "PASS",
+    "python_3_12": "PASS",
+    "python_3_13": "PASS",
+    "python_3_14": "PASS",
+    "windows_smoke": "PASS",
+    "package_gate": "PASS",
+    "standalone_qt_exe": "PASS",
+    "ci_gate": "PASS",
+    "independently_explains_frozen_vog_case": true
+  },
+  "promoted_rule_ids": [
+    "vog.main_version_state.oeminfo",
+    "vog.service_mode.preserve_until_verified",
+    "vog.stock_fastboot.finalization_only",
+    "vog.branding.separate_stage"
+  ],
+  "execution_authority": "none",
+  "device_authority": "none",
+  "write_allowed": false,
+  "physical_vog_certification": "HARDWARE_PENDING",
+  "truth_boundary": "Phase 13 proves that TTG Device X-Ray independently consumes and explains the frozen VOG replay case from promoted read-only Kirin capability. It does not prove physical VOG repair execution or grant device-changing authority."
+}

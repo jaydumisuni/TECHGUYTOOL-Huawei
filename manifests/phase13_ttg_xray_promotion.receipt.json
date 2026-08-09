@@ -1,0 +1,37 @@
+{
+  "generated_at": "2026-08-09T22:37:53Z",
+  "hosted_proof": {
+    "repository": "jaydumisuni/TECHGUYTOOL-Huawei",
+    "run_id": 31339783255,
+    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/31339783255",
+    "tested_revision": "d555ff5e1b6be0c006914810b36af0d0ad24094a",
+    "workflow": "Software Phase Proof"
+  },
+  "owner_verification": {
+    "authority_commit": "72e238090163bf2987018ff75e69febe0e7c99cd",
+    "source_proof_run_id": 31339783255,
+    "source_revision": "d555ff5e1b6be0c006914810b36af0d0ad24094a",
+    "status": "CONFIRMED"
+  },
+  "phase": 13,
+  "phase_name": "Phase 13 TTG Device X-Ray Promotion",
+  "predecessor_merge": "93a8bd705bd9e8d8bade40f0e15181644211812e",
+  "proof": {
+    "active_phase_proof": "PASS",
+    "complete_python_regression": "PASS",
+    "contract_core_regression": "PASS",
+    "device_gateway_regression": "PASS",
+    "rust_clippy": "PASS",
+    "rust_format": "PASS",
+    "rust_tests": "PASS",
+    "source_freeze_verifier": "PASS",
+    "srg_20_for_2": "40/40 PASS"
+  },
+  "schema": "techguytool-huawei.phase13-receipt.v1",
+  "source_inventory": {
+    "path": "manifests/source_inventory.json",
+    "sha256": "1426e0895cbe5db4b0cd4aecabc50a908dcba8c53ad516b3faa782fbeadb95db"
+  },
+  "status": "FROZEN",
+  "truth_boundary": "This receipt proves only the software authority described by the active phase. Physical-device certification, external proprietary artifacts, Windows signing and hardware-specific destructive operations remain outside software-only proof unless the phase plan explicitly records independent physical evidence."
+}
