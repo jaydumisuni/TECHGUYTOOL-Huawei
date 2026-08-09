@@ -17,11 +17,18 @@
   ],
   "phase8_p10revive_golden_theorem": [
     "docs/PHASE_8_P10REVIVE_GOLDEN_THEOREM.md",
-    "manifests/active_software_phase.json",
     "manifests/huawei_revive_golden_theorem.json",
-    "manifests/software_phase_sources.json",
     "techguy_huawei/golden_theorem.py",
     "tests/test_golden_theorem.py",
     "tools/prove_phase8_golden_theorem.py"
+  ],
+  "phase9_vog_l29_c185_recipe": [
+    "docs/PHASE_9_VOG_L29_C185_RECIPE.md",
+    "manifests/active_software_phase.json",
+    "manifests/software_phase_sources.json",
+    "recipes/vog_l29_c185.json",
+    "techguy_huawei/vog_recipe.py",
+    "tests/test_vog_recipe.py",
+    "tools/prove_phase9_vog_recipe.py"
   ]
 }

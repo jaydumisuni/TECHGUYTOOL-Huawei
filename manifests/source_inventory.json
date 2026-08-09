@@ -23,7 +23,7 @@
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 161,
+  "file_count": 166,
   "files": [
     {
       "origin": "phase2_shared_contracts",
@@ -242,16 +242,22 @@
       "size_bytes": 2866
     },
     {
+      "origin": "phase9_vog_l29_c185_recipe",
+      "path": "docs/PHASE_9_VOG_L29_C185_RECIPE.md",
+      "sha256": "c9861dc8802f7302f2d0e623985f465d47608eaab70c38f80ed3b56e924981dd",
+      "size_bytes": 4485
+    },
+    {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "main.py",
       "sha256": "4d3884f3d7643931fef4ccf666b296e83a20b19f663c35d49c7d41cb6f2439c9",
       "size_bytes": 1408
     },
     {
-      "origin": "phase8_p10revive_golden_theorem",
+      "origin": "phase9_vog_l29_c185_recipe",
       "path": "manifests/active_software_phase.json",
-      "sha256": "b1c19f89f274329d5c94369278cf61499c5bd562d98967a2fb7922c733e100d6",
-      "size_bytes": 352
+      "sha256": "88b455e3fbd96570f9ef6d8454562eddaefd03bd052caf0c0df45cf87b19f19e",
+      "size_bytes": 350
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -278,10 +284,10 @@
       "size_bytes": 2671
     },
     {
-      "origin": "phase8_p10revive_golden_theorem",
+      "origin": "phase9_vog_l29_c185_recipe",
       "path": "manifests/software_phase_sources.json",
-      "sha256": "ef7e3d0bc116ebce13ae19cccc4ecaeefb3bc6aaef72fc5d1e2ae754b65fcdb9",
-      "size_bytes": 1062
+      "sha256": "254d199774d15e0d1a84d1573b6a0204ef7c206a2b6ac93a64ada4061983e3ab",
+      "size_bytes": 1284
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -402,6 +408,12 @@
       "path": "qml/qmldir",
       "sha256": "8a9e1301a00c98c76b795513d7ea8f550f6c16b5c3ab662b40e158412009f546",
       "size_bytes": 30
+    },
+    {
+      "origin": "phase9_vog_l29_c185_recipe",
+      "path": "recipes/vog_l29_c185.json",
+      "sha256": "7f2cc5d023f732ffccb80812083f7340241d9cdca7da723e382eca5842419cb3",
+      "size_bytes": 8734
     },
     {
       "origin": "phase4_kirin_xray",
@@ -782,6 +794,12 @@
       "size_bytes": 1260
     },
     {
+      "origin": "phase9_vog_l29_c185_recipe",
+      "path": "techguy_huawei/vog_recipe.py",
+      "sha256": "f08e4f884d05051c6c8ef0561d2eba30dccebb265ccc70709efd0b3147904417",
+      "size_bytes": 17412
+    },
+    {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "tests/test_action_health.py",
       "sha256": "56da431eb2f7bea5bffacbd35a3795b7ce3adde16d294c289d118514997a569d",
@@ -846,6 +864,12 @@
       "path": "tests/test_source_freeze.py",
       "sha256": "b88e29cb5b02c8f6cb9390d0e69a205930e990a49683cb604022df447d0b1cce",
       "size_bytes": 996
+    },
+    {
+      "origin": "phase9_vog_l29_c185_recipe",
+      "path": "tests/test_vog_recipe.py",
+      "sha256": "c1188a2f63517eeff5a1688cfe144f305565ecee83e7fe8bd795cc2cbb782d4c",
+      "size_bytes": 7364
     },
     {
       "origin": "phase7_bounded_executor_framework",
@@ -954,6 +978,12 @@
       "path": "tools/prove_phase8_golden_theorem.py",
       "sha256": "812da479ba06d14195aca4bba9958dd839758d4736eec9c290d87321cde31d3f",
       "size_bytes": 2900
+    },
+    {
+      "origin": "phase9_vog_l29_c185_recipe",
+      "path": "tools/prove_phase9_vog_recipe.py",
+      "sha256": "75ef90a5453c6a8f1976416ab001e524e6758879af61ec5883aaad7bd8949dd5",
+      "size_bytes": 5379
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",

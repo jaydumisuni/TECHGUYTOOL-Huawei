@@ -1,10 +1,10 @@
 {
-  "branch": "phase8/golden-theorem",
-  "name": "Phase 8 P10Revive Golden Theorem",
-  "phase": 8,
-  "predecessor_merge": "79404e0825ee11309f58996b75f53733f4e35fda",
-  "proof_script": "tools/prove_phase8_golden_theorem.py",
-  "receipt_path": "manifests/phase8_golden_theorem.receipt.json",
-  "slug": "p10revive_golden_theorem",
+  "branch": "phase9/vog-l29-c185-recipe",
+  "name": "Phase 9 VOG-L29 C185 Production Recipe",
+  "phase": 9,
+  "predecessor_merge": "12149a5f4083edc7eddacc04043357167d347b89",
+  "proof_script": "tools/prove_phase9_vog_recipe.py",
+  "receipt_path": "manifests/phase9_vog_recipe.receipt.json",
+  "slug": "vog_l29_c185_recipe",
   "status": "WORKING"
 }

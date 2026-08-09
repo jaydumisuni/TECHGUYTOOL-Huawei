@@ -1,0 +1,40 @@
+{
+  "generated_at": "2026-08-09T16:48:25Z",
+  "hosted_proof": {
+    "repository": "jaydumisuni/TECHGUYTOOL-Huawei",
+    "run_id": 31324592018,
+    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/31324592018",
+    "tested_revision": "d772ed601897026bae59b2757ec72b5be2e34423",
+    "workflow": "Software Phase Proof"
+  },
+  "owner_verification": {
+    "authority_commit": "fb495597c03dcf6bacbcaef82825bf90b92109f9",
+    "source_proof_run_id": 31324592018,
+    "source_revision": "d772ed601897026bae59b2757ec72b5be2e34423",
+    "status": "CONFIRMED"
+  },
+  "phase": 9,
+  "phase_name": "Phase 9 VOG-L29 C185 Production Recipe",
+  "predecessor_merge": "12149a5f4083edc7eddacc04043357167d347b89",
+  "proof": {
+    "active_phase_proof": "PASS",
+    "complete_python_regression": "PASS",
+    "contract_core_regression": "PASS",
+    "device_gateway_regression": "PASS",
+    "rust_clippy": "PASS",
+    "rust_format": "PASS",
+    "rust_tests": "PASS",
+    "source_freeze_verifier": "PASS",
+    "srg_20_for_2": "40/40 PASS"
+  },
+  "schema": "techguytool-huawei.phase9-receipt.v1",
+  "source_inventory": {
+    "path": "manifests/source_inventory.json",
+    "sha256": "87f13d8285114323bb2cf6de5c09709645475c1cccfa8a43dcc4dfbe3bacede5"
+  },
+  "status": "FROZEN",
+  "hardware_certification": "HARDWARE_PENDING",
+  "production_enabled": false,
+  "software_truth_boundary": "Simulation/replay proves recipe logic and fail-closed software authority only; physical VOG end-to-end certification remains separate and pending.",
+  "truth_boundary": "This receipt proves only the software authority described by the active phase. Physical-device certification, external proprietary artifacts, Windows signing and hardware-specific destructive operations remain outside software-only proof unless the phase plan explicitly records independent physical evidence."
+}

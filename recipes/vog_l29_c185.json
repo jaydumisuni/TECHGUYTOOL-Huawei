@@ -1,0 +1,250 @@
+{
+  "schema": "techguytool-huawei.repair-recipe.vog-l29-c185.v1",
+  "recipe_id": "vog-l29-c185-revive-v1",
+  "recipe_version": "1.0.0",
+  "authority": "planning_only",
+  "execution_authority": "lease_required",
+  "device_authority": "none",
+  "production_enablement": "HARDWARE_PENDING",
+  "target_profile": {
+    "profile_id": "VOG-L29.C185",
+    "family": "VOG",
+    "model": "VOG-L29",
+    "soc": "Kirin980",
+    "region": "C185",
+    "vendor": "hw",
+    "country": "meafnaf",
+    "reference_build_family": "VOGUE-L29D 10.0.0.186(C185E8R5P1)"
+  },
+  "accepted_source_profiles": [
+    "VOG-AL00.board_service",
+    "VOG-L29.board_service"
+  ],
+  "required_starting_mode": "board_service_fastboot",
+  "service_entry": {
+    "testpoint_transport": "huawei_usb_com_1_0",
+    "service_mode": "board_service_fastboot",
+    "preserve_until_release": true
+  },
+  "oeminfo": {
+    "total_size_bytes": 100663296,
+    "copy_count": 2,
+    "copy_size_bytes": 50331648,
+    "derive_target_identity_from_exact_firmware": true,
+    "preserve_device_specific_records": true,
+    "backup_required": true,
+    "readback_required": true,
+    "hardcoded_record_offsets_allowed": false
+  },
+  "artifact_requirements": [
+    {"role": "kirin_service_loader", "kind": "loader", "executable": true},
+    {"role": "target_base", "kind": "firmware", "executable": false},
+    {"role": "target_cust", "kind": "firmware", "executable": false},
+    {"role": "target_preload", "kind": "firmware", "executable": false},
+    {"role": "oeminfo_backup", "kind": "backup", "executable": false},
+    {"role": "rollback_bundle", "kind": "backup", "executable": false},
+    {"role": "stock_recovery", "kind": "recovery", "executable": false},
+    {"role": "stock_fastboot", "kind": "firmware", "executable": false}
+  ],
+  "stages": [
+    {
+      "id": "certify_physical_session",
+      "kind": "observe",
+      "mode": "any",
+      "reboot_allowed": false,
+      "requires": [],
+      "produces": ["physical_session_certified"]
+    },
+    {
+      "id": "preserve_service_environment",
+      "kind": "govern",
+      "mode": "board_service_fastboot",
+      "reboot_allowed": false,
+      "requires": ["physical_session_certified"],
+      "artifact_roles": ["kirin_service_loader"],
+      "produces": ["service_environment_acquired"]
+    },
+    {
+      "id": "backup_oeminfo",
+      "kind": "backup",
+      "mode": "board_service_fastboot",
+      "reboot_allowed": false,
+      "requires": ["service_environment_acquired"],
+      "artifact_roles": ["oeminfo_backup"],
+      "produces": ["oeminfo_backup_verified"]
+    },
+    {
+      "id": "derive_target_identity",
+      "kind": "plan",
+      "mode": "board_service_fastboot",
+      "reboot_allowed": false,
+      "requires": ["oeminfo_backup_verified"],
+      "artifact_roles": ["target_base", "target_cust", "target_preload"],
+      "produces": ["target_identity_derived"]
+    },
+    {
+      "id": "compile_oeminfo_identity_patch",
+      "kind": "plan",
+      "mode": "board_service_fastboot",
+      "reboot_allowed": false,
+      "requires": ["target_identity_derived"],
+      "produces": ["oeminfo_patch_reviewed"]
+    },
+    {
+      "id": "prepare_rollback_authority",
+      "kind": "plan",
+      "mode": "board_service_fastboot",
+      "reboot_allowed": false,
+      "requires": ["oeminfo_patch_reviewed"],
+      "artifact_roles": ["rollback_bundle"],
+      "produces": ["rollback_ready"]
+    },
+    {
+      "id": "restore_oeminfo_identity",
+      "kind": "bounded_write",
+      "mode": "board_service_fastboot",
+      "reboot_allowed": false,
+      "requires": ["oeminfo_patch_reviewed", "rollback_ready"],
+      "partitions": ["oeminfo"],
+      "range_manifest_required": true,
+      "produces": ["target_identity_restored"]
+    },
+    {
+      "id": "verify_oeminfo_readback",
+      "kind": "verify",
+      "mode": "board_service_fastboot",
+      "reboot_allowed": false,
+      "requires": ["target_identity_restored"],
+      "produces": ["target_identity_verified", "main_version_verified"]
+    },
+    {
+      "id": "continue_base_cust_preload",
+      "kind": "bounded_write",
+      "mode": "board_service_fastboot",
+      "reboot_allowed": false,
+      "requires": ["target_identity_verified", "main_version_verified"],
+      "artifact_roles": ["target_base", "target_cust", "target_preload"],
+      "range_manifest_required": true,
+      "produces": ["regional_firmware_continued"]
+    },
+    {
+      "id": "derive_super_sparse_plan",
+      "kind": "plan",
+      "mode": "board_service_fastboot",
+      "reboot_allowed": false,
+      "requires": ["regional_firmware_continued"],
+      "artifact_roles": ["target_base"],
+      "hardcoded_chunk_count_allowed": false,
+      "produces": ["super_sparse_plan_verified"]
+    },
+    {
+      "id": "continue_super",
+      "kind": "bounded_write",
+      "mode": "board_service_fastboot",
+      "reboot_allowed": false,
+      "requires": ["super_sparse_plan_verified"],
+      "partitions": ["super"],
+      "range_manifest_required": true,
+      "produces": ["remaining_firmware_completed"]
+    },
+    {
+      "id": "verify_target_boot_environment",
+      "kind": "verify",
+      "mode": "board_service_fastboot",
+      "reboot_allowed": false,
+      "requires": ["remaining_firmware_completed"],
+      "produces": ["target_boot_environment_ready"]
+    },
+    {
+      "id": "restore_stock_recovery",
+      "kind": "bounded_write",
+      "mode": "board_service_fastboot",
+      "reboot_allowed": false,
+      "requires": ["target_identity_verified", "remaining_firmware_completed", "target_boot_environment_ready"],
+      "artifact_roles": ["stock_recovery"],
+      "range_manifest_required": true,
+      "produces": ["stock_recovery_restored"]
+    },
+    {
+      "id": "restore_stock_fastboot",
+      "kind": "bounded_write",
+      "mode": "board_service_fastboot",
+      "reboot_allowed": false,
+      "requires": ["stock_recovery_restored", "target_identity_verified", "remaining_firmware_completed", "target_boot_environment_ready"],
+      "artifact_roles": ["stock_fastboot"],
+      "range_manifest_required": true,
+      "produces": ["stock_environment_restored"]
+    },
+    {
+      "id": "release_service_mode",
+      "kind": "govern",
+      "mode": "board_service_fastboot",
+      "reboot_allowed": false,
+      "requires": ["stock_environment_restored", "target_identity_verified", "remaining_firmware_completed", "target_boot_environment_ready"],
+      "produces": ["service_mode_released"]
+    },
+    {
+      "id": "reboot_to_target_system",
+      "kind": "reboot",
+      "mode": "board_service_fastboot",
+      "reboot_allowed": true,
+      "requires": ["service_mode_released"],
+      "produces": ["reboot_requested"]
+    },
+    {
+      "id": "verify_normal_boot",
+      "kind": "verify",
+      "mode": "normal",
+      "reboot_allowed": false,
+      "requires": ["reboot_requested"],
+      "produces": ["boot_confirmed"]
+    },
+    {
+      "id": "normalize_branding_if_required",
+      "kind": "conditional_bounded_write",
+      "mode": "runtime_selected_approved",
+      "reboot_allowed": false,
+      "requires": ["boot_confirmed"],
+      "range_manifest_required": true,
+      "scope": "reviewed_branding_fields_only",
+      "produces": ["branding_checked"]
+    },
+    {
+      "id": "final_xray_verification",
+      "kind": "verify",
+      "mode": "normal",
+      "reboot_allowed": false,
+      "requires": ["branding_checked"],
+      "produces": ["final_device_twin", "full_repair_verdict"]
+    }
+  ],
+  "service_release_conditions": [
+    "target_identity_verified",
+    "remaining_firmware_completed",
+    "target_boot_environment_ready"
+  ],
+  "verification_states": [
+    "CORE_REPAIR_CONFIRMED",
+    "BOOT_CONFIRMED",
+    "VERSION_STATE_RESTORED",
+    "BRANDING_NORMALIZATION_REQUIRED",
+    "FULL_REPAIR_CONFIRMED"
+  ],
+  "provenance": {
+    "golden_theorem": "huawei-revive-golden-v1",
+    "replay_scenario": "kirin-p30-main-version-mode-hazard-v1",
+    "replay_source_hashes": [
+      "93c5a4a24b0f84e6bebab0b84be4bc37261c3a00ece1f234fe4ca9fbcf59db28",
+      "57772084b3aee50cffa92fb9729c3df08084c4d1afc96acf8eb2ab23320ba739",
+      "ff78bd796bfb6a10a4c90e1693e78f1addeded3da34964454e98f663630d96aa",
+      "459b2671c27f6333d68253541389833035596fda1a3b5834fea0b4ef0f51e2b1"
+    ]
+  },
+  "certification": {
+    "simulation": "REQUIRED",
+    "replay": "REQUIRED",
+    "physical_vog": "HARDWARE_PENDING",
+    "production_enabled": false
+  },
+  "truth_boundary": "This public recipe freezes deterministic workflow and validation policy. Exact runtime firmware, loader, backup, recovery, range-manifest and device evidence hashes must be supplied and validated before an execution lease may exist. Software proof cannot certify a physical VOG repair."
+}
