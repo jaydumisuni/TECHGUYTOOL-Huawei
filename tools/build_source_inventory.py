@@ -6,11 +6,21 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "manifests" / "source_inventory.json"
+SOFTWARE_PHASE_SOURCES = ROOT / "manifests" / "software_phase_sources.json"
 EXCLUDED = {
     "manifests/phase3_gateway.receipt.json",
     "manifests/phase4_kirin_xray.receipt.json",
     "manifests/phase5_decision_corps.receipt.json",
     "manifests/phase6_leases.receipt.json",
+    "manifests/phase7_executor.receipt.json",
+    "manifests/phase8_golden_theorem.receipt.json",
+    "manifests/phase9_vog_recipe.receipt.json",
+    "manifests/phase10_inquiry_governor.receipt.json",
+    "manifests/phase11_knowledge_workshop.receipt.json",
+    "manifests/phase12_kirin_packs.receipt.json",
+    "manifests/phase13_ttg_xray_promotion.receipt.json",
+    "manifests/phase14_qcom_mtk.receipt.json",
+    "manifests/phase15_windows_release.receipt.json",
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json",
 }
@@ -25,10 +35,7 @@ PHASE1_PATHS = {
     "docs/PHASE_1_SOURCE_FREEZE.md",
     "tests/test_source_freeze.py",
 }
-PHASE2_PREFIXES = (
-    "contracts/",
-    "rust/contracts_core/",
-)
+PHASE2_PREFIXES = ("contracts/", "rust/contracts_core/")
 PHASE2_PATHS = {
     ".github/workflows/phase2-contracts.yml",
     ".gitignore",
@@ -65,7 +72,6 @@ PHASE4_PATHS = {
     "tests/test_kirin_xray.py",
     "tests/test_kirin_xray_authority.py",
     "tools/build_phase4_receipt.py",
-    "tools/build_source_inventory.py",
     "tools/prove_kirin_xray_replay.py",
 }
 PHASE5_PATHS = {
@@ -97,12 +103,17 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def is_phase_receipt(rel: str) -> bool:
+    return rel.startswith("manifests/phase") and rel.endswith(".receipt.json")
+
+
 def is_ignored(path: Path) -> bool:
     rel = path.relative_to(ROOT).as_posix()
     parts = path.relative_to(ROOT).parts
     return (
         rel.startswith(".git/")
         or rel in EXCLUDED
+        or is_phase_receipt(rel)
         or rel in IGNORED_EXACT
         or bool(parts and parts[0] in IGNORED_ROOTS)
         or any(part in IGNORED_PARTS or part.endswith(".egg-info") for part in parts)
@@ -114,7 +125,28 @@ def source_files() -> list[Path]:
     return sorted(files, key=lambda item: item.relative_to(ROOT).as_posix())
 
 
-def origin_for(rel: str) -> str:
+def software_origin_map() -> dict[str, str]:
+    if not SOFTWARE_PHASE_SOURCES.is_file():
+        return {}
+    payload = json.loads(SOFTWARE_PHASE_SOURCES.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise SystemExit("software phase source map must be an object")
+    result: dict[str, str] = {}
+    for origin, paths in payload.items():
+        if not isinstance(origin, str) or not isinstance(paths, list):
+            raise SystemExit("software phase source map is malformed")
+        for rel in paths:
+            if not isinstance(rel, str):
+                raise SystemExit("software phase source path must be a string")
+            if rel in result and result[rel] != origin:
+                raise SystemExit(f"source path belongs to multiple software phases: {rel}")
+            result[rel] = origin
+    return result
+
+
+def origin_for(rel: str, software_origins: dict[str, str]) -> str:
+    if rel in software_origins:
+        return software_origins[rel]
     if rel in PHASE6_PATHS:
         return "phase6_mode_execution_leases"
     if rel in PHASE5_PATHS:
@@ -131,12 +163,13 @@ def origin_for(rel: str) -> str:
 
 
 def build() -> dict[str, object]:
+    software_origins = software_origin_map()
     records = []
     for path in source_files():
         rel = path.relative_to(ROOT).as_posix()
         records.append(
             {
-                "origin": origin_for(rel),
+                "origin": origin_for(rel, software_origins),
                 "path": rel,
                 "sha256": sha256(path),
                 "size_bytes": path.stat().st_size,
