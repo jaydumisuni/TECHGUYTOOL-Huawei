@@ -39,6 +39,12 @@ if (-not $SkipInstall) {
     python -m pip install -e ".[test]" "nuitka==2.6.8" ordered_set zstandard
 }
 
+# Prove the checked-out source before creating any build/generated files.
+python -m pytest
+if ($LASTEXITCODE -ne 0) { throw "Tests failed." }
+python tools\review_20_for_2.py --strict
+if ($LASTEXITCODE -ne 0) { throw "20-for-2 review failed." }
+
 if (-not $SkipRust) {
     if (-not (Get-Command cargo -ErrorAction SilentlyContinue)) {
         throw "Rust/Cargo is required for the release health core. Use -SkipRust only for UI development builds."
@@ -55,10 +61,6 @@ if ($LASTEXITCODE -ne 0) { throw "Application icon generation failed." }
 Assert-File "assets\brand\techguy_huawei.ico" "Generated Windows icon"
 python tools\generate_qrc.py
 if ($LASTEXITCODE -ne 0) { throw "Qt resource generation failed." }
-python -m pytest
-if ($LASTEXITCODE -ne 0) { throw "Tests failed." }
-python tools\review_20_for_2.py --strict
-if ($LASTEXITCODE -ne 0) { throw "20-for-2 review failed." }
 
 python -m PySide6.scripts.pyside_tool rcc resources.qrc -o techguy_huawei\resources_rc.py
 if ($LASTEXITCODE -ne 0) {
