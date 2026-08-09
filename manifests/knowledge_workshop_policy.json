@@ -1,0 +1,31 @@
+{
+  "schema": "techguytool-huawei.knowledge-workshop-policy.v1",
+  "authority": "read_only_learning",
+  "execution_authority": "none",
+  "device_authority": "none",
+  "read_only_change_kinds": [
+    "diagnostic_rule",
+    "read_only_parser",
+    "verification_requirement"
+  ],
+  "dangerous_change_kinds": [
+    "destructive_recipe",
+    "expanded_authority",
+    "write_offset",
+    "write_target"
+  ],
+  "lifecycle": [
+    "quarantined",
+    "replay_supported",
+    "hardware_supported",
+    "specialist_approved",
+    "ttg_promoted"
+  ],
+  "rules": {
+    "read_only_parser": "replay+regression may establish replay support; specialist approval required before Phase 13 promotion",
+    "diagnostic_rule": "replay+challenge+specialist canary+hardware proof required before specialist approval",
+    "verification_requirement": "replay+challenge+hardware proof required before specialist approval",
+    "dangerous": "never automatic and never promoted by the read-only workshop"
+  },
+  "truth_boundary": "Software may validate lifecycle and hashes. A hardware_supported transition requires a real external hardware-proof hash; tests exercising the validator do not create hardware certification. TTG promotion is finalized by Phase 13, not by Phase 11."
+}
