@@ -8,5 +8,6 @@
   "physical_mtk_brom_preloader": "HARDWARE_PENDING",
   "bounded_write_proof": "DEFERRED",
   "production_enabled": false,
-  "device_modification": "OUT_OF_SCOPE"
+  "device_modification": "OUT_OF_SCOPE",
+  "freeze_request": "owner"
 }
