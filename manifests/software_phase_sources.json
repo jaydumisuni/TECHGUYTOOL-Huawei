@@ -24,11 +24,18 @@
   ],
   "phase9_vog_l29_c185_recipe": [
     "docs/PHASE_9_VOG_L29_C185_RECIPE.md",
-    "manifests/active_software_phase.json",
-    "manifests/software_phase_sources.json",
     "recipes/vog_l29_c185.json",
     "techguy_huawei/vog_recipe.py",
     "tests/test_vog_recipe.py",
     "tools/prove_phase9_vog_recipe.py"
+  ],
+  "phase10_inquiry_governor": [
+    "docs/PHASE_10_INQUIRY_GOVERNOR.md",
+    "manifests/active_software_phase.json",
+    "manifests/inquiry_probe_registry.json",
+    "manifests/software_phase_sources.json",
+    "techguy_huawei/inquiry_governor.py",
+    "tests/test_inquiry_governor.py",
+    "tools/prove_phase10_inquiry_governor.py"
   ]
 }

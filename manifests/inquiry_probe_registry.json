@@ -1,0 +1,16 @@
+{
+  "schema": "techguytool-huawei.inquiry-probe-registry.v1",
+  "authority": "read_only_only",
+  "device_write_authority": "none",
+  "probes": {
+    "xray.branding.reread": {"authority": "diagnosis", "write_allowed": false},
+    "xray.firmware.reread": {"authority": "diagnosis", "write_allowed": false},
+    "xray.identity.reread": {"authority": "diagnosis", "write_allowed": false},
+    "xray.partition_inventory.reread": {"authority": "diagnosis", "write_allowed": false},
+    "xray.security.reread": {"authority": "diagnosis", "write_allowed": false},
+    "xray.storage.reread": {"authority": "diagnosis", "write_allowed": false},
+    "xray.transport.reread": {"authority": "observation", "write_allowed": false},
+    "xray.version.reread": {"authority": "diagnosis", "write_allowed": false}
+  },
+  "truth_boundary": "Inquiry may request only these registered read-only probes. It cannot request loader transfer, shell execution, partition writes, firmware flashing, reboot, unlock/relock, or other execution authority."
+}
