@@ -1,0 +1,49 @@
+name: Phase 7 One-Shot Test Correction
+
+on:
+  push:
+    branches: ["phase7/bounded-executor-framework"]
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: startsWith(github.event.head_commit.message, 'Request Phase 7 test helper correction')
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Rename helper without changing executor behavior
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('rust/device_gateway/tests/executor.rs')
+          text = path.read_text(encoding='utf-8')
+          old_count = text.count('executor(')
+          if old_count < 2:
+              raise SystemExit(f'unexpected executor( occurrence count: {old_count}')
+          text = text.replace('executor(', 'make_executor(')
+          if 'fn make_executor(' not in text or 'fn executor(' in text:
+              raise SystemExit('helper rename postcondition failed')
+          path.write_text(text, encoding='utf-8')
+          PY
+          git diff --check
+          test "$(git diff --name-only)" = "rust/device_gateway/tests/executor.rs"
+      - name: Commit exact correction
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          BRANCH_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          git config user.name "THETECHGUY Phase 7 Test Corrector"
+          git config user.email "actions@users.noreply.github.com"
+          git add rust/device_gateway/tests/executor.rs
+          git commit -m "Correct Phase 7 executor test helper shadowing"
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:"$BRANCH_NAME"
