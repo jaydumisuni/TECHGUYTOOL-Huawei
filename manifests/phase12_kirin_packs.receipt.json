@@ -5,5 +5,5 @@
   "maturity": "replay_supported",
   "includes_execution": false,
   "device_authority": "none",
-  "freeze_request": "owner"
+  "proof_trigger": "frozen-inventory"
 }
