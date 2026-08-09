@@ -38,11 +38,23 @@
   ],
   "phase11_xray_knowledge_workshop": [
     "docs/PHASE_11_XRAY_KNOWLEDGE_WORKSHOP.md",
-    "manifests/active_software_phase.json",
     "manifests/knowledge_workshop_policy.json",
-    "manifests/software_phase_sources.json",
     "techguy_huawei/knowledge_workshop.py",
     "tests/test_knowledge_workshop.py",
     "tools/prove_phase11_knowledge_workshop.py"
+  ],
+  "phase12_kirin_capability_packs": [
+    "docs/PHASE_12_KIRIN_CAPABILITY_PACKS.md",
+    "manifests/active_software_phase.json",
+    "manifests/software_phase_sources.json",
+    "packs/kirin/error_pack.json",
+    "packs/kirin/knowledge_pack.json",
+    "packs/kirin/manifest.json",
+    "packs/kirin/provider_pack.json",
+    "packs/kirin/replay_pack.json",
+    "packs/kirin/verification_pack.json",
+    "techguy_huawei/capability_packs.py",
+    "tests/test_capability_packs.py",
+    "tools/prove_phase12_kirin_capability_packs.py"
   ]
 }
