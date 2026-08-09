@@ -1,8 +1,13 @@
 from __future__ import annotations
 
 import json
+import sys
+from pathlib import Path
 
-from techguy_huawei.ttg_xray_promotion import promotion_summary
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from techguy_huawei.ttg_xray_promotion import promotion_summary  # noqa: E402
 
 
 def main() -> int:
