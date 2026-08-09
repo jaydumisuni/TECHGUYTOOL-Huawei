@@ -57,11 +57,20 @@
   ],
   "phase13_ttg_xray_promotion": [
     "docs/PHASE_13_TTG_XRAY_PROMOTION.md",
-    "manifests/active_software_phase.json",
     "manifests/phase13_ttg_xray_promotion.json",
-    "manifests/software_phase_sources.json",
     "techguy_huawei/ttg_xray_promotion.py",
     "tests/test_ttg_xray_promotion.py",
     "tools/prove_phase13_ttg_xray_promotion.py"
+  ],
+  "phase14_qcom_mtk": [
+    "docs/PHASE_14_QUALCOMM_MTK.md",
+    "manifests/active_software_phase.json",
+    "manifests/phase14_service_lanes.json",
+    "manifests/software_phase_sources.json",
+    "replay/service/mtk_brom_partition_readonly.json",
+    "replay/service/qualcomm_9008_gpt_readonly.json",
+    "techguy_huawei/service_lanes.py",
+    "tests/test_service_lanes.py",
+    "tools/prove_phase14_qcom_mtk.py"
   ]
 }
