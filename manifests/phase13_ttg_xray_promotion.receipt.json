@@ -8,5 +8,8 @@
   "execution_authority": "none",
   "device_authority": "none",
   "physical_vog_certification": "HARDWARE_PENDING",
-  "proof_trigger": "frozen-inventory"
+  "authority_request": {
+    "proof_run_id": 31339783255,
+    "tested_revision": "d555ff5e1b6be0c006914810b36af0d0ad24094a"
+  }
 }
