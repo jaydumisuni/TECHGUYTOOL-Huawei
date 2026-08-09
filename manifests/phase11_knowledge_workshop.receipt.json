@@ -1,12 +1,37 @@
 {
+  "generated_at": "2026-08-09T17:26:44Z",
+  "hosted_proof": {
+    "repository": "jaydumisuni/TECHGUYTOOL-Huawei",
+    "run_id": 31326300524,
+    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/31326300524",
+    "tested_revision": "9eac1595602fa18e44eda04ef6fe1d3d76b222b2",
+    "workflow": "Software Phase Proof"
+  },
+  "owner_verification": {
+    "authority_commit": "5693ee64975812296ad28bf240f82a4f9cc4a512",
+    "source_proof_run_id": 31326300524,
+    "source_revision": "9eac1595602fa18e44eda04ef6fe1d3d76b222b2",
+    "status": "CONFIRMED"
+  },
   "phase": 11,
+  "phase_name": "Phase 11 Xray Knowledge Workshop",
+  "predecessor_merge": "66a420ccc245d3cf61c0b39b34a9181b57684c73",
+  "proof": {
+    "active_phase_proof": "PASS",
+    "complete_python_regression": "PASS",
+    "contract_core_regression": "PASS",
+    "device_gateway_regression": "PASS",
+    "rust_clippy": "PASS",
+    "rust_format": "PASS",
+    "rust_tests": "PASS",
+    "source_freeze_verifier": "PASS",
+    "srg_20_for_2": "40/40 PASS"
+  },
   "schema": "techguytool-huawei.phase11-receipt.v1",
-  "status": "PROVEN_PENDING_OWNER",
-  "execution_authority": "none",
-  "device_authority": "none",
-  "hardware_certification": "EXTERNAL_EVIDENCE_REQUIRED",
-  "authority_request": {
-    "proof_run_id": 31326300524,
-    "tested_revision": "9eac1595602fa18e44eda04ef6fe1d3d76b222b2"
-  }
+  "source_inventory": {
+    "path": "manifests/source_inventory.json",
+    "sha256": "09787a61d50defdabff01af0bce24dfdc20e95220ccee66ac04ce97eb584d905"
+  },
+  "status": "FROZEN",
+  "truth_boundary": "This receipt proves only the software authority described by the active phase. Physical-device certification, external proprietary artifacts, Windows signing and hardware-specific destructive operations remain outside software-only proof unless the phase plan explicitly records independent physical evidence."
 }
