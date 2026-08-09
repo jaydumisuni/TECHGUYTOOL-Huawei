@@ -23,7 +23,7 @@
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 171,
+  "file_count": 176,
   "files": [
     {
       "origin": "phase2_shared_contracts",
@@ -200,6 +200,12 @@
       "size_bytes": 3792
     },
     {
+      "origin": "phase11_xray_knowledge_workshop",
+      "path": "docs/PHASE_11_XRAY_KNOWLEDGE_WORKSHOP.md",
+      "sha256": "2ce2b83929bb000255764231af266d4e93bf6a917659116b7d9ea1785900ec33",
+      "size_bytes": 2905
+    },
+    {
       "origin": "phase1_recovery_and_freeze",
       "path": "docs/PHASE_1_SOURCE_FREEZE.md",
       "sha256": "a29b49032752723e33af3e7ca0df9e319a7453dc638e66afc70e2fa8f3d2dfba",
@@ -260,10 +266,10 @@
       "size_bytes": 1408
     },
     {
-      "origin": "phase10_inquiry_governor",
+      "origin": "phase11_xray_knowledge_workshop",
       "path": "manifests/active_software_phase.json",
-      "sha256": "7f7fa3dd569395d3574d56ed56266d3adf6603de3ccc44e484779d8b6a8d201d",
-      "size_bytes": 347
+      "sha256": "f33f5fd8cd65217296263d686d6d216c8a8fe902925fef3ca9edb33f4e449475",
+      "size_bytes": 372
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -290,16 +296,22 @@
       "size_bytes": 1829
     },
     {
+      "origin": "phase11_xray_knowledge_workshop",
+      "path": "manifests/knowledge_workshop_policy.json",
+      "sha256": "e8359287cf66f12fe2fc13f258c7592e044c2d7779e576dd7689f3996f3ca407",
+      "size_bytes": 1256
+    },
+    {
       "origin": "phase1_recovery_and_freeze",
       "path": "manifests/private_source_archive.json",
       "sha256": "66a13007ad171d7793c294a44e8b978ca82352197e8c3e6949f965d130cc270d",
       "size_bytes": 2671
     },
     {
-      "origin": "phase10_inquiry_governor",
+      "origin": "phase11_xray_knowledge_workshop",
       "path": "manifests/software_phase_sources.json",
-      "sha256": "0ad0981184f779d9cc876f9bb2d2b3d2be189fa462b7c6adb18845db0891abe2",
-      "size_bytes": 1533
+      "sha256": "bf83c5bfdeb1258d78f0e17ab76134693bc6953f697327b7e7298b4ac26a7181",
+      "size_bytes": 1805
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -806,6 +818,12 @@
       "size_bytes": 4724
     },
     {
+      "origin": "phase11_xray_knowledge_workshop",
+      "path": "techguy_huawei/knowledge_workshop.py",
+      "sha256": "da0bfb162b23c7c3d3b73721525dd084e87acae8ee856283fb961e7596dabe11",
+      "size_bytes": 10789
+    },
+    {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "techguy_huawei/storage.py",
       "sha256": "45d35a8381b79307399dc884b9755b15111c4730957c6a5738bb32c69f0b6caa",
@@ -870,6 +888,12 @@
       "path": "tests/test_kirin_xray_authority.py",
       "sha256": "4d9befde4ef566c013c469afa7dd87b45e8881ecc7c7c1dd19978d8eba90b605",
       "size_bytes": 764
+    },
+    {
+      "origin": "phase11_xray_knowledge_workshop",
+      "path": "tests/test_knowledge_workshop.py",
+      "sha256": "a36bbeed9aa104913400aaca73326b408013f59f1a9a156d9657803934524cb6",
+      "size_bytes": 6579
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -990,6 +1014,12 @@
       "path": "tools/prove_phase10_inquiry_governor.py",
       "sha256": "8732aeb31d1dcce60f3887138840c875ce33bd0b0b520d38fa2e6ce1a3f7fb6e",
       "size_bytes": 5079
+    },
+    {
+      "origin": "phase11_xray_knowledge_workshop",
+      "path": "tools/prove_phase11_knowledge_workshop.py",
+      "sha256": "dbde636be14163b5e3ec933a6fd6e325db2f6e17a5a32c8bc0de8470ae989b87",
+      "size_bytes": 4045
     },
     {
       "origin": "phase6_mode_execution_leases",

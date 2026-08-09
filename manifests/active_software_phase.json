@@ -1,10 +1,10 @@
 {
-  "branch": "phase10/inquiry-governor",
-  "name": "Phase 10 Inquiry Governor",
-  "phase": 10,
-  "predecessor_merge": "1e652a5a171cd93fcc9391c356b36b30b29552eb",
-  "proof_script": "tools/prove_phase10_inquiry_governor.py",
-  "receipt_path": "manifests/phase10_inquiry_governor.receipt.json",
-  "slug": "inquiry_governor",
+  "branch": "phase11/xray-knowledge-workshop",
+  "name": "Phase 11 Xray Knowledge Workshop",
+  "phase": 11,
+  "predecessor_merge": "66a420ccc245d3cf61c0b39b34a9181b57684c73",
+  "proof_script": "tools/prove_phase11_knowledge_workshop.py",
+  "receipt_path": "manifests/phase11_knowledge_workshop.receipt.json",
+  "slug": "xray_knowledge_workshop",
   "status": "WORKING"
 }
