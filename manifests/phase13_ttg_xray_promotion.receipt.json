@@ -7,5 +7,6 @@
   "target_ci_run_id": 31339256277,
   "execution_authority": "none",
   "device_authority": "none",
-  "physical_vog_certification": "HARDWARE_PENDING"
+  "physical_vog_certification": "HARDWARE_PENDING",
+  "freeze_request": "owner"
 }
