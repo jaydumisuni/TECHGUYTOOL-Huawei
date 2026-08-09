@@ -1,0 +1,37 @@
+{
+  "generated_at": "2026-08-09T17:46:32Z",
+  "hosted_proof": {
+    "repository": "jaydumisuni/TECHGUYTOOL-Huawei",
+    "run_id": 31327171411,
+    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/31327171411",
+    "tested_revision": "14e810de8f49ef0ce61ab2ec0544f74cfa102edf",
+    "workflow": "Software Phase Proof"
+  },
+  "owner_verification": {
+    "authority_commit": "c0168f0b3a59757832dcc1922869cb0cc75d5aa5",
+    "source_proof_run_id": 31327171411,
+    "source_revision": "14e810de8f49ef0ce61ab2ec0544f74cfa102edf",
+    "status": "CONFIRMED"
+  },
+  "phase": 12,
+  "phase_name": "Phase 12 Kirin Capability Packs",
+  "predecessor_merge": "c88e2736cba860bef67212d3c7926804ab502e6e",
+  "proof": {
+    "active_phase_proof": "PASS",
+    "complete_python_regression": "PASS",
+    "contract_core_regression": "PASS",
+    "device_gateway_regression": "PASS",
+    "rust_clippy": "PASS",
+    "rust_format": "PASS",
+    "rust_tests": "PASS",
+    "source_freeze_verifier": "PASS",
+    "srg_20_for_2": "40/40 PASS"
+  },
+  "schema": "techguytool-huawei.phase12-receipt.v1",
+  "source_inventory": {
+    "path": "manifests/source_inventory.json",
+    "sha256": "0952234b9309f76f39e606bbc03c97570daa99c400051d70f2ba60078ab9ef13"
+  },
+  "status": "FROZEN",
+  "truth_boundary": "This receipt proves only the software authority described by the active phase. Physical-device certification, external proprietary artifacts, Windows signing and hardware-specific destructive operations remain outside software-only proof unless the phase plan explicitly records independent physical evidence."
+}

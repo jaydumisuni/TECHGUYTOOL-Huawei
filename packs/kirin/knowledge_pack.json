@@ -1,0 +1,13 @@
+{
+  "includes_execution": false,
+  "pack_id": "kirin-xray-knowledge-pack",
+  "rules": [
+    {"evidence_level": "replay_supported", "id": "vog.main_version_state.oeminfo", "statement": "For the frozen VOG replay evidence, MAIN VERSION state is explained by OEMINFO version identity rather than a proven standalone writable verlist partition."},
+    {"evidence_level": "replay_supported", "id": "vog.service_mode.preserve_until_verified", "statement": "Preserve Board-Service Fastboot while main-version/identity restoration and remaining firmware stages are unresolved."},
+    {"evidence_level": "replay_supported", "id": "vog.stock_fastboot.finalization_only", "statement": "Stock Fastboot restoration is finalization-only after release conditions are verified."},
+    {"evidence_level": "replay_supported", "id": "vog.branding.separate_stage", "statement": "Branding normalization is distinct from core recovery and must modify only reviewed fields proven incorrect."},
+    {"evidence_level": "replay_supported", "id": "super.chunking.derive_from_artifact", "statement": "Sparse SUPER continuation derives its chunk set from the validated artifact; no universal chunk count is assumed."}
+  ],
+  "schema": "techguytool-huawei.kirin-knowledge-pack.v1",
+  "version": "1.0.0"
+}

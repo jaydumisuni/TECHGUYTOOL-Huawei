@@ -1,0 +1,17 @@
+{
+  "includes_execution": false,
+  "pack_id": "kirin-xray-provider-pack",
+  "providers": [
+    {"authority": "diagnosis", "id": "kirin.identity", "write_allowed": false},
+    {"authority": "diagnosis", "id": "kirin.version", "write_allowed": false},
+    {"authority": "diagnosis", "id": "kirin.storage", "write_allowed": false},
+    {"authority": "diagnosis", "id": "kirin.partition_inventory", "write_allowed": false},
+    {"authority": "observation", "id": "kirin.transport", "write_allowed": false},
+    {"authority": "diagnosis", "id": "kirin.branding", "write_allowed": false},
+    {"authority": "diagnosis", "id": "kirin.security", "write_allowed": false},
+    {"authority": "diagnosis", "id": "kirin.firmware", "write_allowed": false}
+  ],
+  "schema": "techguytool-huawei.kirin-provider-pack.v1",
+  "specialist": "kirin_xray",
+  "version": "1.0.0"
+}

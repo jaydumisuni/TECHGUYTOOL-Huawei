@@ -1,0 +1,16 @@
+{
+  "errors": [
+    {"authority": "diagnosis", "code": "XR-HUA-VERSION-001", "name": "MAIN_VERSION_RECORD_MISSING"},
+    {"authority": "diagnosis", "code": "XR-HUA-PARTITION-002", "name": "WRITABLE_VERLIST_PARTITION_NOT_PRESENT"},
+    {"authority": "diagnosis", "code": "XR-HUA-IDENTITY-003", "name": "BRANDING_IDENTITY_MISMATCH"},
+    {"authority": "diagnosis", "code": "XR-HUA-SECURITY-004", "name": "LOCK_STATE_EVIDENCE_CONFLICT"},
+    {"authority": "observation", "code": "XR-SESSION-005", "name": "PHYSICAL_DEVICE_CONTINUITY_LOST"},
+    {"authority": "verification", "code": "VERIFY-VERSION-302", "name": "MAIN_VERSION_RESTORED"},
+    {"authority": "verification", "code": "VERIFY-IDENTITY-303", "name": "TARGET_BRANDING_CONFIRMED"},
+    {"authority": "verification", "code": "VERIFY-PARTIAL-305", "name": "CORE_REPAIR_COMPLETE_BRANDING_REMAINS"}
+  ],
+  "includes_execution": false,
+  "pack_id": "kirin-xray-error-pack",
+  "schema": "techguytool-huawei.kirin-error-pack.v1",
+  "version": "1.0.0"
+}

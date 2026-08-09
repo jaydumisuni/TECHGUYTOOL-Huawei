@@ -1,0 +1,11 @@
+{
+  "includes_execution": false,
+  "pack_id": "kirin-xray-verification-pack",
+  "rules": [
+    {"id": "verify.main_version", "requires": ["version.main.observed", "identity.target.coherent"], "verdict": "VERIFY-VERSION-302"},
+    {"id": "verify.branding", "requires": ["branding.target.coherent"], "verdict": "VERIFY-IDENTITY-303"},
+    {"id": "verify.partial_branding", "requires": ["version.main.observed", "boot.normal.observed", "branding.target.mismatch"], "verdict": "VERIFY-PARTIAL-305"}
+  ],
+  "schema": "techguytool-huawei.kirin-verification-pack.v1",
+  "version": "1.0.0"
+}
