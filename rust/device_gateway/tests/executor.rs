@@ -132,7 +132,7 @@ impl BoundedAdapter for MemoryAdapter {
     }
 }
 
-fn executor(adapter: MemoryAdapter) -> BoundedExecutor {
+fn make_executor(adapter: MemoryAdapter) -> BoundedExecutor {
     let mut executor = BoundedExecutor::new(LeaseGuard::in_memory().unwrap());
     executor.register_adapter(Box::new(adapter)).unwrap();
     executor
@@ -147,7 +147,7 @@ fn policy_code(error: ExecutorError) -> String {
 
 #[test]
 fn exact_authority_executes_once_and_verifies_readback() {
-    let mut executor = executor(MemoryAdapter::default());
+    let mut executor = make_executor(MemoryAdapter::default());
     let result = executor
         .execute_authorized(
             &lease(),
@@ -202,7 +202,7 @@ fn request_mismatch_fails_before_adapter() {
         "reboot",
     ];
     for field in fields {
-        let mut executor = executor(MemoryAdapter::default());
+        let mut executor = make_executor(MemoryAdapter::default());
         let mut request = request();
         let expected = match field {
             "session" => {
@@ -257,7 +257,7 @@ fn payload_hash_size_and_artifact_authority_are_fail_closed() {
     let mut bad_hash = request();
     bad_hash.payload_sha256 =
         "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee".to_owned();
-    let mut executor = executor(MemoryAdapter::default());
+    let mut executor = make_executor(MemoryAdapter::default());
     assert_eq!(
         policy_code(
             executor
@@ -274,7 +274,7 @@ fn payload_hash_size_and_artifact_authority_are_fail_closed() {
 
     let mut wrong_size_context = lease_context();
     wrong_size_context.write_bytes += 1;
-    let mut executor = executor(MemoryAdapter::default());
+    let mut executor = make_executor(MemoryAdapter::default());
     assert_eq!(
         policy_code(
             executor
@@ -292,7 +292,7 @@ fn payload_hash_size_and_artifact_authority_are_fail_closed() {
     let mut unauthorized = lease_context();
     unauthorized.artifact_hashes =
         vec!["eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee".to_owned()];
-    let mut executor = executor(MemoryAdapter::default());
+    let mut executor = make_executor(MemoryAdapter::default());
     assert_eq!(
         policy_code(
             executor
@@ -333,7 +333,7 @@ fn mandatory_backup_readback_and_write_count_are_verified() {
             "ADAPTER_WRITE_COUNT_MISMATCH",
         ),
     ] {
-        let mut executor = executor(adapter);
+        let mut executor = make_executor(adapter);
         let error = executor
             .execute_authorized(
                 &lease(),
@@ -350,7 +350,7 @@ fn mandatory_backup_readback_and_write_count_are_verified() {
 fn cancellation_is_fail_closed_before_and_during_adapter() {
     let cancellation = CancellationFlag::default();
     cancellation.cancel();
-    let mut executor = executor(MemoryAdapter::default());
+    let mut executor = make_executor(MemoryAdapter::default());
     assert_eq!(
         policy_code(
             executor
@@ -360,7 +360,7 @@ fn cancellation_is_fail_closed_before_and_during_adapter() {
         "EXECUTION_CANCELLED_BEFORE_CLAIM"
     );
 
-    let mut executor = executor(MemoryAdapter {
+    let mut executor = make_executor(MemoryAdapter {
         cancel_during: true,
         ..Default::default()
     });
