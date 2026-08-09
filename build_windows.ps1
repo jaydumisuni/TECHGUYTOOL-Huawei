@@ -1,6 +1,7 @@
 param(
     [switch]$SkipInstall,
     [switch]$SkipRust,
+    [switch]$CiTestSigning,
     [string]$CertificateThumbprint = $env:TECHGUY_SIGNING_CERT_THUMBPRINT
 )
 
@@ -18,6 +19,12 @@ Write-Host "TECHGUY TOOL Huawei one-file release" -ForegroundColor Cyan
 
 if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
     throw "Python 3.11+ is required."
+}
+if ($CiTestSigning -and $env:GITHUB_ACTIONS -ne "true") {
+    throw "CI test signing is permitted only inside GitHub Actions."
+}
+if ($CiTestSigning -and -not $CertificateThumbprint) {
+    throw "CI test signing requires an explicit temporary certificate thumbprint."
 }
 
 if (-not $SkipInstall) {
@@ -60,15 +67,40 @@ if ($LASTEXITCODE -ne 0) { throw "pyside6-deploy failed." }
 $Exe = Get-ChildItem -Path dist -Filter "TECHGUYTOOL_Huawei.exe" -Recurse | Select-Object -First 1
 if (-not $Exe) { throw "TECHGUYTOOL_Huawei.exe was not produced." }
 
+$SigningMode = "unsigned"
 if ($CertificateThumbprint) {
     $SignTool = Get-Command signtool.exe -ErrorAction SilentlyContinue
     if (-not $SignTool) { throw "Signing thumbprint was supplied, but signtool.exe is unavailable." }
-    & $SignTool.Source sign /sha1 $CertificateThumbprint /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 $Exe.FullName
+    if ($CiTestSigning) {
+        & $SignTool.Source sign /sha1 $CertificateThumbprint /fd SHA256 $Exe.FullName
+        $SigningMode = "ci-test-authenticode"
+    } else {
+        & $SignTool.Source sign /sha1 $CertificateThumbprint /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 $Exe.FullName
+        $SigningMode = "production-authenticode"
+    }
     if ($LASTEXITCODE -ne 0) { throw "Code signing failed." }
+    $Signature = Get-AuthenticodeSignature $Exe.FullName
+    if ($Signature.Status -ne "Valid") {
+        throw "Authenticode signature validation failed: $($Signature.Status)"
+    }
 } else {
-    Write-Warning "No signing certificate thumbprint supplied. The executable is verified but unsigned."
+    Write-Warning "No signing certificate thumbprint supplied. The executable is verified but unsigned and is not production-release eligible."
 }
 
 $Hash = Get-FileHash -Algorithm SHA256 $Exe.FullName
-"$($Hash.Hash.ToLowerInvariant())  $($Exe.Name)" | Set-Content -Encoding ASCII (Join-Path $Exe.DirectoryName "SHA256SUMS.txt")
-Write-Host "Release ready: $($Exe.FullName)" -ForegroundColor Green
+$ChecksumPath = Join-Path $Exe.DirectoryName "SHA256SUMS.txt"
+"$($Hash.Hash.ToLowerInvariant())  $($Exe.Name)" | Set-Content -Encoding ASCII $ChecksumPath
+Assert-File $ChecksumPath "SHA-256 checksum file"
+
+$Provenance = [ordered]@{
+    schema = "techguytool-huawei.windows-release-provenance.v1"
+    filename = $Exe.Name
+    sha256 = $Hash.Hash.ToLowerInvariant()
+    packaging = "onefile"
+    signing_mode = $SigningMode
+    authenticode_required_for_production = $true
+    ci_test_signature = [bool]$CiTestSigning
+    production_signature = [bool]($SigningMode -eq "production-authenticode")
+}
+$Provenance | ConvertTo-Json -Depth 4 | Set-Content -Encoding UTF8 (Join-Path $Exe.DirectoryName "RELEASE_PROVENANCE.json")
+Write-Host "Release candidate ready: $($Exe.FullName)" -ForegroundColor Green
