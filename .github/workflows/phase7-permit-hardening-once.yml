@@ -24,22 +24,17 @@ jobs:
         run: |
           set -euo pipefail
           python - <<'PY'
+          import re
           from pathlib import Path
+
           path = Path('rust/device_gateway/src/lease.rs')
           text = path.read_text(encoding='utf-8')
-          old = '''#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-          pub struct ExecutionPermit {
-              pub lease_id: String,
-              pub physical_session_id: String,
-              pub stage_id: String,
-              pub partition: String,
-              pub max_write_bytes: u64,
-              pub requested_write_bytes: u64,
-              pub reboot_allowed: bool,
-              pub claimed_at: String,
-          }
-          '''.replace('          ', '')
-          new = '''#[derive(Debug, Eq, PartialEq, Serialize)]
+          pattern = re.compile(
+              r'#\[derive\(Debug, Clone, Eq, PartialEq, Serialize, Deserialize\)\]\n'
+              r'pub struct ExecutionPermit \{.*?\n\}\n',
+              re.S,
+          )
+          replacement = '''#[derive(Debug, Eq, PartialEq, Serialize)]
           pub struct ExecutionPermit {
               lease_id: String,
               physical_session_id: String,
@@ -74,31 +69,24 @@ jobs:
               pub fn claimed_at(&self) -> &str { &self.claimed_at }
           }
           '''.replace('          ', '')
-          if old not in text:
-              raise SystemExit('ExecutionPermit definition did not match frozen Phase 6 source')
-          text = text.replace(old, new, 1)
-          old_ctor = '''        Ok(ExecutionPermit {
-                      lease_id,
-                      physical_session_id: context.physical_session_id.clone(),
-                      stage_id: context.stage_id.clone(),
-                      partition: context.partition.clone(),
-                      max_write_bytes,
-                      requested_write_bytes: context.write_bytes,
-                      reboot_allowed,
-                      claimed_at: context.now.clone(),
-                  })'''.replace('        ', '')
-          # tolerate rustfmt indentation by matching the exact logical block separately
-          old_ctor = '''Ok(ExecutionPermit {
-              lease_id,
-              physical_session_id: context.physical_session_id.clone(),
-              stage_id: context.stage_id.clone(),
-              partition: context.partition.clone(),
-              max_write_bytes,
-              requested_write_bytes: context.write_bytes,
-              reboot_allowed,
-              claimed_at: context.now.clone(),
-          })'''
-          new_ctor = '''Ok(ExecutionPermit {
+          text, count = pattern.subn(replacement, text, count=1)
+          if count != 1:
+              raise SystemExit(f'expected one ExecutionPermit definition, changed {count}')
+
+          ctor = re.compile(
+              r'Ok\(ExecutionPermit \{\n'
+              r'\s*lease_id,\n'
+              r'\s*physical_session_id: context\.physical_session_id\.clone\(\),\n'
+              r'\s*stage_id: context\.stage_id\.clone\(\),\n'
+              r'\s*partition: context\.partition\.clone\(\),\n'
+              r'\s*max_write_bytes,\n'
+              r'\s*requested_write_bytes: context\.write_bytes,\n'
+              r'\s*reboot_allowed,\n'
+              r'\s*claimed_at: context\.now\.clone\(\),\n'
+              r'\s*\}\)',
+              re.S,
+          )
+          ctor_replacement = '''Ok(ExecutionPermit {
               lease_id,
               physical_session_id: context.physical_session_id.clone(),
               recipe_hash: context.recipe_hash.clone(),
@@ -114,13 +102,16 @@ jobs:
               reboot_allowed,
               claimed_at: context.now.clone(),
           })'''
-          if old_ctor not in text:
-              raise SystemExit('ExecutionPermit constructor did not match frozen Phase 6 source')
-          text = text.replace(old_ctor, new_ctor, 1)
+          text, count = ctor.subn(ctor_replacement, text, count=1)
+          if count != 1:
+              raise SystemExit(f'expected one ExecutionPermit constructor, changed {count}')
+          if 'pub lease_id:' in text or 'ExecutionPermit {' not in text:
+              raise SystemExit('permit hardening postcondition failed')
           path.write_text(text, encoding='utf-8')
 
           tests = Path('rust/device_gateway/tests/leases.rs')
-          data = tests.read_text(encoding='utf-8').replace('permit.lease_id, EXEC_LEASE_ID', 'permit.lease_id(), EXEC_LEASE_ID')
+          data = tests.read_text(encoding='utf-8')
+          data = data.replace('permit.lease_id, EXEC_LEASE_ID', 'permit.lease_id(), EXEC_LEASE_ID')
           tests.write_text(data, encoding='utf-8')
           PY
           rustup toolchain install 1.75.0 --profile minimal --component rustfmt
