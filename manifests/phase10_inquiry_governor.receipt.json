@@ -1,11 +1,37 @@
 {
+  "generated_at": "2026-08-09T17:12:38Z",
+  "hosted_proof": {
+    "repository": "jaydumisuni/TECHGUYTOOL-Huawei",
+    "run_id": 31325680513,
+    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/31325680513",
+    "tested_revision": "60f521b3d5aff6021039b62dcf1f8f22532b577a",
+    "workflow": "Software Phase Proof"
+  },
+  "owner_verification": {
+    "authority_commit": "060e471bf70c0d3dee19ce14c43a61df8f3235fd",
+    "source_proof_run_id": 31325680513,
+    "source_revision": "60f521b3d5aff6021039b62dcf1f8f22532b577a",
+    "status": "CONFIRMED"
+  },
   "phase": 10,
+  "phase_name": "Phase 10 Inquiry Governor",
+  "predecessor_merge": "1e652a5a171cd93fcc9391c356b36b30b29552eb",
+  "proof": {
+    "active_phase_proof": "PASS",
+    "complete_python_regression": "PASS",
+    "contract_core_regression": "PASS",
+    "device_gateway_regression": "PASS",
+    "rust_clippy": "PASS",
+    "rust_format": "PASS",
+    "rust_tests": "PASS",
+    "source_freeze_verifier": "PASS",
+    "srg_20_for_2": "40/40 PASS"
+  },
   "schema": "techguytool-huawei.phase10-receipt.v1",
-  "status": "PROVEN_PENDING_OWNER",
-  "device_authority": "none",
-  "execution_authority": "none",
-  "authority_request": {
-    "proof_run_id": 31325680513,
-    "tested_revision": "60f521b3d5aff6021039b62dcf1f8f22532b577a"
-  }
+  "source_inventory": {
+    "path": "manifests/source_inventory.json",
+    "sha256": "e5973c4208415faf1814e5cd9172a751d2c3912145a25cd9c07db5604cee348a"
+  },
+  "status": "FROZEN",
+  "truth_boundary": "This receipt proves only the software authority described by the active phase. Physical-device certification, external proprietary artifacts, Windows signing and hardware-specific destructive operations remain outside software-only proof unless the phase plan explicitly records independent physical evidence."
 }
