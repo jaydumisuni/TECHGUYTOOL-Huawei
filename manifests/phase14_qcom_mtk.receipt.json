@@ -9,5 +9,5 @@
   "bounded_write_proof": "DEFERRED",
   "production_enabled": false,
   "device_modification": "OUT_OF_SCOPE",
-  "freeze_request": "owner"
+  "proof_trigger": "frozen-inventory"
 }
