@@ -13,6 +13,7 @@
     "tools/build_source_inventory.py",
     "tools/prove_active_software_phase.py",
     "tools/prove_phase7_executor.py",
+    "tools/verify_historical_phase6_authority.py",
     "tools/verify_software_phase_receipt.py"
   ]
 }
