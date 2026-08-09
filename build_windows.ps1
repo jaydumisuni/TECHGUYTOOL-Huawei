@@ -29,7 +29,7 @@ if ($CiTestSigning -and -not $CertificateThumbprint) {
 
 if (-not $SkipInstall) {
     python -m pip install --upgrade pip
-    python -m pip install -e ".[test]" pyside6-deploy
+    python -m pip install -e ".[test]" "nuitka==2.6.8" ordered_set zstandard
 }
 
 if (-not $SkipRust) {
@@ -61,6 +61,9 @@ if ($LASTEXITCODE -ne 0) {
 Assert-File "techguy_huawei\resources_rc.py" "Compiled Qt resources"
 
 if (Test-Path dist) { Remove-Item dist -Recurse -Force }
+if (-not (Get-Command pyside6-deploy -ErrorAction SilentlyContinue)) {
+    throw "pyside6-deploy was not installed with PySide6."
+}
 pyside6-deploy -c pysidedeploy.spec -f
 if ($LASTEXITCODE -ne 0) { throw "pyside6-deploy failed." }
 
