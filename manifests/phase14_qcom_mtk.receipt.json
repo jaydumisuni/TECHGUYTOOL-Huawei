@@ -1,0 +1,12 @@
+{
+  "phase": 14,
+  "schema": "techguytool-huawei.phase14-receipt.v1",
+  "status": "UNFROZEN",
+  "proof_level": "replay_supported",
+  "hardware_certification": "HARDWARE_PENDING",
+  "physical_qcom_9008": "HARDWARE_PENDING",
+  "physical_mtk_brom_preloader": "HARDWARE_PENDING",
+  "bounded_write_proof": "DEFERRED",
+  "production_enabled": false,
+  "device_modification": "OUT_OF_SCOPE"
+}
