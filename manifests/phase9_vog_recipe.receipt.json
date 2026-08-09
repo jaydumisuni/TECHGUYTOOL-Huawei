@@ -4,5 +4,6 @@
   "status": "UNFROZEN",
   "hardware_certification": "HARDWARE_PENDING",
   "production_enabled": false,
-  "software_truth_boundary": "Simulation/replay may prove recipe logic and fail-closed authority only; physical VOG end-to-end certification remains separate."
+  "software_truth_boundary": "Simulation/replay may prove recipe logic and fail-closed authority only; physical VOG end-to-end certification remains separate.",
+  "freeze_request": "owner"
 }
