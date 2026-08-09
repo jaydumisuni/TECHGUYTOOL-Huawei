@@ -72,6 +72,12 @@ jobs:
       - name: Re-prove complete Device Gateway behavior
         run: cargo test --locked --manifest-path rust/device_gateway/Cargo.toml --all-targets
 
+      - name: Remove generated Rust build output before source review
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf rust/contracts_core/target rust/device_gateway/target
+
       - name: Regenerate deterministic source inventory
         run: python tools/build_source_inventory.py
 
