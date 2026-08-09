@@ -1,5 +1,6 @@
 {
   "phase": 7,
+  "rustfmt_request": "owner",
   "schema": "techguytool-huawei.phase7-receipt.v1",
   "status": "UNFROZEN"
 }
