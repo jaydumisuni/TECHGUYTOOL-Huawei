@@ -39,7 +39,9 @@ jobs:
         run: |
           $ErrorActionPreference = "Stop"
           python -m pip install --upgrade pip
-          python -m pip install -e ".[test]" pyside6-deploy
+          python -m pip install -e ".[test]" "nuitka==2.6.8" ordered_set zstandard
+          $deploy = Get-Command pyside6-deploy -ErrorAction Stop
+          Write-Host "pyside6-deploy=$($deploy.Source)"
 
       - name: Prove clean Windows servicing primitives
         shell: pwsh
