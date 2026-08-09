@@ -1,4 +1,5 @@
 {
   "schema": "techguytool-huawei.phase6-leases-receipt.v1",
-  "status": "PHASE6_LEASES_UNFROZEN"
+  "status": "PHASE6_LEASES_UNFROZEN",
+  "source_inventory_request": "freeze"
 }
