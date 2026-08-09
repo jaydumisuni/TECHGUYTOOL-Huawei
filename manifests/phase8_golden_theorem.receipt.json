@@ -1,0 +1,37 @@
+{
+  "generated_at": "2026-08-09T16:00:02Z",
+  "hosted_proof": {
+    "repository": "jaydumisuni/TECHGUYTOOL-Huawei",
+    "run_id": 31322497031,
+    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/31322497031",
+    "tested_revision": "27ad1dd08488ec7aeeb94e434f02b44671efb4c2",
+    "workflow": "Software Phase Proof"
+  },
+  "owner_verification": {
+    "authority_commit": "9b8f1f7067ffb08b76cbb087ed00ac1ca6ba6d46",
+    "source_proof_run_id": 31322497031,
+    "source_revision": "27ad1dd08488ec7aeeb94e434f02b44671efb4c2",
+    "status": "CONFIRMED"
+  },
+  "phase": 8,
+  "phase_name": "Phase 8 P10Revive Golden Theorem",
+  "predecessor_merge": "79404e0825ee11309f58996b75f53733f4e35fda",
+  "proof": {
+    "active_phase_proof": "PASS",
+    "complete_python_regression": "PASS",
+    "contract_core_regression": "PASS",
+    "device_gateway_regression": "PASS",
+    "rust_clippy": "PASS",
+    "rust_format": "PASS",
+    "rust_tests": "PASS",
+    "source_freeze_verifier": "PASS",
+    "srg_20_for_2": "40/40 PASS"
+  },
+  "schema": "techguytool-huawei.phase8-receipt.v1",
+  "source_inventory": {
+    "path": "manifests/source_inventory.json",
+    "sha256": "576b9ecccbe1d4122fc27f1ded549648fa07196799241f1d09de232bcd5b54d9"
+  },
+  "status": "FROZEN",
+  "truth_boundary": "This receipt proves only the software authority described by the active phase. Physical-device certification, external proprietary artifacts, Windows signing and hardware-specific destructive operations remain outside software-only proof unless the phase plan explicitly records independent physical evidence."
+}
