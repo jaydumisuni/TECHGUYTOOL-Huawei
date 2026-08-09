@@ -1,0 +1,8 @@
+{
+  "phase": 12,
+  "schema": "techguytool-huawei.phase12-receipt.v1",
+  "status": "UNFROZEN",
+  "maturity": "replay_supported",
+  "includes_execution": false,
+  "device_authority": "none"
+}
