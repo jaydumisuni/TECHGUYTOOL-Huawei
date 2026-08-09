@@ -8,5 +8,5 @@
   "execution_authority": "none",
   "device_authority": "none",
   "physical_vog_certification": "HARDWARE_PENDING",
-  "freeze_request": "owner"
+  "proof_trigger": "frozen-inventory"
 }
