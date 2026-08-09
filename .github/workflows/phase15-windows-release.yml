@@ -1,0 +1,148 @@
+name: Phase 15 Windows Release Candidate
+
+on:
+  push:
+    branches: ["phase15/**"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-release-candidate:
+    runs-on: windows-latest
+    steps:
+      - name: Check out reviewed source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up Rust 1.75
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          rustup toolchain install 1.75.0 --profile minimal
+          rustup override set 1.75.0
+          rustc --version
+          cargo --version
+
+      - name: Install release dependencies
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[test]" pyside6-deploy
+
+      - name: Prove clean Windows servicing primitives
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $PnPUtil = Get-Command pnputil.exe -ErrorAction Stop
+          $PnP = Get-Command Get-PnpDevice -ErrorAction Stop
+          Write-Host "pnputil=$($PnPUtil.Source)"
+          Write-Host "Get-PnpDevice=$($PnP.Source)"
+          $sample = Get-PnpDevice -PresentOnly | Select-Object -First 3 Status, Class, FriendlyName, InstanceId
+          if (-not $sample) { throw "Clean Windows runner exposed no present PnP inventory." }
+          $sample | ConvertTo-Json -Depth 4 | Write-Host
+
+      - name: Locate Windows signing tool
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $root = "${env:ProgramFiles(x86)}\Windows Kits\10\bin"
+          $tool = Get-ChildItem -Path $root -Filter signtool.exe -Recurse -ErrorAction Stop |
+            Where-Object { $_.FullName -match '\\x64\\signtool\.exe$' } |
+            Sort-Object FullName -Descending |
+            Select-Object -First 1
+          if (-not $tool) { throw "signtool.exe was not found on the Windows runner." }
+          $tool.DirectoryName | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          Write-Host "signtool=$($tool.FullName)"
+
+      - name: Create isolated CI test-signing certificate
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $cert = New-SelfSignedCertificate `
+            -Type CodeSigningCert `
+            -Subject "CN=THETECHGUY Phase15 CI Test Signing - NOT FOR PRODUCTION" `
+            -CertStoreLocation "Cert:\CurrentUser\My" `
+            -KeyAlgorithm RSA `
+            -KeyLength 2048 `
+            -HashAlgorithm SHA256 `
+            -KeyExportPolicy Exportable `
+            -NotAfter (Get-Date).AddDays(1)
+          if (-not $cert -or -not $cert.Thumbprint) { throw "CI test certificate creation failed." }
+          $cer = Join-Path $env:RUNNER_TEMP "phase15-ci-test-signing.cer"
+          Export-Certificate -Cert $cert -FilePath $cer | Out-Null
+          Import-Certificate -FilePath $cer -CertStoreLocation "Cert:\CurrentUser\Root" | Out-Null
+          "CI_CERT_THUMBPRINT=$($cert.Thumbprint)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "Created short-lived CI test-signing certificate."
+
+      - name: Build and CI-sign canonical one-file executable
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          .\build_windows.ps1 -SkipInstall -CiTestSigning -CertificateThumbprint $env:CI_CERT_THUMBPRINT
+
+      - name: Verify Authenticode, checksum and provenance
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $exe = Get-ChildItem -Path dist -Filter "TECHGUYTOOL_Huawei.exe" -Recurse | Select-Object -First 1
+          if (-not $exe) { throw "Release executable missing." }
+          $sig = Get-AuthenticodeSignature $exe.FullName
+          if ($sig.Status -ne "Valid") { throw "CI Authenticode status is $($sig.Status)." }
+          $sumPath = Join-Path $exe.DirectoryName "SHA256SUMS.txt"
+          $provPath = Join-Path $exe.DirectoryName "RELEASE_PROVENANCE.json"
+          if (-not (Test-Path $sumPath) -or -not (Test-Path $provPath)) { throw "Release evidence files missing." }
+          $expected = ((Get-Content $sumPath -Raw).Trim() -split '\s+')[0].ToLowerInvariant()
+          $actual = (Get-FileHash -Algorithm SHA256 $exe.FullName).Hash.ToLowerInvariant()
+          if ($expected -ne $actual) { throw "SHA-256 checksum mismatch." }
+          $prov = Get-Content $provPath -Raw | ConvertFrom-Json
+          if ($prov.sha256 -ne $actual) { throw "Release provenance hash mismatch." }
+          if ($prov.signing_mode -ne "ci-test-authenticode" -or $prov.ci_test_signature -ne $true) {
+            throw "CI signing provenance mismatch."
+          }
+          if ($prov.production_signature -ne $false) { throw "CI artifact may not claim production signature." }
+          Write-Host "CI-signed one-file SHA256=$actual"
+
+      - name: Prove one-file extraction and restart after forced close
+        shell: pwsh
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          $ErrorActionPreference = "Stop"
+          $exe = Get-ChildItem -Path dist -Filter "TECHGUYTOOL_Huawei.exe" -Recurse | Select-Object -First 1
+          if (-not $exe) { throw "Release executable missing." }
+          function Test-Launch([string]$label) {
+            $process = Start-Process -FilePath $exe.FullName -PassThru
+            Start-Sleep -Seconds 8
+            if ($process.HasExited) {
+              throw "$label launch exited early with code $($process.ExitCode)."
+            }
+            Stop-Process -Id $process.Id -Force
+            Wait-Process -Id $process.Id -ErrorAction SilentlyContinue
+            Write-Host "$label launch survived extraction/startup and was forcibly closed."
+          }
+          Test-Launch "first"
+          Start-Sleep -Seconds 2
+          Test-Launch "restart"
+
+      - name: Upload Windows release-candidate evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: TECHGUYTOOL-Huawei-phase15-windows-candidate
+          path: |
+            dist/**/TECHGUYTOOL_Huawei.exe
+            dist/**/SHA256SUMS.txt
+            dist/**/RELEASE_PROVENANCE.json
+          if-no-files-found: error
+          retention-days: 7
