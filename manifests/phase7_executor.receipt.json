@@ -1,6 +1,6 @@
 {
+  "freeze_request": "owner-final-source",
   "phase": 7,
-  "proof_trigger": "frozen-inventory",
   "schema": "techguytool-huawei.phase7-receipt.v1",
   "status": "UNFROZEN"
 }
