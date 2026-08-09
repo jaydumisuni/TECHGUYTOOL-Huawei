@@ -1,8 +1,8 @@
 use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
 use techguy_device_gateway::{
-    BoundedAdapter, BoundedExecutor, BoundedStageRequest, CancellationFlag,
-    ExecutionLeaseContext, ExecutorError, LeaseGuard, RawAdapterResult,
+    BoundedAdapter, BoundedExecutor, BoundedStageRequest, CancellationFlag, ExecutionLeaseContext,
+    ExecutorError, LeaseGuard, RawAdapterResult,
 };
 
 const SESSION: &str = "11111111-1111-4111-8111-111111111111";
@@ -159,7 +159,10 @@ fn exact_authority_executes_once_and_verifies_readback() {
     assert!(result.verified);
     assert_eq!(result.lease_id, LEASE_ID);
     assert_eq!(result.bytes_written, PAYLOAD.len() as u64);
-    assert_eq!(result.readback_sha256.as_deref(), Some(payload_hash().as_str()));
+    assert_eq!(
+        result.readback_sha256.as_deref(),
+        Some(payload_hash().as_str())
+    );
 
     let replay = executor
         .execute_authorized(
@@ -188,23 +191,62 @@ fn unregistered_adapter_fails_before_lease_claim() {
 
 #[test]
 fn request_mismatch_fails_before_adapter() {
-    let fields = ["session", "stage", "partition", "adapter", "version", "mode", "range", "reboot"];
+    let fields = [
+        "session",
+        "stage",
+        "partition",
+        "adapter",
+        "version",
+        "mode",
+        "range",
+        "reboot",
+    ];
     for field in fields {
         let mut executor = executor(MemoryAdapter::default());
         let mut request = request();
         let expected = match field {
-            "session" => { request.physical_session_id = "99999999-9999-4999-8999-999999999999".to_owned(); "EXECUTOR_SESSION_MISMATCH" }
-            "stage" => { request.stage_id = "restore.branding".to_owned(); "EXECUTOR_STAGE_MISMATCH" }
-            "partition" => { request.partition = "version_a".to_owned(); "EXECUTOR_PARTITION_MISMATCH" }
-            "adapter" => { request.adapter_id = "other.adapter".to_owned(); "EXECUTOR_ADAPTER_MISMATCH" }
-            "version" => { request.adapter_version = "2.0.0".to_owned(); "EXECUTOR_ADAPTER_VERSION_MISMATCH" }
-            "mode" => { request.current_mode = "qualcomm_firehose".to_owned(); "EXECUTOR_MODE_MISMATCH" }
-            "range" => { request.range_manifest_sha256 = "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee".to_owned(); "EXECUTOR_RANGE_MISMATCH" }
-            "reboot" => { request.request_reboot = true; "EXECUTOR_REBOOT_REQUEST_MISMATCH" }
+            "session" => {
+                request.physical_session_id = "99999999-9999-4999-8999-999999999999".to_owned();
+                "EXECUTOR_SESSION_MISMATCH"
+            }
+            "stage" => {
+                request.stage_id = "restore.branding".to_owned();
+                "EXECUTOR_STAGE_MISMATCH"
+            }
+            "partition" => {
+                request.partition = "version_a".to_owned();
+                "EXECUTOR_PARTITION_MISMATCH"
+            }
+            "adapter" => {
+                request.adapter_id = "other.adapter".to_owned();
+                "EXECUTOR_ADAPTER_MISMATCH"
+            }
+            "version" => {
+                request.adapter_version = "2.0.0".to_owned();
+                "EXECUTOR_ADAPTER_VERSION_MISMATCH"
+            }
+            "mode" => {
+                request.current_mode = "qualcomm_firehose".to_owned();
+                "EXECUTOR_MODE_MISMATCH"
+            }
+            "range" => {
+                request.range_manifest_sha256 =
+                    "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee".to_owned();
+                "EXECUTOR_RANGE_MISMATCH"
+            }
+            "reboot" => {
+                request.request_reboot = true;
+                "EXECUTOR_REBOOT_REQUEST_MISMATCH"
+            }
             _ => unreachable!(),
         };
         let error = executor
-            .execute_authorized(&lease(), &lease_context(), &request, &CancellationFlag::default())
+            .execute_authorized(
+                &lease(),
+                &lease_context(),
+                &request,
+                &CancellationFlag::default(),
+            )
             .unwrap_err();
         assert_eq!(policy_code(error), expected);
     }
@@ -213,10 +255,20 @@ fn request_mismatch_fails_before_adapter() {
 #[test]
 fn payload_hash_size_and_artifact_authority_are_fail_closed() {
     let mut bad_hash = request();
-    bad_hash.payload_sha256 = "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee".to_owned();
+    bad_hash.payload_sha256 =
+        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee".to_owned();
     let mut executor = executor(MemoryAdapter::default());
     assert_eq!(
-        policy_code(executor.execute_authorized(&lease(), &lease_context(), &bad_hash, &CancellationFlag::default()).unwrap_err()),
+        policy_code(
+            executor
+                .execute_authorized(
+                    &lease(),
+                    &lease_context(),
+                    &bad_hash,
+                    &CancellationFlag::default()
+                )
+                .unwrap_err()
+        ),
         "PAYLOAD_HASH_MISMATCH"
     );
 
@@ -224,15 +276,34 @@ fn payload_hash_size_and_artifact_authority_are_fail_closed() {
     wrong_size_context.write_bytes += 1;
     let mut executor = executor(MemoryAdapter::default());
     assert_eq!(
-        policy_code(executor.execute_authorized(&lease(), &wrong_size_context, &request(), &CancellationFlag::default()).unwrap_err()),
+        policy_code(
+            executor
+                .execute_authorized(
+                    &lease(),
+                    &wrong_size_context,
+                    &request(),
+                    &CancellationFlag::default()
+                )
+                .unwrap_err()
+        ),
         "PAYLOAD_SIZE_MISMATCH"
     );
 
     let mut unauthorized = lease_context();
-    unauthorized.artifact_hashes = vec!["eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee".to_owned()];
+    unauthorized.artifact_hashes =
+        vec!["eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee".to_owned()];
     let mut executor = executor(MemoryAdapter::default());
     assert_eq!(
-        policy_code(executor.execute_authorized(&lease(), &unauthorized, &request(), &CancellationFlag::default()).unwrap_err()),
+        policy_code(
+            executor
+                .execute_authorized(
+                    &lease(),
+                    &unauthorized,
+                    &request(),
+                    &CancellationFlag::default()
+                )
+                .unwrap_err()
+        ),
         "PAYLOAD_NOT_AUTHORIZED_ARTIFACT"
     );
 }
@@ -240,13 +311,36 @@ fn payload_hash_size_and_artifact_authority_are_fail_closed() {
 #[test]
 fn mandatory_backup_readback_and_write_count_are_verified() {
     for (adapter, expected) in [
-        (MemoryAdapter { omit_backup: true, ..Default::default() }, "MANDATORY_BACKUP_MISSING"),
-        (MemoryAdapter { corrupt_readback: true, ..Default::default() }, "READBACK_HASH_MISMATCH"),
-        (MemoryAdapter { wrong_count: true, ..Default::default() }, "ADAPTER_WRITE_COUNT_MISMATCH"),
+        (
+            MemoryAdapter {
+                omit_backup: true,
+                ..Default::default()
+            },
+            "MANDATORY_BACKUP_MISSING",
+        ),
+        (
+            MemoryAdapter {
+                corrupt_readback: true,
+                ..Default::default()
+            },
+            "READBACK_HASH_MISMATCH",
+        ),
+        (
+            MemoryAdapter {
+                wrong_count: true,
+                ..Default::default()
+            },
+            "ADAPTER_WRITE_COUNT_MISMATCH",
+        ),
     ] {
         let mut executor = executor(adapter);
         let error = executor
-            .execute_authorized(&lease(), &lease_context(), &request(), &CancellationFlag::default())
+            .execute_authorized(
+                &lease(),
+                &lease_context(),
+                &request(),
+                &CancellationFlag::default(),
+            )
             .unwrap_err();
         assert_eq!(policy_code(error), expected);
     }
@@ -258,13 +352,25 @@ fn cancellation_is_fail_closed_before_and_during_adapter() {
     cancellation.cancel();
     let mut executor = executor(MemoryAdapter::default());
     assert_eq!(
-        policy_code(executor.execute_authorized(&lease(), &lease_context(), &request(), &cancellation).unwrap_err()),
+        policy_code(
+            executor
+                .execute_authorized(&lease(), &lease_context(), &request(), &cancellation)
+                .unwrap_err()
+        ),
         "EXECUTION_CANCELLED_BEFORE_CLAIM"
     );
 
-    let mut executor = executor(MemoryAdapter { cancel_during: true, ..Default::default() });
+    let mut executor = executor(MemoryAdapter {
+        cancel_during: true,
+        ..Default::default()
+    });
     let error = executor
-        .execute_authorized(&lease(), &lease_context(), &request(), &CancellationFlag::default())
+        .execute_authorized(
+            &lease(),
+            &lease_context(),
+            &request(),
+            &CancellationFlag::default(),
+        )
         .unwrap_err();
     assert_eq!(policy_code(error), "EXECUTION_CANCELLED_DURING_ADAPTER");
 }
@@ -272,7 +378,11 @@ fn cancellation_is_fail_closed_before_and_during_adapter() {
 #[test]
 fn duplicate_adapter_identity_is_rejected() {
     let mut executor = BoundedExecutor::new(LeaseGuard::in_memory().unwrap());
-    executor.register_adapter(Box::new(MemoryAdapter::default())).unwrap();
-    let error = executor.register_adapter(Box::new(MemoryAdapter::default())).unwrap_err();
+    executor
+        .register_adapter(Box::new(MemoryAdapter::default()))
+        .unwrap();
+    let error = executor
+        .register_adapter(Box::new(MemoryAdapter::default()))
+        .unwrap_err();
     assert_eq!(policy_code(error), "ADAPTER_ALREADY_REGISTERED");
 }
