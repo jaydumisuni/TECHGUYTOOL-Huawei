@@ -2,6 +2,8 @@ param(
     [switch]$SkipInstall,
     [switch]$SkipRust,
     [switch]$CiTestSigning,
+    [string]$CiTestSigningPfx = $env:TECHGUY_CI_TEST_SIGNING_PFX,
+    [string]$CiTestSigningPassword = $env:TECHGUY_CI_TEST_SIGNING_PASSWORD,
     [string]$CertificateThumbprint = $env:TECHGUY_SIGNING_CERT_THUMBPRINT
 )
 
@@ -23,8 +25,13 @@ if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
 if ($CiTestSigning -and $env:GITHUB_ACTIONS -ne "true") {
     throw "CI test signing is permitted only inside GitHub Actions."
 }
-if ($CiTestSigning -and -not $CertificateThumbprint) {
-    throw "CI test signing requires an explicit temporary certificate thumbprint."
+if ($CiTestSigning) {
+    if (-not $CiTestSigningPfx -or -not (Test-Path $CiTestSigningPfx)) {
+        throw "CI test signing requires an explicit temporary PFX path."
+    }
+    if (-not $CiTestSigningPassword) {
+        throw "CI test signing requires an explicit temporary PFX password."
+    }
 }
 
 if (-not $SkipInstall) {
@@ -71,11 +78,11 @@ $Exe = Get-ChildItem -Path dist -Filter "TECHGUYTOOL_Huawei.exe" -Recurse | Sele
 if (-not $Exe) { throw "TECHGUYTOOL_Huawei.exe was not produced." }
 
 $SigningMode = "unsigned"
-if ($CertificateThumbprint) {
+if ($CiTestSigning -or $CertificateThumbprint) {
     $SignTool = Get-Command signtool.exe -ErrorAction SilentlyContinue
-    if (-not $SignTool) { throw "Signing thumbprint was supplied, but signtool.exe is unavailable." }
+    if (-not $SignTool) { throw "A signing mode was requested, but signtool.exe is unavailable." }
     if ($CiTestSigning) {
-        & $SignTool.Source sign /sha1 $CertificateThumbprint /fd SHA256 $Exe.FullName
+        & $SignTool.Source sign /f $CiTestSigningPfx /p $CiTestSigningPassword /fd SHA256 $Exe.FullName
         $SigningMode = "ci-test-authenticode"
     } else {
         & $SignTool.Source sign /sha1 $CertificateThumbprint /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 $Exe.FullName
@@ -83,11 +90,18 @@ if ($CertificateThumbprint) {
     }
     if ($LASTEXITCODE -ne 0) { throw "Code signing failed." }
     $Signature = Get-AuthenticodeSignature $Exe.FullName
-    if ($Signature.Status -ne "Valid") {
-        throw "Authenticode signature validation failed: $($Signature.Status)"
+    if (-not $Signature.SignerCertificate) {
+        throw "Authenticode signer certificate was not present after signing."
+    }
+    if ($CiTestSigning) {
+        if ($Signature.SignerCertificate.Subject -notlike "*THETECHGUY Phase15 CI Test Signing - NOT FOR PRODUCTION*") {
+            throw "CI Authenticode signer identity mismatch."
+        }
+    } elseif ($Signature.Status -ne "Valid") {
+        throw "Production Authenticode signature validation failed: $($Signature.Status)"
     }
 } else {
-    Write-Warning "No signing certificate thumbprint supplied. The executable is verified but unsigned and is not production-release eligible."
+    Write-Warning "No signing certificate supplied. The executable is verified but unsigned and is not production-release eligible."
 }
 
 $Hash = Get-FileHash -Algorithm SHA256 $Exe.FullName
