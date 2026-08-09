@@ -1,16 +1,37 @@
 {
+  "generated_at": "2026-08-09T22:50:22Z",
+  "hosted_proof": {
+    "repository": "jaydumisuni/TECHGUYTOOL-Huawei",
+    "run_id": 31340297316,
+    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/31340297316",
+    "tested_revision": "787920d18514cbd6f6ff010fd07ed535c9826ced",
+    "workflow": "Software Phase Proof"
+  },
+  "owner_verification": {
+    "authority_commit": "742a04dd66bc5647ed1df8b8d5d56244fb21e277",
+    "source_proof_run_id": 31340297316,
+    "source_revision": "787920d18514cbd6f6ff010fd07ed535c9826ced",
+    "status": "CONFIRMED"
+  },
   "phase": 14,
+  "phase_name": "Phase 14 Qualcomm and MediaTek Expansion",
+  "predecessor_merge": "78323631cd3187d9a4576c8a62b46e7862389905",
+  "proof": {
+    "active_phase_proof": "PASS",
+    "complete_python_regression": "PASS",
+    "contract_core_regression": "PASS",
+    "device_gateway_regression": "PASS",
+    "rust_clippy": "PASS",
+    "rust_format": "PASS",
+    "rust_tests": "PASS",
+    "source_freeze_verifier": "PASS",
+    "srg_20_for_2": "40/40 PASS"
+  },
   "schema": "techguytool-huawei.phase14-receipt.v1",
-  "status": "UNFROZEN",
-  "proof_level": "replay_supported",
-  "hardware_certification": "HARDWARE_PENDING",
-  "physical_qcom_9008": "HARDWARE_PENDING",
-  "physical_mtk_brom_preloader": "HARDWARE_PENDING",
-  "bounded_write_proof": "DEFERRED",
-  "production_enabled": false,
-  "device_modification": "OUT_OF_SCOPE",
-  "authority_request": {
-    "proof_run_id": 31340297316,
-    "tested_revision": "787920d18514cbd6f6ff010fd07ed535c9826ced"
-  }
+  "source_inventory": {
+    "path": "manifests/source_inventory.json",
+    "sha256": "3e51f9418dfceb5433f1392d30f16d90bf8e2228fd322494ac68d5a486be25cd"
+  },
+  "status": "FROZEN",
+  "truth_boundary": "This receipt proves only the software authority described by the active phase. Physical-device certification, external proprietary artifacts, Windows signing and hardware-specific destructive operations remain outside software-only proof unless the phase plan explicitly records independent physical evidence."
 }
