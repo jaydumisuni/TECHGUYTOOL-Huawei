@@ -55,6 +55,7 @@ jobs:
           python -m compileall -q
           tools/prove_active_software_phase.py
           tools/verify_software_phase_receipt.py
+          tools/verify_historical_phase6_authority.py
           tools/build_active_software_phase_receipt.py
           tools/build_source_inventory.py
 
@@ -100,7 +101,7 @@ jobs:
           python tools/build_phase3_receipt.py --verify
           python tools/build_phase4_receipt.py --verify
           python tools/build_phase5_receipt.py --verify --verify-hosted-run
-          python tools/build_phase6_receipt.py --verify --verify-hosted-run
+          python tools/verify_historical_phase6_authority.py
 
       - name: Run complete Python regression
         run: python -m pytest -q
