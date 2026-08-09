@@ -12,69 +12,69 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 INVENTORY = ROOT / "manifests" / "source_inventory.json"
-OUTPUT = ROOT / "manifests" / "phase4_kirin_xray.receipt.json"
+OUTPUT = ROOT / "manifests" / "phase5_decision_corps.receipt.json"
 EXPECTED_REPOSITORY = "jaydumisuni/TECHGUYTOOL-Huawei"
-EXPECTED_WORKFLOW_NAME = "Phase 4 Harden Kirin Xray"
-PHASE3_MERGE_COMMIT = "40bb352f3f2ea2da1f7ec6cc977a30ba4dc2d3dd"
-PHASE4_BRANCH = "phase4/harden-kirin-xray"
-PROVIDER_ID = "kirin.xray"
-PROVIDER_VERSION = "0.2.0"
-SPECIALIST_DONOR_COMMIT = "d26152d38c197ba0bf98f41a66bed7ceb0575ce1"
-REPLAY_CASES = 2
-PHASE4_UNIT_TESTS = 15
-DEVICE_AUTHORITY = "none"
-XRAY_AUTHORITY = "read_only"
+EXPECTED_WORKFLOW_NAME = "Phase 5 Repair Decision Corps"
+PHASE4_MERGE_COMMIT = "775d922a9fe31acb0df316d03b5c6b149a3eb8f2"
+PHASE5_BRANCH = "phase5/repair-decision-corps-v2"
 INVENTORY_PATH = "manifests/source_inventory.json"
+OFFICER_ORDER = [
+    "identity.officer",
+    "mode.officer",
+    "firmware.officer",
+    "artifact.officer",
+    "recovery.officer",
+    "route.planner",
+    "safety.challenger",
+    "verification.judge",
+]
+VETO_OFFICERS = [
+    "identity.officer",
+    "recovery.officer",
+    "safety.challenger",
+    "verification.judge",
+]
 TRUTH_BOUNDARY = (
-    "This receipt proves only Phase 4 deterministic read-only Kirin Xray replay, "
-    "provider authority, frozen Phase 2 contract emission, real Gateway publication, "
-    "journal integrity and restart recovery. It does not prove live Huawei USB discovery, "
-    "loader compatibility, OEMINFO construction or modification, partition writes, "
-    "flashing, reboot, unlock/relock, physical VOG recovery, Windows packaging or signing."
+    "This receipt proves Phase 5 deterministic governance over frozen read-only Xray replay, "
+    "including veto precedence and the historical stock-Fastboot exit gate. It does not grant "
+    "mode-lease, execution-lease, USB/serial, partition-write, flashing, reboot, loader-transfer, "
+    "OEMINFO-write, or physical-device execution authority."
 )
-PRELIMINARY_STATUS = "PHASE4_KIRIN_XRAY_PROVEN_PENDING_OWNER"
-FROZEN_STATUS = "PHASE4_KIRIN_XRAY_FROZEN"
+PRELIMINARY_STATUS = "PHASE5_DECISION_CORPS_PROVEN_PENDING_OWNER"
+FROZEN_STATUS = "PHASE5_DECISION_CORPS_FROZEN"
 _SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 _TIMESTAMP_RE = re.compile(
     r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
 )
-_ALLOWED_POST_PROOF_CHANGES = {
-    "manifests/phase4_kirin_xray.receipt.json",
-    "manifests/source_inventory.json",
-    "rust/device_gateway/Cargo.lock",
-}
+_ALLOWED_POST_PROOF_CHANGES = {"manifests/phase5_decision_corps.receipt.json"}
 _REQUIRED_PROOF = {
-    "phase4_python_compile",
-    "phase4_unit_and_authority_tests",
-    "p10_deterministic_replay",
-    "p30_deterministic_replay",
+    "phase5_python_compile",
+    "phase5_decision_tests",
+    "historical_stock_fastboot_exit_gate",
+    "p30_reboot_block",
+    "p30_repair_stage_selection",
+    "p10_finalization_block",
+    "unauthorized_service_endpoint_rejection",
+    "veto_precedence",
+    "session_binding",
     "phase2_contract_validation",
-    "real_gateway_publication",
-    "gateway_journal_verification",
-    "gateway_restart_recovery",
-    "provider_read_only_boundary",
-    "forbidden_write_authority_rejection",
+    "no_execution_surface",
     "phase2_regression",
     "phase3_regression",
+    "phase4_regression",
     "complete_python_regression",
     "source_freeze_verifier",
     "srg_20_for_2",
     "rust_toolchain",
 }
-_REQUIRED_PHASE4_PATHS = {
-    ".github/workflows/phase4-authority.yml",
-    ".github/workflows/phase4-kirin-xray.yml",
-    "docs/PHASE_4_KIRIN_XRAY.md",
-    "manifests/kirin_xray_sources.json",
-    "replay/kirin/p10_golden_workflow.json",
-    "replay/kirin/p30_main_version_mode_hazard.json",
-    "techguy_huawei/kirin_xray.py",
-    "techguy_huawei/kirin_xray_authority.py",
-    "tests/test_kirin_xray.py",
-    "tests/test_kirin_xray_authority.py",
-    "tools/build_phase4_receipt.py",
-    "tools/build_source_inventory.py",
-    "tools/prove_kirin_xray_replay.py",
+_REQUIRED_PHASE5_PATHS = {
+    ".github/workflows/phase5-authority.yml",
+    ".github/workflows/phase5-decision-corps.yml",
+    "docs/PHASE_5_REPAIR_DECISION_CORPS.md",
+    "techguy_huawei/decision_corps.py",
+    "tests/test_decision_corps.py",
+    "tools/build_phase5_receipt.py",
+    "tools/prove_decision_corps.py",
 }
 
 
@@ -104,16 +104,19 @@ def _validate_proof_identity(
 
 
 def _load_hosted_run(proof_run_id: str) -> dict[str, Any]:
-    url = f"https://api.github.com/repos/{EXPECTED_REPOSITORY}/actions/runs/{proof_run_id}"
-    headers = {
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-        "User-Agent": "TECHGUYTOOL-Huawei-phase4-verifier",
-    }
-    token = os.environ.get("GITHUB_TOKEN")
-    if token:
-        headers["Authorization"] = f"Bearer {token}"
-    request = urllib.request.Request(url, headers=headers)
+    request = urllib.request.Request(
+        f"https://api.github.com/repos/{EXPECTED_REPOSITORY}/actions/runs/{proof_run_id}",
+        headers={
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+            "User-Agent": "TECHGUYTOOL-Huawei-phase5-verifier",
+            **(
+                {"Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}"}
+                if os.environ.get("GITHUB_TOKEN")
+                else {}
+            ),
+        },
+    )
     with urllib.request.urlopen(request, timeout=20) as response:
         return json.load(response)
 
@@ -127,13 +130,13 @@ def verify_hosted_run(proof_run_id: str, tested_revision: str) -> None:
     if run.get("head_sha") != tested_revision:
         raise ValueError("hosted proof run head SHA does not match tested_revision")
     if run.get("name") != EXPECTED_WORKFLOW_NAME:
-        raise ValueError("hosted proof run is not the Phase 4 workflow")
+        raise ValueError("hosted proof run is not the Phase 5 workflow")
     if str(run.get("id")) != proof_run_id:
         raise ValueError("hosted proof run ID does not match the receipt")
     if run.get("status") != "completed":
-        raise ValueError("hosted Phase 4 proof run is not completed")
+        raise ValueError("hosted Phase 5 proof run is not completed")
     if run.get("conclusion") != "success":
-        raise ValueError("hosted Phase 4 proof run did not conclude successfully")
+        raise ValueError("hosted Phase 5 proof run did not conclude successfully")
 
 
 def _parse_inventory_bytes(value: bytes) -> dict[str, Any]:
@@ -147,32 +150,31 @@ def _inventory_payload() -> dict[str, Any]:
     return _parse_inventory_bytes(INVENTORY.read_bytes())
 
 
-def _phase4_files(inventory: dict[str, Any]) -> list[dict[str, Any]]:
-    phase4_files = [
+def _phase5_files(inventory: dict[str, Any]) -> list[dict[str, Any]]:
+    files = [
         item
         for item in inventory.get("files", [])
-        if item.get("origin") == "phase4_kirin_xray"
+        if item.get("origin") == "phase5_repair_decision_corps"
     ]
-    actual_paths = {str(item.get("path")) for item in phase4_files}
-    missing = sorted(_REQUIRED_PHASE4_PATHS - actual_paths)
+    paths = {str(item.get("path")) for item in files}
+    missing = sorted(_REQUIRED_PHASE5_PATHS - paths)
     if missing:
         raise ValueError(
-            "source inventory is missing Phase 4 proof/source files: " + ", ".join(missing)
+            "source inventory is missing Phase 5 proof/source files: " + ", ".join(missing)
         )
-    return phase4_files
+    return files
 
 
-def _expected_phase4(inventory: dict[str, Any]) -> dict[str, Any]:
+def _expected_phase5(inventory: dict[str, Any]) -> dict[str, Any]:
     return {
-        "branch": PHASE4_BRANCH,
-        "provider_id": PROVIDER_ID,
-        "provider_version": PROVIDER_VERSION,
-        "specialist_donor_commit": SPECIALIST_DONOR_COMMIT,
-        "replay_cases": REPLAY_CASES,
-        "phase4_unit_tests": PHASE4_UNIT_TESTS,
-        "device_authority": DEVICE_AUTHORITY,
-        "xray_authority": XRAY_AUTHORITY,
-        "phase4_file_count": len(_phase4_files(inventory)),
+        "branch": PHASE5_BRANCH,
+        "officer_order": OFFICER_ORDER,
+        "veto_officers": VETO_OFFICERS,
+        "replay_cases": 2,
+        "decision_authority": "governance_only",
+        "execution_authority": "none",
+        "device_authority": "none",
+        "phase5_file_count": len(_phase5_files(inventory)),
     }
 
 
@@ -182,16 +184,14 @@ def build(
     proof_run_id: str,
     generated_at: str,
     proof_run_url: str,
-) -> dict[str, object]:
+) -> dict[str, Any]:
     _validate_proof_identity(tested_revision, proof_run_id, generated_at, proof_run_url)
     inventory = _inventory_payload()
-    phase4 = _expected_phase4(inventory)
-
     return {
-        "schema": "techguytool-huawei.phase4-kirin-xray-receipt.v1",
+        "schema": "techguytool-huawei.phase5-decision-corps-receipt.v1",
         "status": PRELIMINARY_STATUS,
         "generated_at": generated_at,
-        "phase3_merge_commit": PHASE3_MERGE_COMMIT,
+        "phase4_merge_commit": PHASE4_MERGE_COMMIT,
         "hosted_proof": {
             "repository": EXPECTED_REPOSITORY,
             "workflow": EXPECTED_WORKFLOW_NAME,
@@ -199,20 +199,22 @@ def build(
             "run_id": int(proof_run_id),
             "run_url": proof_run_url,
         },
-        "phase4": phase4,
+        "phase5": _expected_phase5(inventory),
         "proof": {
-            "phase4_python_compile": "PASS",
-            "phase4_unit_and_authority_tests": "PASS",
-            "p10_deterministic_replay": "PASS",
-            "p30_deterministic_replay": "PASS",
+            "phase5_python_compile": "PASS",
+            "phase5_decision_tests": "PASS",
+            "historical_stock_fastboot_exit_gate": "PASS",
+            "p30_reboot_block": "PASS",
+            "p30_repair_stage_selection": "PASS",
+            "p10_finalization_block": "PASS",
+            "unauthorized_service_endpoint_rejection": "PASS",
+            "veto_precedence": "PASS",
+            "session_binding": "PASS",
             "phase2_contract_validation": "PASS",
-            "real_gateway_publication": "PASS",
-            "gateway_journal_verification": "PASS",
-            "gateway_restart_recovery": "PASS",
-            "provider_read_only_boundary": "PASS",
-            "forbidden_write_authority_rejection": "PASS",
+            "no_execution_surface": "PASS",
             "phase2_regression": "PASS",
             "phase3_regression": "PASS",
+            "phase4_regression": "PASS",
             "complete_python_regression": "PASS",
             "source_freeze_verifier": "PASS",
             "srg_20_for_2": "40/40 PASS",
@@ -229,23 +231,23 @@ def build(
 
 def verify(*, verify_run: bool = False) -> None:
     receipt = json.loads(OUTPUT.read_text(encoding="utf-8"))
-    if receipt.get("schema") != "techguytool-huawei.phase4-kirin-xray-receipt.v1":
-        raise ValueError("unsupported Phase 4 receipt schema")
+    if receipt.get("schema") != "techguytool-huawei.phase5-decision-corps-receipt.v1":
+        raise ValueError("unsupported Phase 5 receipt schema")
     status = receipt.get("status")
     if status not in {PRELIMINARY_STATUS, FROZEN_STATUS}:
-        raise ValueError("unsupported Phase 4 receipt status")
-    if receipt.get("phase3_merge_commit") != PHASE3_MERGE_COMMIT:
-        raise ValueError("Phase 3 merge authority changed")
+        raise ValueError("unsupported Phase 5 receipt status")
+    if receipt.get("phase4_merge_commit") != PHASE4_MERGE_COMMIT:
+        raise ValueError("Phase 4 merge authority changed")
     if receipt.get("truth_boundary") != TRUTH_BOUNDARY:
-        raise ValueError("Phase 4 truth boundary changed")
+        raise ValueError("Phase 5 truth boundary changed")
 
     hosted = receipt.get("hosted_proof")
     if not isinstance(hosted, dict):
-        raise ValueError("Phase 4 receipt is missing hosted proof identity")
+        raise ValueError("Phase 5 receipt is missing hosted proof identity")
     if hosted.get("repository") != EXPECTED_REPOSITORY:
-        raise ValueError("Phase 4 receipt repository identity changed")
+        raise ValueError("Phase 5 receipt repository identity changed")
     if hosted.get("workflow") != EXPECTED_WORKFLOW_NAME:
-        raise ValueError("Phase 4 receipt workflow identity changed")
+        raise ValueError("Phase 5 receipt workflow identity changed")
     tested_revision = str(hosted.get("tested_revision"))
     run_id = str(hosted.get("run_id"))
     run_url = str(hosted.get("run_url"))
@@ -256,14 +258,14 @@ def verify(*, verify_run: bool = False) -> None:
 
     inventory_claim = receipt.get("source_inventory")
     if not isinstance(inventory_claim, dict):
-        raise ValueError("Phase 4 receipt is missing source inventory identity")
+        raise ValueError("Phase 5 receipt is missing source inventory identity")
     if inventory_claim.get("path") != INVENTORY_PATH:
-        raise ValueError("Phase 4 receipt source inventory path changed")
+        raise ValueError("Phase 5 receipt source inventory path changed")
 
     owner = receipt.get("owner_verification")
     if status == FROZEN_STATUS:
         if not isinstance(owner, dict) or owner.get("status") != "CONFIRMED":
-            raise ValueError("frozen Phase 4 receipt requires confirmed owner verification")
+            raise ValueError("frozen Phase 5 receipt requires confirmed owner verification")
         authority_commit = str(owner.get("authority_commit"))
         source_revision = str(owner.get("source_revision"))
         source_run_id = str(owner.get("source_proof_run_id"))
@@ -271,52 +273,51 @@ def verify(*, verify_run: bool = False) -> None:
             raise ValueError("owner verification authority_commit is invalid")
         if source_revision != tested_revision or source_run_id != run_id:
             raise ValueError("owner verification does not match hosted proof identity")
+        _require_ancestor(PHASE4_MERGE_COMMIT, tested_revision)
         _require_ancestor(tested_revision, authority_commit)
         _require_ancestor(authority_commit, "HEAD")
-        authority_inventory_bytes = _git_file_bytes(authority_commit, INVENTORY_PATH)
-        authority_inventory = _parse_inventory_bytes(authority_inventory_bytes)
-        if inventory_claim.get("sha256") != sha256_bytes(authority_inventory_bytes):
-            raise ValueError("Phase 4 receipt does not match its authority inventory")
+        inventory_bytes = _git_file_bytes(authority_commit, INVENTORY_PATH)
+        authority_inventory = _parse_inventory_bytes(inventory_bytes)
+        if inventory_claim.get("sha256") != sha256_bytes(inventory_bytes):
+            raise ValueError("Phase 5 receipt does not match its authority inventory")
         if inventory_claim.get("file_count") != authority_inventory.get("file_count"):
-            raise ValueError("Phase 4 receipt authority inventory file count changed")
-        expected_phase4 = _expected_phase4(authority_inventory)
+            raise ValueError("Phase 5 authority inventory file count changed")
+        expected_phase5 = _expected_phase5(authority_inventory)
         changed = _changed_files(tested_revision, authority_commit)
     else:
         if owner is not None:
-            raise ValueError("preliminary Phase 4 receipt must not claim owner verification")
+            raise ValueError("preliminary Phase 5 receipt must not claim owner verification")
+        _require_ancestor(PHASE4_MERGE_COMMIT, tested_revision)
         _require_ancestor(tested_revision, "HEAD")
         current_inventory = _inventory_payload()
         if inventory_claim.get("sha256") != sha256(INVENTORY):
-            raise ValueError("Phase 4 receipt does not match the committed source inventory")
+            raise ValueError("Phase 5 receipt does not match the committed source inventory")
         if inventory_claim.get("file_count") != current_inventory.get("file_count"):
-            raise ValueError("Phase 4 receipt source inventory file count changed")
-        expected_phase4 = _expected_phase4(current_inventory)
+            raise ValueError("Phase 5 source inventory file count changed")
+        expected_phase5 = _expected_phase5(current_inventory)
         changed = _changed_files(tested_revision, "HEAD")
 
-    if receipt.get("phase4") != expected_phase4:
-        raise ValueError("Phase 4 immutable metadata does not match its authority inventory")
+    if receipt.get("phase5") != expected_phase5:
+        raise ValueError("Phase 5 immutable metadata does not match its authority inventory")
 
     proof = receipt.get("proof")
     if not isinstance(proof, dict):
-        raise ValueError("Phase 4 receipt is missing proof results")
-    proof_keys = set(proof)
-    missing_keys = sorted(_REQUIRED_PROOF - proof_keys)
-    unknown_keys = sorted(proof_keys - _REQUIRED_PROOF)
-    if missing_keys or unknown_keys:
-        raise ValueError(
-            f"Phase 4 proof key mismatch; missing={missing_keys} unknown={unknown_keys}"
-        )
+        raise ValueError("Phase 5 receipt is missing proof results")
+    missing = sorted(_REQUIRED_PROOF - set(proof))
+    unknown = sorted(set(proof) - _REQUIRED_PROOF)
+    if missing or unknown:
+        raise ValueError(f"Phase 5 proof key mismatch; missing={missing} unknown={unknown}")
     failed = [
-        name
-        for name, value in proof.items()
-        if name not in {"rust_toolchain", "srg_20_for_2"} and value != "PASS"
+        key
+        for key, value in proof.items()
+        if key not in {"srg_20_for_2", "rust_toolchain"} and value != "PASS"
     ]
     if failed:
-        raise ValueError("Phase 4 receipt contains non-PASS proof fields: " + ", ".join(failed))
-    if proof["rust_toolchain"] != "1.75.0":
-        raise ValueError("Phase 4 receipt records an unsupported Rust toolchain")
+        raise ValueError("Phase 5 receipt contains non-PASS proof fields: " + ", ".join(failed))
     if proof["srg_20_for_2"] != "40/40 PASS":
-        raise ValueError("Phase 4 receipt does not prove the SRG 20-for-2 gate")
+        raise ValueError("Phase 5 receipt does not prove SRG 20-for-2")
+    if proof["rust_toolchain"] != "1.75.0":
+        raise ValueError("Phase 5 receipt records an unsupported Rust toolchain")
 
     unexpected = sorted(set(changed) - _ALLOWED_POST_PROOF_CHANGES)
     if unexpected:
@@ -357,7 +358,7 @@ def _git_file_bytes(revision: str, path: str) -> bytes:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Build or verify the Phase 4 proof receipt")
+    parser = argparse.ArgumentParser(description="Build or verify the Phase 5 proof receipt")
     parser.add_argument("--verify", action="store_true")
     parser.add_argument("--verify-hosted-run", action="store_true")
     parser.add_argument("--tested-revision")

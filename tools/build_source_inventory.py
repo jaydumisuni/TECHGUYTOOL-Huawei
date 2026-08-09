@@ -9,6 +9,7 @@ OUTPUT = ROOT / "manifests" / "source_inventory.json"
 EXCLUDED = {
     "manifests/phase3_gateway.receipt.json",
     "manifests/phase4_kirin_xray.receipt.json",
+    "manifests/phase5_decision_corps.receipt.json",
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json",
 }
@@ -66,6 +67,15 @@ PHASE4_PATHS = {
     "tools/build_source_inventory.py",
     "tools/prove_kirin_xray_replay.py",
 }
+PHASE5_PATHS = {
+    ".github/workflows/phase5-authority.yml",
+    ".github/workflows/phase5-decision-corps.yml",
+    "docs/PHASE_5_REPAIR_DECISION_CORPS.md",
+    "techguy_huawei/decision_corps.py",
+    "tests/test_decision_corps.py",
+    "tools/build_phase5_receipt.py",
+    "tools/prove_decision_corps.py",
+}
 
 
 def sha256(path: Path) -> str:
@@ -94,6 +104,8 @@ def source_files() -> list[Path]:
 
 
 def origin_for(rel: str) -> str:
+    if rel in PHASE5_PATHS:
+        return "phase5_repair_decision_corps"
     if rel in PHASE4_PATHS or rel.startswith(PHASE4_PREFIXES):
         return "phase4_kirin_xray"
     if rel in PHASE3_PATHS or rel.startswith(PHASE3_PREFIXES):

@@ -43,8 +43,8 @@ jobs:
       - name: Install Python proof dependency
         run: python -m pip install --disable-pip-version-check pytest==8.3.5
 
-      - name: Resolve the gateway dependency lock
-        run: cargo generate-lockfile --manifest-path rust/device_gateway/Cargo.toml
+      - name: Verify the committed gateway dependency lock
+        run: cargo metadata --locked --no-deps --format-version 1 --manifest-path rust/device_gateway/Cargo.toml > /dev/null
 
       - name: Compile deterministic Python gateway modules
         run: >-
@@ -104,14 +104,14 @@ jobs:
           python tools/verify_source_freeze.py --json
           python tools/build_phase2_receipt.py --verify
           git diff --check
-          unexpected="$(git diff --name-only | grep -Ev '^(manifests/source_inventory\.json|rust/device_gateway/Cargo\.lock)$' || true)"
+          unexpected="$(git diff --name-only | grep -Ev '^manifests/source_inventory\.json$' || true)"
           test -z "$unexpected" || {
             echo "Unexpected generated source changes:" >&2
             echo "$unexpected" >&2
             exit 1
           }
           if [[ "$EVENT_NAME" == "pull_request" || "$IS_FREEZE_COMMIT" == "true" || "$IS_OWNER_VERIFICATION" == "true" ]]; then
-            git diff --exit-code -- manifests/source_inventory.json rust/device_gateway/Cargo.lock
+            git diff --exit-code -- manifests/source_inventory.json
             python tools/build_phase3_receipt.py --verify
           fi
 
@@ -155,7 +155,7 @@ jobs:
         run: |
           set -euo pipefail
           generated_at="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-          cargo generate-lockfile --manifest-path rust/device_gateway/Cargo.toml
+          cargo metadata --locked --no-deps --format-version 1 --manifest-path rust/device_gateway/Cargo.toml > /dev/null
           python tools/build_source_inventory.py
           python tools/build_phase3_receipt.py \
             --tested-revision "$TESTED_REVISION" \
@@ -166,7 +166,7 @@ jobs:
           python tools/build_phase2_receipt.py --verify
           python tools/build_phase3_receipt.py --verify
           git diff --check
-          unexpected="$(git diff --name-only | grep -Ev '^(manifests/phase3_gateway\.receipt\.json|manifests/source_inventory\.json|rust/device_gateway/Cargo\.lock)$' || true)"
+          unexpected="$(git diff --name-only | grep -Ev '^(manifests/phase3_gateway\.receipt\.json|manifests/source_inventory\.json)$' || true)"
           test -z "$unexpected" || {
             echo "Refusing to freeze unexpected files:" >&2
             echo "$unexpected" >&2
@@ -179,12 +179,12 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          if git diff --quiet -- manifests/phase3_gateway.receipt.json manifests/source_inventory.json rust/device_gateway/Cargo.lock; then
+          if git diff --quiet -- manifests/phase3_gateway.receipt.json manifests/source_inventory.json; then
             echo "Phase 3 authority is already frozen."
             exit 0
           fi
           git config user.name "THETECHGUY Phase Freezer"
           git config user.email "actions@users.noreply.github.com"
-          git add manifests/phase3_gateway.receipt.json manifests/source_inventory.json rust/device_gateway/Cargo.lock
+          git add manifests/phase3_gateway.receipt.json manifests/source_inventory.json
           git commit -m "Freeze Phase 3 gateway inventory and proof receipt"
           git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:phase3/device-gateway
