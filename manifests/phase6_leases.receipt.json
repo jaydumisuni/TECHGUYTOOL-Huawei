@@ -1,5 +1,49 @@
 {
+  "generated_at": "2026-08-09T12:45:47Z",
+  "hosted_proof": {
+    "repository": "jaydumisuni/TECHGUYTOOL-Huawei",
+    "run_id": 31314009855,
+    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/31314009855",
+    "tested_revision": "3b68c5de5bb142e42284c4a476631a998b1f3049",
+    "workflow": "Phase 6 Mode and Execution Leases"
+  },
+  "phase5_merge_commit": "da23daae30539b1c6820c9f6878abc4c1cb6714d",
+  "phase6": {
+    "branch": "phase6/mode-execution-leases",
+    "device_authority": "none",
+    "execution_authority": "lease_only",
+    "lease_guard": "rust/device_gateway/src/lease.rs",
+    "mode_authority": "governance_constraint",
+    "single_use_ledger": "sqlite"
+  },
+  "proof": {
+    "complete_python_regression": "PASS",
+    "execution_lease_persistent_single_use": "PASS",
+    "lease_contract_validation": "PASS",
+    "mode_release_conditions": "PASS",
+    "p30_mode_protection": "PASS",
+    "phase2_regression": "PASS",
+    "phase3_regression": "PASS",
+    "phase4_regression": "PASS",
+    "phase5_regression": "PASS",
+    "rust_clippy": "PASS",
+    "rust_format": "PASS",
+    "rust_lease_tests": "PASS",
+    "source_freeze_verifier": "PASS",
+    "srg_20_for_2": "40/40 PASS",
+    "wrong_adapter_rejection": "PASS",
+    "wrong_artifact_rejection": "PASS",
+    "wrong_mode_rejection": "PASS",
+    "wrong_partition_rejection": "PASS",
+    "wrong_range_rejection": "PASS",
+    "wrong_session_rejection": "PASS"
+  },
   "schema": "techguytool-huawei.phase6-leases-receipt.v1",
-  "status": "PHASE6_LEASES_UNFROZEN",
-  "authority_request": "freeze-proven-source"
+  "source_inventory": {
+    "file_count": 142,
+    "path": "manifests/source_inventory.json",
+    "sha256": "f17969ff6c8a0448447a045825715ff9436708f815e41882029ec883087f546d"
+  },
+  "status": "PHASE6_LEASES_PROVEN_PENDING_OWNER",
+  "truth_boundary": "This receipt proves deterministic Rust enforcement of mode and execution leases, including session/artifact/partition/range/mode/expiry/reboot and persistent single-use constraints. It does not implement or authorize a device executor, USB/serial writes, partition writes, flashing, OEMINFO modification, reboot, loader transfer, physical-device repair, Windows packaging or signing."
 }
