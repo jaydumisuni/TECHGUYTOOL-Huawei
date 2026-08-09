@@ -1,9 +1,12 @@
 {
   "phase": 11,
   "schema": "techguytool-huawei.phase11-receipt.v1",
-  "status": "UNFROZEN",
+  "status": "PROVEN_PENDING_OWNER",
   "execution_authority": "none",
   "device_authority": "none",
   "hardware_certification": "EXTERNAL_EVIDENCE_REQUIRED",
-  "proof_trigger": "frozen-inventory"
+  "authority_request": {
+    "proof_run_id": 31326300524,
+    "tested_revision": "9eac1595602fa18e44eda04ef6fe1d3d76b222b2"
+  }
 }
