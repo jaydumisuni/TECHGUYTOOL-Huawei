@@ -4,5 +4,6 @@
   "status": "UNFROZEN",
   "maturity": "replay_supported",
   "includes_execution": false,
-  "device_authority": "none"
+  "device_authority": "none",
+  "freeze_request": "owner"
 }
