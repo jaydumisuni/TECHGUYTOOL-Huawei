@@ -9,6 +9,7 @@
     "rust/device_gateway/src/executor.rs",
     "rust/device_gateway/src/lib.rs",
     "rust/device_gateway/tests/executor.rs",
+    "tools/build_source_inventory.py",
     "tools/prove_active_software_phase.py",
     "tools/prove_phase7_executor.py",
     "tools/verify_software_phase_receipt.py"
