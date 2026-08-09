@@ -9,5 +9,8 @@
   "bounded_write_proof": "DEFERRED",
   "production_enabled": false,
   "device_modification": "OUT_OF_SCOPE",
-  "proof_trigger": "frozen-inventory"
+  "authority_request": {
+    "proof_run_id": 31340297316,
+    "tested_revision": "787920d18514cbd6f6ff010fd07ed535c9826ced"
+  }
 }
