@@ -1,0 +1,129 @@
+name: Phase 6 Lease Authority Freezer
+
+on:
+  push:
+    branches: ["phase6/mode-execution-leases"]
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: phase6-lease-authority
+  cancel-in-progress: false
+
+jobs:
+  freeze-source-inventory:
+    if: >-
+      github.actor == 'jaydumisuni' &&
+      startsWith(github.event.head_commit.message, 'Request Phase 6 source inventory freeze')
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out source inventory request
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Install Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+      - name: Rebuild exact Phase 6 source inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/build_source_inventory.py
+          python tools/verify_source_freeze.py --json
+          git diff --check
+          unexpected="$(git diff --name-only | grep -Ev '^manifests/source_inventory\.json$' || true)"
+          test -z "$unexpected" || { echo "$unexpected" >&2; exit 1; }
+      - name: Freeze Phase 6 source inventory
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name "THETECHGUY Phase 6 Freezer"
+          git config user.email "actions@users.noreply.github.com"
+          git add manifests/source_inventory.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Freeze Phase 6 source inventory"
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:phase6/mode-execution-leases
+
+  freeze-proof-authority:
+    if: >-
+      github.actor == 'jaydumisuni' &&
+      startsWith(github.event.head_commit.message, 'Request Phase 6 authority freeze')
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out authority request
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Install Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+      - name: Resolve successful Phase 6 proof for parent source revision
+        id: proof
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tested_revision="$(git rev-parse HEAD^)"
+          export TESTED_REVISION="$tested_revision"
+          python - <<'PY' > /tmp/phase6-proof.json
+          import json, os, urllib.parse, urllib.request
+          repository = os.environ["GITHUB_REPOSITORY"]
+          tested_revision = os.environ["TESTED_REVISION"]
+          token = os.environ["GITHUB_TOKEN"]
+          query = urllib.parse.urlencode({"head_sha": tested_revision, "status": "completed", "per_page": 100})
+          request = urllib.request.Request(
+              f"https://api.github.com/repos/{repository}/actions/runs?{query}",
+              headers={"Accept": "application/vnd.github+json", "Authorization": f"Bearer {token}", "X-GitHub-Api-Version": "2022-11-28", "User-Agent": "TECHGUYTOOL-Huawei-phase6-authority"},
+          )
+          with urllib.request.urlopen(request, timeout=20) as response:
+              payload = json.load(response)
+          matches = [run for run in payload.get("workflow_runs", []) if run.get("name") == "Phase 6 Mode and Execution Leases" and run.get("head_sha") == tested_revision and run.get("status") == "completed" and run.get("conclusion") == "success"]
+          if not matches:
+              raise SystemExit("No completed successful Phase 6 proof exists for the parent revision")
+          run = max(matches, key=lambda item: int(item["id"]))
+          print(json.dumps({"id": run["id"], "url": run["html_url"]}))
+          PY
+          echo "tested_revision=$tested_revision" >> "$GITHUB_OUTPUT"
+          echo "proof_run_id=$(python -c 'import json; print(json.load(open("/tmp/phase6-proof.json"))["id"])')" >> "$GITHUB_OUTPUT"
+          echo "proof_run_url=$(python -c 'import json; print(json.load(open("/tmp/phase6-proof.json"))["url"])')" >> "$GITHUB_OUTPUT"
+      - name: Build Phase 6 proof authority
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TESTED_REVISION: ${{ steps.proof.outputs.tested_revision }}
+          PROOF_RUN_ID: ${{ steps.proof.outputs.proof_run_id }}
+          PROOF_RUN_URL: ${{ steps.proof.outputs.proof_run_url }}
+        run: |
+          set -euo pipefail
+          generated_at="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          python tools/build_source_inventory.py
+          git diff --exit-code -- manifests/source_inventory.json
+          python tools/build_phase6_receipt.py --verify-hosted-run --tested-revision "$TESTED_REVISION" --proof-run-id "$PROOF_RUN_ID" --generated-at "$generated_at" --proof-run-url "$PROOF_RUN_URL"
+          python tools/build_phase5_receipt.py --verify --verify-hosted-run
+          python tools/build_phase6_receipt.py --verify --verify-hosted-run
+          python tools/verify_source_freeze.py --json
+          git diff --check
+          unexpected="$(git diff --name-only | grep -Ev '^manifests/phase6_leases\.receipt\.json$' || true)"
+          test -z "$unexpected" || { echo "$unexpected" >&2; exit 1; }
+      - name: Freeze Phase 6 proof authority
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name "THETECHGUY Phase 6 Freezer"
+          git config user.email "actions@users.noreply.github.com"
+          git add manifests/phase6_leases.receipt.json
+          git commit -m "Freeze Phase 6 lease proof authority"
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:phase6/mode-execution-leases
