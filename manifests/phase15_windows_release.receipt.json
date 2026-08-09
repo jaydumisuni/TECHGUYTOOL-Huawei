@@ -1,0 +1,12 @@
+{
+  "phase": 15,
+  "schema": "techguytool-huawei.phase15-receipt.v1",
+  "status": "UNFROZEN",
+  "release_filename": "TECHGUYTOOL_Huawei.exe",
+  "windows_ci": "PENDING",
+  "ci_test_signing": "PENDING",
+  "production_signing": "EXTERNAL_CERTIFICATE_REQUIRED",
+  "physical_proof_matrix": "INCOMPLETE",
+  "production_release_status": "EXTERNAL_CERTIFICATION_PENDING",
+  "production_enabled": false
+}
