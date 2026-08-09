@@ -1,0 +1,36 @@
+{
+  "schema": "techguytool-huawei.phase15-windows-release-policy.v1",
+  "release_filename": "TECHGUYTOOL_Huawei.exe",
+  "platform": "windows",
+  "packaging": {
+    "mode": "onefile",
+    "builder": "pyside6-deploy",
+    "engine": "nuitka",
+    "runtime_extraction_required": true,
+    "restart_after_forced_close_required": true,
+    "sha256_required": true
+  },
+  "signing": {
+    "authenticode_required_for_production": true,
+    "ci_test_signing_allowed": true,
+    "production_certificate_may_not_be_committed": true,
+    "production_signing_status": "EXTERNAL_CERTIFICATE_REQUIRED"
+  },
+  "clean_windows": {
+    "github_windows_runner_required": true,
+    "pnputil_presence_required": true,
+    "pnp_inventory_presence_required": true,
+    "physical_driver_install_status": "HARDWARE_PENDING"
+  },
+  "external_data": [
+    "firmware",
+    "SUPER images",
+    "customer backups",
+    "testpoint catalogue images",
+    "operation journals",
+    "registration/license data",
+    "downloaded artifacts"
+  ],
+  "production_enabled": false,
+  "production_release_status": "EXTERNAL_CERTIFICATION_PENDING"
+}
