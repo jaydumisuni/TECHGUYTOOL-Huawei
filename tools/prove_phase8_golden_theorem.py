@@ -1,11 +1,15 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from techguy_huawei.golden_theorem import evaluate_workflow, load_theorem, workflow_plan_from_mapping
 
-ROOT = Path(__file__).resolve().parents[1]
 THEOREM = ROOT / "manifests" / "huawei_revive_golden_theorem.json"
 MODULE = ROOT / "techguy_huawei" / "golden_theorem.py"
 TESTS = ROOT / "tests" / "test_golden_theorem.py"
