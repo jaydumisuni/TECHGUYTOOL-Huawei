@@ -1,0 +1,7 @@
+{
+  "phase": 9,
+  "schema": "techguytool-huawei.phase9-receipt.v1",
+  "status": "UNFROZEN",
+  "hardware_certification": "HARDWARE_PENDING",
+  "production_enabled": false
+}
