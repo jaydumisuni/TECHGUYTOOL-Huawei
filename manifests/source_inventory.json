@@ -10,10 +10,11 @@
     "manifests/phase3_gateway.receipt.json",
     "manifests/phase4_kirin_xray.receipt.json",
     "manifests/phase5_decision_corps.receipt.json",
+    "manifests/phase6_leases.receipt.json",
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 135,
+  "file_count": 142,
   "files": [
     {
       "origin": "phase2_shared_contracts",
@@ -50,6 +51,18 @@
       "path": ".github/workflows/phase5-decision-corps.yml",
       "sha256": "c71c015709ad08570b418c3ca67c32d4b7e5f75414a48625c8ec6b0d236967dd",
       "size_bytes": 4880
+    },
+    {
+      "origin": "phase6_mode_execution_leases",
+      "path": ".github/workflows/phase6-authority.yml",
+      "sha256": "f2bfea096d42272c856c0dab462db09900d0fcaf416d5dac12e30edfe2586e09",
+      "size_bytes": 6125
+    },
+    {
+      "origin": "phase6_mode_execution_leases",
+      "path": ".github/workflows/phase6-leases.yml",
+      "sha256": "1557032e7c1aa94adf6d813b94759a204deaa9f9d40f7b6ae987ee099ca03b06",
+      "size_bytes": 5333
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -176,6 +189,12 @@
       "path": "docs/PHASE_5_REPAIR_DECISION_CORPS.md",
       "sha256": "61e616ddc2f8ee1c3fa836d8b6015385072d84bd5fc13d7dcfb32da9a33b0059",
       "size_bytes": 4927
+    },
+    {
+      "origin": "phase6_mode_execution_leases",
+      "path": "docs/PHASE_6_MODE_EXECUTION_LEASES.md",
+      "sha256": "e45f3a2ca45b8330a9d30bea3fdce5e836780e9daa0c801e2e8ab4cc060636d6",
+      "size_bytes": 3576
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -514,10 +533,16 @@
       "size_bytes": 12844
     },
     {
-      "origin": "phase3_device_gateway",
+      "origin": "phase6_mode_execution_leases",
+      "path": "rust/device_gateway/src/lease.rs",
+      "sha256": "1b597b87cb40f493fbf5160b806f0bdb8a2d3b4a0fb9b389931959ec6407fc3b",
+      "size_bytes": 12759
+    },
+    {
+      "origin": "phase6_mode_execution_leases",
       "path": "rust/device_gateway/src/lib.rs",
-      "sha256": "9bd45273771aa072b74f6056e25c702a48cbdb01cb0804cc1395af7d83c1abb7",
-      "size_bytes": 665
+      "sha256": "906037324f694103809619892d9437c4e6c01692716837399d948b5546286ffb",
+      "size_bytes": 810
     },
     {
       "origin": "phase3_device_gateway",
@@ -560,6 +585,12 @@
       "path": "rust/device_gateway/tests/gateway.rs",
       "sha256": "af5a222cab6f45021365dddfd101c3cf8d9d5c8154299c33d2e169a15c4556ed",
       "size_bytes": 12750
+    },
+    {
+      "origin": "phase6_mode_execution_leases",
+      "path": "rust/device_gateway/tests/leases.rs",
+      "sha256": "0408a8d66691bfbf3b752a7dd7e1f6432139e7db93136d6a0ed1b78b497e7b76",
+      "size_bytes": 12320
     },
     {
       "origin": "phase3_device_gateway",
@@ -754,10 +785,16 @@
       "size_bytes": 15969
     },
     {
+      "origin": "phase6_mode_execution_leases",
+      "path": "tools/build_phase6_receipt.py",
+      "sha256": "857f4e2316a43d51563b83322261fca3f4b0c97cbd030fafaf55a6f6e7bbf792",
+      "size_bytes": 8511
+    },
+    {
       "origin": "phase4_kirin_xray",
       "path": "tools/build_source_inventory.py",
-      "sha256": "8482227787f136351889177c7d49e966d3aad4e68592ac03661ea6eaea3f3886",
-      "size_bytes": 5715
+      "sha256": "12aed5af1492198a21dc321e776a32bd4643fd533ef5610844edcbef11073286",
+      "size_bytes": 6180
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -802,6 +839,12 @@
       "size_bytes": 9701
     },
     {
+      "origin": "phase6_mode_execution_leases",
+      "path": "tools/prove_phase6_leases.py",
+      "sha256": "94e438f0f914ba9805aadd5fe0b755b7f5c348ca8349a81d01012e0a5eb8a2eb",
+      "size_bytes": 2323
+    },
+    {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "tools/review_20_for_2.py",
       "sha256": "202210df400ebc34004d419f628d6ef2aee596c33aa16a3c8d8fae6c6bacbc30",
@@ -826,7 +869,7 @@
       "size_bytes": 6522
     }
   ],
-  "inventory_definition_date": "2026-08-07",
+  "inventory_definition_date": "2026-08-09",
   "private_recovery_authority": {
     "archive_sha256": "d98d44364387431f86d4bad2e725bb5e6612f32a1f1884436a4285872c87efc4",
     "copied_into_public_source": false,
