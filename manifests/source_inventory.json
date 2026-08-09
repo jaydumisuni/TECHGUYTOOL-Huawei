@@ -23,7 +23,7 @@
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 186,
+  "file_count": 191,
   "files": [
     {
       "origin": "phase2_shared_contracts",
@@ -212,6 +212,12 @@
       "size_bytes": 3123
     },
     {
+      "origin": "phase13_ttg_xray_promotion",
+      "path": "docs/PHASE_13_TTG_XRAY_PROMOTION.md",
+      "sha256": "2be624a1be8828ee7b9101b527a568781208a393ea3b6666d5cd00c649364373",
+      "size_bytes": 2299
+    },
+    {
       "origin": "phase1_recovery_and_freeze",
       "path": "docs/PHASE_1_SOURCE_FREEZE.md",
       "sha256": "a29b49032752723e33af3e7ca0df9e319a7453dc638e66afc70e2fa8f3d2dfba",
@@ -272,10 +278,10 @@
       "size_bytes": 1408
     },
     {
-      "origin": "phase12_kirin_capability_packs",
+      "origin": "phase13_ttg_xray_promotion",
       "path": "manifests/active_software_phase.json",
-      "sha256": "d983c7485a6bb771457342a95d701e29027851b8a7a6ee65ab4e53335af76886",
-      "size_bytes": 366
+      "sha256": "903bb6887074021d080acf61fd353ec367a5a1b6c66ae056ab35eb1a44968a8e",
+      "size_bytes": 365
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -308,16 +314,22 @@
       "size_bytes": 1256
     },
     {
+      "origin": "phase13_ttg_xray_promotion",
+      "path": "manifests/phase13_ttg_xray_promotion.json",
+      "sha256": "7ce8e320396337492561af97590f8d7f8bee3615c19b66da8361b05d6f3bb811",
+      "size_bytes": 2060
+    },
+    {
       "origin": "phase1_recovery_and_freeze",
       "path": "manifests/private_source_archive.json",
       "sha256": "66a13007ad171d7793c294a44e8b978ca82352197e8c3e6949f965d130cc270d",
       "size_bytes": 2671
     },
     {
-      "origin": "phase12_kirin_capability_packs",
+      "origin": "phase13_ttg_xray_promotion",
       "path": "manifests/software_phase_sources.json",
-      "sha256": "d515a7ac73fa36216cf920f259737c160b5306407c40dd63b606a9f65a94aeee",
-      "size_bytes": 2250
+      "sha256": "5e2de98d0f6d6b0c980ab3c996a55f9a206887016ccf0855bdf041ccefe80d1f",
+      "size_bytes": 2513
     },
     {
       "origin": "phase12_kirin_capability_packs",
@@ -878,6 +890,12 @@
       "size_bytes": 1260
     },
     {
+      "origin": "phase13_ttg_xray_promotion",
+      "path": "techguy_huawei/ttg_xray_promotion.py",
+      "sha256": "f4aabe0f1f1e99a55170dfc2117e6219e304e9dd1377dd5ceb079a619647b62a",
+      "size_bytes": 7234
+    },
+    {
       "origin": "phase9_vog_l29_c185_recipe",
       "path": "techguy_huawei/vog_recipe.py",
       "sha256": "f08e4f884d05051c6c8ef0561d2eba30dccebb265ccc70709efd0b3147904417",
@@ -966,6 +984,12 @@
       "path": "tests/test_source_freeze.py",
       "sha256": "b88e29cb5b02c8f6cb9390d0e69a205930e990a49683cb604022df447d0b1cce",
       "size_bytes": 996
+    },
+    {
+      "origin": "phase13_ttg_xray_promotion",
+      "path": "tests/test_ttg_xray_promotion.py",
+      "sha256": "7e6f1afe1bbd24a3f7dd4f08dd64c03e2081682765d944cefd78eec28a16a054",
+      "size_bytes": 2230
     },
     {
       "origin": "phase9_vog_l29_c185_recipe",
@@ -1080,6 +1104,12 @@
       "path": "tools/prove_phase12_kirin_capability_packs.py",
       "sha256": "dec111179fd75c050d882f3745265004c1f8ef41f1f77d998694cc8cb2212c0a",
       "size_bytes": 2678
+    },
+    {
+      "origin": "phase13_ttg_xray_promotion",
+      "path": "tools/prove_phase13_ttg_xray_promotion.py",
+      "sha256": "9b6f6faed6782a1d62db5393a22490d2966d9962ebcb59581a87ef307c33f19b",
+      "size_bytes": 888
     },
     {
       "origin": "phase6_mode_execution_leases",
