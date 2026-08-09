@@ -1,0 +1,33 @@
+{
+  "schema": "techguytool-huawei.kirin-capability-pack-set.v1",
+  "pack_id": "kirin-xray-capability-set",
+  "pack_version": "1.0.0",
+  "specialist": "kirin_xray",
+  "maturity": "replay_supported",
+  "includes_execution": false,
+  "components": [
+    {"id": "kirin-xray-error-pack", "path": "packs/kirin/error_pack.json", "sha256": "910f1fc29ade6afa24fe9e7bc440d5c3eca0c4123ea987d5153ecaab0336771b"},
+    {"id": "kirin-xray-knowledge-pack", "path": "packs/kirin/knowledge_pack.json", "sha256": "d19cbfcea20bc227d8e1b3185b1ee1247fe5f2faa64396709402e02b74f99801"},
+    {"id": "kirin-xray-provider-pack", "path": "packs/kirin/provider_pack.json", "sha256": "73815be698cb66dec76887893b5ba1c28e192c3d7f1395df6710a57846fe035f"},
+    {"id": "kirin-xray-replay-pack", "path": "packs/kirin/replay_pack.json", "sha256": "d97e62f8ca3510884865313d97cfd97256a12c99c0d1fe61ad6b95822061ddf7"},
+    {"id": "kirin-xray-verification-pack", "path": "packs/kirin/verification_pack.json", "sha256": "9ce2fbb76f08f3b6dd72c4671fbb78aa6f48bab43b8ed4ffefddf6255748a53a"}
+  ],
+  "capability_ids": [
+    "kirin.branding",
+    "kirin.firmware",
+    "kirin.identity",
+    "kirin.partition_inventory",
+    "kirin.security",
+    "kirin.storage",
+    "kirin.transport",
+    "kirin.version"
+  ],
+  "forbidden_contents": [
+    "executor",
+    "firmware_write",
+    "loader_transfer",
+    "partition_write",
+    "reboot_authority"
+  ],
+  "truth_boundary": "This capability set contains read-only diagnostic/observation/verification knowledge only. It excludes Kirin executor code, loader execution, OEMINFO construction, firmware flashing, partition writes and repair recipes that change devices."
+}
