@@ -23,7 +23,7 @@
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 156,
+  "file_count": 161,
   "files": [
     {
       "origin": "phase2_shared_contracts",
@@ -236,22 +236,34 @@
       "size_bytes": 4035
     },
     {
+      "origin": "phase8_p10revive_golden_theorem",
+      "path": "docs/PHASE_8_P10REVIVE_GOLDEN_THEOREM.md",
+      "sha256": "4d9fecb936871369e823908a69622282d521406cb8af928c0f2244cee13d00e6",
+      "size_bytes": 2866
+    },
+    {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "main.py",
       "sha256": "4d3884f3d7643931fef4ccf666b296e83a20b19f663c35d49c7d41cb6f2439c9",
       "size_bytes": 1408
     },
     {
-      "origin": "phase7_bounded_executor_framework",
+      "origin": "phase8_p10revive_golden_theorem",
       "path": "manifests/active_software_phase.json",
-      "sha256": "64b482205dc3c0450aea574953405b710fbd32375ff2d349281a6d0ac56dbb5f",
-      "size_bytes": 356
+      "sha256": "b1c19f89f274329d5c94369278cf61499c5bd562d98967a2fb7922c733e100d6",
+      "size_bytes": 352
     },
     {
       "origin": "phase1_recovery_and_freeze",
       "path": "manifests/external_artifacts.json",
       "sha256": "e49aef2b74c8ff2989ac756e778419b36c8c6c6ec25538fff8efe5ece11dbc70",
       "size_bytes": 4251
+    },
+    {
+      "origin": "phase8_p10revive_golden_theorem",
+      "path": "manifests/huawei_revive_golden_theorem.json",
+      "sha256": "d8ff4743cb8b35990e3ecae3e445687c27b841f475bda55434ab8ec2a796314a",
+      "size_bytes": 1671
     },
     {
       "origin": "phase4_kirin_xray",
@@ -266,10 +278,10 @@
       "size_bytes": 2671
     },
     {
-      "origin": "phase7_bounded_executor_framework",
+      "origin": "phase8_p10revive_golden_theorem",
       "path": "manifests/software_phase_sources.json",
-      "sha256": "aca40df0dfacb2abb1df17d3649174b5f7f7e100bd37106c87081e3a9a323513",
-      "size_bytes": 800
+      "sha256": "ef7e3d0bc116ebce13ae19cccc4ecaeefb3bc6aaef72fc5d1e2ae754b65fcdb9",
+      "size_bytes": 1062
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -746,6 +758,12 @@
       "size_bytes": 6986
     },
     {
+      "origin": "phase8_p10revive_golden_theorem",
+      "path": "techguy_huawei/golden_theorem.py",
+      "sha256": "e21580a494863768515c93a6bf0278d23160d8970656313f5465aa170a6fd45a",
+      "size_bytes": 8823
+    },
+    {
       "origin": "phase4_kirin_xray",
       "path": "techguy_huawei/kirin_xray.py",
       "sha256": "5d6a20fbafa757b9eec591f4a4620a5a8f547c1edbbe6ce403ca8eb4f4147a96",
@@ -792,6 +810,12 @@
       "path": "tests/test_gateway_client.py",
       "sha256": "523c918ad1e684f3056051fbed1d75b9890e54dd76f44d02ceb848be0e1e2dfa",
       "size_bytes": 3096
+    },
+    {
+      "origin": "phase8_p10revive_golden_theorem",
+      "path": "tests/test_golden_theorem.py",
+      "sha256": "d465a2b2edf67bb98f2cde98982817986657905c270eb686151346c5655a31a7",
+      "size_bytes": 5306
     },
     {
       "origin": "phase4_kirin_xray",
@@ -924,6 +948,12 @@
       "path": "tools/prove_phase7_executor.py",
       "sha256": "be114df39e186c51d2a96d5c8393a22031619be2049e756f4847b1282c4713ff",
       "size_bytes": 2816
+    },
+    {
+      "origin": "phase8_p10revive_golden_theorem",
+      "path": "tools/prove_phase8_golden_theorem.py",
+      "sha256": "812da479ba06d14195aca4bba9958dd839758d4736eec9c290d87321cde31d3f",
+      "size_bytes": 2900
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
