@@ -4,5 +4,6 @@
   "status": "UNFROZEN",
   "execution_authority": "none",
   "device_authority": "none",
-  "hardware_certification": "EXTERNAL_EVIDENCE_REQUIRED"
+  "hardware_certification": "EXTERNAL_EVIDENCE_REQUIRED",
+  "freeze_request": "owner"
 }
