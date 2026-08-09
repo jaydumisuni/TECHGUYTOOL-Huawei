@@ -1,10 +1,10 @@
 {
-  "branch": "phase13/ttg-xray-promotion",
-  "name": "Phase 13 TTG Device X-Ray Promotion",
-  "phase": 13,
-  "predecessor_merge": "93a8bd705bd9e8d8bade40f0e15181644211812e",
-  "proof_script": "tools/prove_phase13_ttg_xray_promotion.py",
-  "receipt_path": "manifests/phase13_ttg_xray_promotion.receipt.json",
-  "slug": "ttg_xray_promotion",
+  "branch": "phase14/qcom-mtk",
+  "name": "Phase 14 Qualcomm and MediaTek Expansion",
+  "phase": 14,
+  "predecessor_merge": "78323631cd3187d9a4576c8a62b46e7862389905",
+  "proof_script": "tools/prove_phase14_qcom_mtk.py",
+  "receipt_path": "manifests/phase14_qcom_mtk.receipt.json",
+  "slug": "qcom_mtk",
   "status": "WORKING"
 }

@@ -23,7 +23,7 @@
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 191,
+  "file_count": 198,
   "files": [
     {
       "origin": "phase2_shared_contracts",
@@ -218,6 +218,12 @@
       "size_bytes": 2299
     },
     {
+      "origin": "phase14_qcom_mtk",
+      "path": "docs/PHASE_14_QUALCOMM_MTK.md",
+      "sha256": "772f4485e88dac6d644d9b7e7f366fd1244a03eb26a1cc90f091233ed7923e4c",
+      "size_bytes": 2984
+    },
+    {
       "origin": "phase1_recovery_and_freeze",
       "path": "docs/PHASE_1_SOURCE_FREEZE.md",
       "sha256": "a29b49032752723e33af3e7ca0df9e319a7453dc638e66afc70e2fa8f3d2dfba",
@@ -278,10 +284,10 @@
       "size_bytes": 1408
     },
     {
-      "origin": "phase13_ttg_xray_promotion",
+      "origin": "phase14_qcom_mtk",
       "path": "manifests/active_software_phase.json",
-      "sha256": "903bb6887074021d080acf61fd353ec367a5a1b6c66ae056ab35eb1a44968a8e",
-      "size_bytes": 365
+      "sha256": "cc64d21f5ebece5362c26c8dc2e3b8c4181f5e057551c2208c70f48c4ed0d0b4",
+      "size_bytes": 330
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -320,16 +326,22 @@
       "size_bytes": 2060
     },
     {
+      "origin": "phase14_qcom_mtk",
+      "path": "manifests/phase14_service_lanes.json",
+      "sha256": "831ee339edffde4916de04ac851855d8f5ea4ac6f62aa0967b3e577284918fd2",
+      "size_bytes": 3058
+    },
+    {
       "origin": "phase1_recovery_and_freeze",
       "path": "manifests/private_source_archive.json",
       "sha256": "66a13007ad171d7793c294a44e8b978ca82352197e8c3e6949f965d130cc270d",
       "size_bytes": 2671
     },
     {
-      "origin": "phase13_ttg_xray_promotion",
+      "origin": "phase14_qcom_mtk",
       "path": "manifests/software_phase_sources.json",
-      "sha256": "5e2de98d0f6d6b0c980ab3c996a55f9a206887016ccf0855bdf041ccefe80d1f",
-      "size_bytes": 2513
+      "sha256": "24793f9765d7aab85a8fbf4288479553d4125289dfde3a7669d1d4cdc420fbcc",
+      "size_bytes": 2844
     },
     {
       "origin": "phase12_kirin_capability_packs",
@@ -504,6 +516,18 @@
       "path": "replay/kirin/p30_main_version_mode_hazard.json",
       "sha256": "659d1611258f07a652de6e2be89f694ce15e6cccb6484f68d158c1fc9b155267",
       "size_bytes": 5375
+    },
+    {
+      "origin": "phase14_qcom_mtk",
+      "path": "replay/service/mtk_brom_partition_readonly.json",
+      "sha256": "9bff5587ad0aaa74c4ec1bb2b970e78efaa4002de76db2dac478b13e1ed6603f",
+      "size_bytes": 1376
+    },
+    {
+      "origin": "phase14_qcom_mtk",
+      "path": "replay/service/qualcomm_9008_gpt_readonly.json",
+      "sha256": "c59f8900510e5f739633cde95ccc09f1a5f2fc2ccb8230d4610842ff07c82e4e",
+      "size_bytes": 1320
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -884,6 +908,12 @@
       "size_bytes": 10789
     },
     {
+      "origin": "phase14_qcom_mtk",
+      "path": "techguy_huawei/service_lanes.py",
+      "sha256": "1fe32283160a568694ccf1f0ad38003bd21daa0c34706e798502603a6b82416e",
+      "size_bytes": 17326
+    },
+    {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "techguy_huawei/storage.py",
       "sha256": "45d35a8381b79307399dc884b9755b15111c4730957c6a5738bb32c69f0b6caa",
@@ -972,6 +1002,12 @@
       "path": "tests/test_repository_contracts.py",
       "sha256": "656fa9c096080b36b40241548395495f6abf768513380387101c2165878b9410",
       "size_bytes": 2435
+    },
+    {
+      "origin": "phase14_qcom_mtk",
+      "path": "tests/test_service_lanes.py",
+      "sha256": "66d63da511536e3c63457da143e29e766599aebf1ff7058bb5c93cb0915bb85c",
+      "size_bytes": 4743
     },
     {
       "origin": "phase2_shared_contracts",
@@ -1110,6 +1146,12 @@
       "path": "tools/prove_phase13_ttg_xray_promotion.py",
       "sha256": "9b6f6faed6782a1d62db5393a22490d2966d9962ebcb59581a87ef307c33f19b",
       "size_bytes": 888
+    },
+    {
+      "origin": "phase14_qcom_mtk",
+      "path": "tools/prove_phase14_qcom_mtk.py",
+      "sha256": "6567c6bf875c56d2e00a8638bc50c28588f1ad32ada3bce8cbad4414f1b4cea9",
+      "size_bytes": 959
     },
     {
       "origin": "phase6_mode_execution_leases",
