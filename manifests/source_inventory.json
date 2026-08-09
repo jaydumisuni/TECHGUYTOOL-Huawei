@@ -24,8 +24,8 @@
     {
       "origin": "phase3_device_gateway",
       "path": ".github/workflows/phase3-gateway.yml",
-      "sha256": "dffff2774dbcbf15d0dd18737119697eaa66e8ed1b09153a37a871ace1d74ed9",
-      "size_bytes": 7443
+      "sha256": "7a20564348449d14e44408e8ddab912f65198a16f512503d799c3b4bdde2fbc6",
+      "size_bytes": 7375
     },
     {
       "origin": "phase4_kirin_xray",
