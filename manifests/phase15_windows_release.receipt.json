@@ -8,5 +8,6 @@
   "production_signing": "EXTERNAL_CERTIFICATE_REQUIRED",
   "physical_proof_matrix": "INCOMPLETE",
   "production_release_status": "EXTERNAL_CERTIFICATION_PENDING",
-  "production_enabled": false
+  "production_enabled": false,
+  "freeze_request": "owner"
 }
