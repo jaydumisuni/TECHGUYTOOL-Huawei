@@ -3,5 +3,6 @@
   "schema": "techguytool-huawei.phase10-receipt.v1",
   "status": "UNFROZEN",
   "device_authority": "none",
-  "execution_authority": "none"
+  "execution_authority": "none",
+  "freeze_request": "owner"
 }
