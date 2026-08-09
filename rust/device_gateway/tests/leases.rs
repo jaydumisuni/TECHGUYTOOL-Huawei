@@ -115,7 +115,9 @@ fn assert_policy(error: LeaseGuardError, code: &str) {
 #[test]
 fn active_mode_lease_preserves_service_fastboot() {
     let guard = LeaseGuard::in_memory().unwrap();
-    let decision = guard.authorize_mode(&mode_lease(), &mode_context()).unwrap();
+    let decision = guard
+        .authorize_mode(&mode_lease(), &mode_context())
+        .unwrap();
     assert_eq!(decision.lease_id, MODE_LEASE_ID);
     assert!(!decision.reboot_allowed);
     assert!(!decision.stock_fastboot_restore_allowed);
@@ -150,14 +152,20 @@ fn mode_lease_rejects_wrong_mode_and_wrong_session() {
     let mut wrong_mode = mode_context();
     wrong_mode.current_mode = "normal_fastboot".to_owned();
     assert_policy(
-        guard.authorize_mode(&mode_lease(), &wrong_mode).unwrap_err(),
+        guard
+            .authorize_mode(&mode_lease(), &wrong_mode)
+            .unwrap_err(),
         "MODE_MISMATCH",
     );
 
     let mut wrong_session = mode_context();
     wrong_session.physical_session_id = "99999999-9999-4999-8999-999999999999".to_owned();
-    let error = guard.authorize_mode(&mode_lease(), &wrong_session).unwrap_err();
-    assert!(matches!(error, LeaseGuardError::Contract(message) if message.contains("PHYSICAL_SESSION_MISMATCH")));
+    let error = guard
+        .authorize_mode(&mode_lease(), &wrong_session)
+        .unwrap_err();
+    assert!(
+        matches!(error, LeaseGuardError::Contract(message) if message.contains("PHYSICAL_SESSION_MISMATCH"))
+    );
 }
 
 #[test]
@@ -168,11 +176,21 @@ fn mode_release_requires_every_condition() {
         "main_version_verified".to_owned(),
         "remaining_firmware_stages_completed".to_owned(),
     ]);
-    assert!(!guard.authorize_mode(&mode_lease(), &context).unwrap().release_ready);
+    assert!(
+        !guard
+            .authorize_mode(&mode_lease(), &context)
+            .unwrap()
+            .release_ready
+    );
     context
         .satisfied_release_conditions
         .insert("target_boot_environment_ready".to_owned());
-    assert!(guard.authorize_mode(&mode_lease(), &context).unwrap().release_ready);
+    assert!(
+        guard
+            .authorize_mode(&mode_lease(), &context)
+            .unwrap()
+            .release_ready
+    );
 }
 
 #[test]
@@ -220,7 +238,9 @@ fn execution_lease_rejects_wrong_partition() {
     let mut context = execution_context();
     context.partition = "fastboot".to_owned();
     assert_policy(
-        guard.claim_execution(&execution_lease(), &context).unwrap_err(),
+        guard
+            .claim_execution(&execution_lease(), &context)
+            .unwrap_err(),
         "PARTITION_NOT_AUTHORIZED",
     );
 }
@@ -231,7 +251,9 @@ fn execution_lease_rejects_wrong_mode() {
     let mut context = execution_context();
     context.current_mode = "qualcomm_firehose".to_owned();
     assert_policy(
-        guard.claim_execution(&execution_lease(), &context).unwrap_err(),
+        guard
+            .claim_execution(&execution_lease(), &context)
+            .unwrap_err(),
         "MODE_MISMATCH",
     );
 }
@@ -242,13 +264,17 @@ fn execution_lease_rejects_oversized_and_zero_writes() {
     let mut oversized = execution_context();
     oversized.write_bytes = 4097;
     assert_policy(
-        guard.claim_execution(&execution_lease(), &oversized).unwrap_err(),
+        guard
+            .claim_execution(&execution_lease(), &oversized)
+            .unwrap_err(),
         "WRITE_RANGE_EXCEEDS_LEASE",
     );
     let mut zero = execution_context();
     zero.write_bytes = 0;
     assert_policy(
-        guard.claim_execution(&execution_lease(), &zero).unwrap_err(),
+        guard
+            .claim_execution(&execution_lease(), &zero)
+            .unwrap_err(),
         "WRITE_RANGE_EXCEEDS_LEASE",
     );
 }
@@ -256,7 +282,11 @@ fn execution_lease_rejects_oversized_and_zero_writes() {
 #[test]
 fn execution_lease_rejects_wrong_range_stage_adapter_and_version() {
     for (field, value, code) in [
-        ("range", "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd", "RANGE_MANIFEST_MISMATCH"),
+        (
+            "range",
+            "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "RANGE_MANIFEST_MISMATCH",
+        ),
         ("stage", "restore.branding", "STAGE_MISMATCH"),
         ("adapter", "kirin.flash.executor", "ADAPTER_ID_MISMATCH"),
         ("version", "1.0.1", "ADAPTER_VERSION_MISMATCH"),
@@ -270,7 +300,12 @@ fn execution_lease_rejects_wrong_range_stage_adapter_and_version() {
             "version" => context.adapter_version = value.to_owned(),
             _ => unreachable!(),
         }
-        assert_policy(guard.claim_execution(&execution_lease(), &context).unwrap_err(), code);
+        assert_policy(
+            guard
+                .claim_execution(&execution_lease(), &context)
+                .unwrap_err(),
+            code,
+        );
     }
 }
 
@@ -281,12 +316,23 @@ fn execution_lease_rejects_wrong_recipe_artifact_and_session() {
         let mut guard = LeaseGuard::in_memory().unwrap();
         let mut context = execution_context();
         match case {
-            "recipe" => context.recipe_hash = "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd".to_owned(),
-            "artifact" => context.artifact_hashes = vec!["dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd".to_owned()],
-            "session" => context.physical_session_id = "99999999-9999-4999-8999-999999999999".to_owned(),
+            "recipe" => {
+                context.recipe_hash =
+                    "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd".to_owned()
+            }
+            "artifact" => {
+                context.artifact_hashes = vec![
+                    "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd".to_owned(),
+                ]
+            }
+            "session" => {
+                context.physical_session_id = "99999999-9999-4999-8999-999999999999".to_owned()
+            }
             _ => unreachable!(),
         }
-        let error = guard.claim_execution(&execution_lease(), &context).unwrap_err();
+        let error = guard
+            .claim_execution(&execution_lease(), &context)
+            .unwrap_err();
         assert!(matches!(error, LeaseGuardError::Contract(_)));
     }
 }
@@ -297,7 +343,9 @@ fn execution_lease_rejects_unapproved_reboot() {
     let mut context = execution_context();
     context.request_reboot = true;
     assert_policy(
-        guard.claim_execution(&execution_lease(), &context).unwrap_err(),
+        guard
+            .claim_execution(&execution_lease(), &context)
+            .unwrap_err(),
         "REBOOT_NOT_AUTHORIZED_BY_EXECUTION_LEASE",
     );
 }
@@ -307,8 +355,12 @@ fn execution_lease_rejects_expired_contract() {
     let mut guard = LeaseGuard::in_memory().unwrap();
     let mut lease = execution_lease();
     lease["expires_at"] = json!("2026-08-09T12:10:00Z");
-    let error = guard.claim_execution(&lease, &execution_context()).unwrap_err();
-    assert!(matches!(error, LeaseGuardError::Contract(message) if message.contains("CONTRACT_EXPIRED")));
+    let error = guard
+        .claim_execution(&lease, &execution_context())
+        .unwrap_err();
+    assert!(
+        matches!(error, LeaseGuardError::Contract(message) if message.contains("CONTRACT_EXPIRED"))
+    );
 }
 
 #[test]
@@ -316,6 +368,8 @@ fn execution_context_rejects_unsorted_or_duplicate_artifacts() {
     let mut guard = LeaseGuard::in_memory().unwrap();
     let mut context = execution_context();
     context.artifact_hashes = vec![ARTIFACT.to_owned(), ARTIFACT.to_owned()];
-    let error = guard.claim_execution(&execution_lease(), &context).unwrap_err();
+    let error = guard
+        .claim_execution(&execution_lease(), &context)
+        .unwrap_err();
     assert!(matches!(error, LeaseGuardError::InvalidContext(_)));
 }

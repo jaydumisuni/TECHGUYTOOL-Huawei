@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc};
+use chrono::DateTime;
 use rusqlite::{params, Connection, OptionalExtension};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -116,14 +116,25 @@ impl LeaseGuard {
         context: &ModeLeaseContext,
     ) -> Result<ModeLeaseDecision, LeaseGuardError> {
         validate_timestamp(&context.now)?;
-        let validated = validate(lease, "mode_lease", "governance", context.physical_session_id.as_str(), &context.now, None, None)?;
+        let validated = validate(
+            lease,
+            "mode_lease",
+            "governance",
+            context.physical_session_id.as_str(),
+            &context.now,
+            None,
+            None,
+        )?;
         let payload = payload(lease)?;
         let lease_id = string(payload, "lease_id")?;
         let mode = string(payload, "mode")?;
         if mode != context.current_mode {
             return Err(policy("MODE_MISMATCH"));
         }
-        if payload.get("released_at").is_some_and(|value| !value.is_null()) {
+        if payload
+            .get("released_at")
+            .is_some_and(|value| !value.is_null())
+        {
             return Err(policy("MODE_LEASE_ALREADY_RELEASED"));
         }
         let reboot_allowed = boolean(payload, "reboot_allowed")?;
@@ -132,7 +143,9 @@ impl LeaseGuard {
             return Err(policy("REBOOT_BLOCKED_BY_ACTIVE_MODE_LEASE"));
         }
         if context.request_stock_fastboot_restore && !stock_fastboot_restore_allowed {
-            return Err(policy("STOCK_FASTBOOT_RESTORE_BLOCKED_BY_ACTIVE_MODE_LEASE"));
+            return Err(policy(
+                "STOCK_FASTBOOT_RESTORE_BLOCKED_BY_ACTIVE_MODE_LEASE",
+            ));
         }
         let required = string_set(payload, "release_conditions")?;
         let release_ready = required.is_subset(&context.satisfied_release_conditions);
@@ -171,8 +184,18 @@ impl LeaseGuard {
         )?;
         let payload = payload(lease)?;
         let lease_id = string(payload, "lease_id")?;
-        exact_string(payload, "recipe_hash", &context.recipe_hash, "RECIPE_HASH_MISMATCH")?;
-        exact_string(payload, "adapter_id", &context.adapter_id, "ADAPTER_ID_MISMATCH")?;
+        exact_string(
+            payload,
+            "recipe_hash",
+            &context.recipe_hash,
+            "RECIPE_HASH_MISMATCH",
+        )?;
+        exact_string(
+            payload,
+            "adapter_id",
+            &context.adapter_id,
+            "ADAPTER_ID_MISMATCH",
+        )?;
         exact_string(
             payload,
             "adapter_version",
@@ -186,7 +209,12 @@ impl LeaseGuard {
             "RANGE_MANIFEST_MISMATCH",
         )?;
         exact_string(payload, "stage_id", &context.stage_id, "STAGE_MISMATCH")?;
-        exact_string(payload, "expected_mode", &context.current_mode, "MODE_MISMATCH")?;
+        exact_string(
+            payload,
+            "expected_mode",
+            &context.current_mode,
+            "MODE_MISMATCH",
+        )?;
 
         let allowed_partitions = string_set(payload, "allowed_partitions")?;
         if !allowed_partitions.contains(&context.partition) {
@@ -201,9 +229,9 @@ impl LeaseGuard {
             return Err(policy("REBOOT_NOT_AUTHORIZED_BY_EXECUTION_LEASE"));
         }
 
-        let contract_sha256 = validated
-            .sha256
-            .ok_or_else(|| LeaseGuardError::Contract("validated lease has no canonical hash".to_owned()))?;
+        let contract_sha256 = validated.sha256.ok_or_else(|| {
+            LeaseGuardError::Contract("validated lease has no canonical hash".to_owned())
+        })?;
         let transaction = self.connection.transaction()?;
         let existing: Option<String> = transaction
             .query_row(
@@ -322,7 +350,10 @@ fn boolean(payload: &serde_json::Map<String, Value>, name: &str) -> Result<bool,
         .ok_or_else(|| LeaseGuardError::Contract(format!("{name} is not a boolean")))
 }
 
-fn integer_u64(payload: &serde_json::Map<String, Value>, name: &str) -> Result<u64, LeaseGuardError> {
+fn integer_u64(
+    payload: &serde_json::Map<String, Value>,
+    name: &str,
+) -> Result<u64, LeaseGuardError> {
     payload
         .get(name)
         .and_then(Value::as_u64)
