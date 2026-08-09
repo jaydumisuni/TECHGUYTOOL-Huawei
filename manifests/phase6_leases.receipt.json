@@ -7,6 +7,12 @@
     "tested_revision": "3b68c5de5bb142e42284c4a476631a998b1f3049",
     "workflow": "Phase 6 Mode and Execution Leases"
   },
+  "owner_verification": {
+    "authority_commit": "4e61e2dcbc5a6f905df9cc4653645559c673ca72",
+    "source_proof_run_id": 31314009855,
+    "source_revision": "3b68c5de5bb142e42284c4a476631a998b1f3049",
+    "status": "CONFIRMED"
+  },
   "phase5_merge_commit": "da23daae30539b1c6820c9f6878abc4c1cb6714d",
   "phase6": {
     "branch": "phase6/mode-execution-leases",
@@ -44,6 +50,6 @@
     "path": "manifests/source_inventory.json",
     "sha256": "f17969ff6c8a0448447a045825715ff9436708f815e41882029ec883087f546d"
   },
-  "status": "PHASE6_LEASES_PROVEN_PENDING_OWNER",
+  "status": "PHASE6_LEASES_FROZEN",
   "truth_boundary": "This receipt proves deterministic Rust enforcement of mode and execution leases, including session/artifact/partition/range/mode/expiry/reboot and persistent single-use constraints. It does not implement or authorize a device executor, USB/serial writes, partition writes, flashing, OEMINFO modification, reboot, loader transfer, physical-device repair, Windows packaging or signing."
 }
