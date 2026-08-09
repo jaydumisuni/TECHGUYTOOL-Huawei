@@ -1,0 +1,10 @@
+{
+  "fixtures": [
+    {"evidence_level": "historical_replay", "path": "replay/kirin/p10_golden_workflow.json", "scenario_id": "kirin-p10-golden-workflow-v1"},
+    {"evidence_level": "historical_replay", "path": "replay/kirin/p30_main_version_mode_hazard.json", "scenario_id": "kirin-p30-main-version-mode-hazard-v1"}
+  ],
+  "includes_execution": false,
+  "pack_id": "kirin-xray-replay-pack",
+  "schema": "techguytool-huawei.kirin-replay-pack.v1",
+  "version": "1.0.0"
+}
