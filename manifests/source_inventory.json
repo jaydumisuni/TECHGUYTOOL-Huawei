@@ -23,7 +23,7 @@
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 155,
+  "file_count": 156,
   "files": [
     {
       "origin": "phase2_shared_contracts",
@@ -78,6 +78,12 @@
       "path": ".github/workflows/proof.yml",
       "sha256": "b14b96cf034f5ceb2a765f3c15b5a2f2c077881b84678c30ee7aa15d53fab09e",
       "size_bytes": 2196
+    },
+    {
+      "origin": "phase7_bounded_executor_framework",
+      "path": ".github/workflows/software-phase-authority.yml",
+      "sha256": "00b7c2b05ff401578daf44e7cf26924a2873c95e14a2d8a09ae12fa89bb11af9",
+      "size_bytes": 3953
     },
     {
       "origin": "phase7_bounded_executor_framework",
@@ -262,8 +268,8 @@
     {
       "origin": "phase7_bounded_executor_framework",
       "path": "manifests/software_phase_sources.json",
-      "sha256": "6deff4cfdf16ce6ea20a0f1fa3987f6913613c0a11a6854abeb55eef78797041",
-      "size_bytes": 746
+      "sha256": "aca40df0dfacb2abb1df17d3649174b5f7f7e100bd37106c87081e3a9a323513",
+      "size_bytes": 800
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
