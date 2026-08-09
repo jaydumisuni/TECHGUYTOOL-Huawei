@@ -1,0 +1,29 @@
+{
+  "schema": "techguytool-huawei.phase15-physical-proof-matrix.v1",
+  "overall_status": "INCOMPLETE",
+  "production_enabled": false,
+  "entries": [
+    {"id": "vog_kirin980_full_recovery_branding", "status": "HARDWARE_PENDING"},
+    {"id": "historical_p10_vtr_regression", "status": "REPLAY_PROVEN_PHYSICAL_PENDING"},
+    {"id": "mtp_direct_route", "status": "HARDWARE_PENDING"},
+    {"id": "authorized_adb_direct_route", "status": "HARDWARE_PENDING"},
+    {"id": "normal_fastboot_direct_route", "status": "HARDWARE_PENDING"},
+    {"id": "recovery_detection", "status": "HARDWARE_PENDING"},
+    {"id": "upgrade_mode_detection_recipe_eligibility", "status": "HARDWARE_PENDING"},
+    {"id": "kirin_testpoint_usb_com_1_0", "status": "HARDWARE_PENDING"},
+    {"id": "loader_factory_board_service_fastboot", "status": "HARDWARE_PENDING"},
+    {"id": "active_mode_lease_blocks_reboot", "status": "SOFTWARE_PROVEN_PHYSICAL_PENDING"},
+    {"id": "wrong_loader_rejection", "status": "SOFTWARE_PROVEN_PHYSICAL_PENDING"},
+    {"id": "wrong_firmware_region_rejection", "status": "SOFTWARE_PROVEN_PHYSICAL_PENDING"},
+    {"id": "multiple_device_rejection", "status": "SOFTWARE_PROVEN_PHYSICAL_PENDING"},
+    {"id": "interrupted_oeminfo_recovery", "status": "HARDWARE_PENDING"},
+    {"id": "interrupted_super_recovery", "status": "HARDWARE_PENDING"},
+    {"id": "stock_finalization_after_release_conditions", "status": "REPLAY_PROVEN_PHYSICAL_PENDING"},
+    {"id": "ui_restart_recovery", "status": "SOFTWARE_PROVEN_PHYSICAL_PENDING"},
+    {"id": "gateway_restart_recovery", "status": "SOFTWARE_PROVEN_PHYSICAL_PENDING"},
+    {"id": "qualcomm_9008_read_only", "status": "REPLAY_PROVEN_PHYSICAL_PENDING"},
+    {"id": "mediatek_brom_preloader_read_only", "status": "REPLAY_PROVEN_PHYSICAL_PENDING"},
+    {"id": "clean_windows_driver_install", "status": "WINDOWS_CI_PENDING_PHYSICAL_DRIVER_PROOF"}
+  ],
+  "rule": "Only PHYSICAL_PASS may satisfy a physical proof matrix entry. Software/replay evidence remains explicitly distinct."
+}
