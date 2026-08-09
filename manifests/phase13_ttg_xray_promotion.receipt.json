@@ -1,0 +1,11 @@
+{
+  "phase": 13,
+  "schema": "techguytool-huawei.phase13-receipt.v1",
+  "status": "UNFROZEN",
+  "target_repository": "jaydumisuni/TTG-Device-X-Ray",
+  "target_merge": "34feb55ab937fa865726cbb22c44b09b52084114",
+  "target_ci_run_id": 31339256277,
+  "execution_authority": "none",
+  "device_authority": "none",
+  "physical_vog_certification": "HARDWARE_PENDING"
+}
