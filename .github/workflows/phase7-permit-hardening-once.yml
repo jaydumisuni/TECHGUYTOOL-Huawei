@@ -1,0 +1,142 @@
+name: Phase 7 One-Shot Permit Hardening
+
+on:
+  push:
+    branches: ["phase7/bounded-executor-framework"]
+
+permissions:
+  contents: write
+
+jobs:
+  harden:
+    if: >-
+      github.actor == 'jaydumisuni' &&
+      startsWith(github.event.head_commit.message, 'Request Phase 7 permit hardening')
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Harden permit construction boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('rust/device_gateway/src/lease.rs')
+          text = path.read_text(encoding='utf-8')
+          old = '''#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+          pub struct ExecutionPermit {
+              pub lease_id: String,
+              pub physical_session_id: String,
+              pub stage_id: String,
+              pub partition: String,
+              pub max_write_bytes: u64,
+              pub requested_write_bytes: u64,
+              pub reboot_allowed: bool,
+              pub claimed_at: String,
+          }
+          '''.replace('          ', '')
+          new = '''#[derive(Debug, Eq, PartialEq, Serialize)]
+          pub struct ExecutionPermit {
+              lease_id: String,
+              physical_session_id: String,
+              recipe_hash: String,
+              adapter_id: String,
+              adapter_version: String,
+              artifact_hashes: Vec<String>,
+              partition: String,
+              range_manifest_sha256: String,
+              max_write_bytes: u64,
+              requested_write_bytes: u64,
+              current_mode: String,
+              stage_id: String,
+              reboot_allowed: bool,
+              claimed_at: String,
+          }
+
+          impl ExecutionPermit {
+              pub fn lease_id(&self) -> &str { &self.lease_id }
+              pub fn physical_session_id(&self) -> &str { &self.physical_session_id }
+              pub fn recipe_hash(&self) -> &str { &self.recipe_hash }
+              pub fn adapter_id(&self) -> &str { &self.adapter_id }
+              pub fn adapter_version(&self) -> &str { &self.adapter_version }
+              pub fn artifact_hashes(&self) -> &[String] { &self.artifact_hashes }
+              pub fn partition(&self) -> &str { &self.partition }
+              pub fn range_manifest_sha256(&self) -> &str { &self.range_manifest_sha256 }
+              pub fn max_write_bytes(&self) -> u64 { self.max_write_bytes }
+              pub fn requested_write_bytes(&self) -> u64 { self.requested_write_bytes }
+              pub fn current_mode(&self) -> &str { &self.current_mode }
+              pub fn stage_id(&self) -> &str { &self.stage_id }
+              pub fn reboot_allowed(&self) -> bool { self.reboot_allowed }
+              pub fn claimed_at(&self) -> &str { &self.claimed_at }
+          }
+          '''.replace('          ', '')
+          if old not in text:
+              raise SystemExit('ExecutionPermit definition did not match frozen Phase 6 source')
+          text = text.replace(old, new, 1)
+          old_ctor = '''        Ok(ExecutionPermit {
+                      lease_id,
+                      physical_session_id: context.physical_session_id.clone(),
+                      stage_id: context.stage_id.clone(),
+                      partition: context.partition.clone(),
+                      max_write_bytes,
+                      requested_write_bytes: context.write_bytes,
+                      reboot_allowed,
+                      claimed_at: context.now.clone(),
+                  })'''.replace('        ', '')
+          # tolerate rustfmt indentation by matching the exact logical block separately
+          old_ctor = '''Ok(ExecutionPermit {
+              lease_id,
+              physical_session_id: context.physical_session_id.clone(),
+              stage_id: context.stage_id.clone(),
+              partition: context.partition.clone(),
+              max_write_bytes,
+              requested_write_bytes: context.write_bytes,
+              reboot_allowed,
+              claimed_at: context.now.clone(),
+          })'''
+          new_ctor = '''Ok(ExecutionPermit {
+              lease_id,
+              physical_session_id: context.physical_session_id.clone(),
+              recipe_hash: context.recipe_hash.clone(),
+              adapter_id: context.adapter_id.clone(),
+              adapter_version: context.adapter_version.clone(),
+              artifact_hashes: context.artifact_hashes.clone(),
+              partition: context.partition.clone(),
+              range_manifest_sha256: context.range_manifest_sha256.clone(),
+              max_write_bytes,
+              requested_write_bytes: context.write_bytes,
+              current_mode: context.current_mode.clone(),
+              stage_id: context.stage_id.clone(),
+              reboot_allowed,
+              claimed_at: context.now.clone(),
+          })'''
+          if old_ctor not in text:
+              raise SystemExit('ExecutionPermit constructor did not match frozen Phase 6 source')
+          text = text.replace(old_ctor, new_ctor, 1)
+          path.write_text(text, encoding='utf-8')
+
+          tests = Path('rust/device_gateway/tests/leases.rs')
+          data = tests.read_text(encoding='utf-8').replace('permit.lease_id, EXEC_LEASE_ID', 'permit.lease_id(), EXEC_LEASE_ID')
+          tests.write_text(data, encoding='utf-8')
+          PY
+          rustup toolchain install 1.75.0 --profile minimal --component rustfmt
+          rustup override set 1.75.0
+          cargo fmt --manifest-path rust/device_gateway/Cargo.toml
+          git diff --check
+          unexpected="$(git diff --name-only | grep -Ev '^(rust/device_gateway/src/lease\.rs|rust/device_gateway/tests/leases\.rs)$' || true)"
+          test -z "$unexpected" || { echo "$unexpected" >&2; exit 1; }
+      - name: Commit hardened permit
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name "THETECHGUY Phase 7 Hardener"
+          git config user.email "actions@users.noreply.github.com"
+          git add rust/device_gateway/src/lease.rs rust/device_gateway/tests/leases.rs
+          git commit -m "Harden execution permit construction boundary"
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:phase7/bounded-executor-framework
