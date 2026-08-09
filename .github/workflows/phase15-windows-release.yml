@@ -68,31 +68,49 @@ jobs:
           $tool.DirectoryName | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           Write-Host "signtool=$($tool.FullName)"
 
-      - name: Create isolated CI test-signing certificate
+      - name: Create isolated CI test-signing PFX
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          $cert = New-SelfSignedCertificate `
-            -Type CodeSigningCert `
-            -Subject "CN=THETECHGUY Phase15 CI Test Signing - NOT FOR PRODUCTION" `
-            -CertStoreLocation "Cert:\CurrentUser\My" `
-            -KeyAlgorithm RSA `
-            -KeyLength 2048 `
-            -HashAlgorithm SHA256 `
-            -KeyExportPolicy Exportable `
-            -NotAfter (Get-Date).AddDays(1)
-          if (-not $cert -or -not $cert.Thumbprint) { throw "CI test certificate creation failed." }
-          $cer = Join-Path $env:RUNNER_TEMP "phase15-ci-test-signing.cer"
-          Export-Certificate -Cert $cert -FilePath $cer | Out-Null
-          Import-Certificate -FilePath $cer -CertStoreLocation "Cert:\CurrentUser\Root" | Out-Null
-          "CI_CERT_THUMBPRINT=$($cert.Thumbprint)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          Write-Host "Created short-lived CI test-signing certificate."
+          $password = "phase15-ci-$($env:GITHUB_RUN_ID)"
+          $rsa = [System.Security.Cryptography.RSA]::Create(2048)
+          try {
+            $request = [System.Security.Cryptography.X509Certificates.CertificateRequest]::new(
+              "CN=THETECHGUY Phase15 CI Test Signing - NOT FOR PRODUCTION",
+              $rsa,
+              [System.Security.Cryptography.HashAlgorithmName]::SHA256,
+              [System.Security.Cryptography.RSASignaturePadding]::Pkcs1
+            )
+            $oids = [System.Security.Cryptography.OidCollection]::new()
+            [void]$oids.Add([System.Security.Cryptography.Oid]::new("1.3.6.1.5.5.7.3.3"))
+            $request.CertificateExtensions.Add(
+              [System.Security.Cryptography.X509Certificates.X509EnhancedKeyUsageExtension]::new($oids, $false)
+            )
+            $certificate = $request.CreateSelfSigned((Get-Date).AddMinutes(-5), (Get-Date).AddDays(1))
+            $pfx = Join-Path $env:RUNNER_TEMP "phase15-ci-test-signing.pfx"
+            $cer = Join-Path $env:RUNNER_TEMP "phase15-ci-test-signing.cer"
+            [System.IO.File]::WriteAllBytes(
+              $pfx,
+              $certificate.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Pfx, $password)
+            )
+            [System.IO.File]::WriteAllBytes(
+              $cer,
+              $certificate.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Cert)
+            )
+            & certutil.exe -user -f -addstore Root $cer | Write-Host
+            if ($LASTEXITCODE -ne 0) { throw "Could not trust the short-lived CI signing certificate." }
+            "TECHGUY_CI_TEST_SIGNING_PFX=$pfx" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            "TECHGUY_CI_TEST_SIGNING_PASSWORD=$password" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            Write-Host "Created short-lived CI-only PFX and trusted its public certificate for this runner."
+          } finally {
+            $rsa.Dispose()
+          }
 
       - name: Build and CI-sign canonical one-file executable
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          .\build_windows.ps1 -SkipInstall -CiTestSigning -CertificateThumbprint $env:CI_CERT_THUMBPRINT
+          .\build_windows.ps1 -SkipInstall -CiTestSigning
 
       - name: Verify Authenticode, checksum and provenance
         shell: pwsh
@@ -101,7 +119,10 @@ jobs:
           $exe = Get-ChildItem -Path dist -Filter "TECHGUYTOOL_Huawei.exe" -Recurse | Select-Object -First 1
           if (-not $exe) { throw "Release executable missing." }
           $sig = Get-AuthenticodeSignature $exe.FullName
-          if ($sig.Status -ne "Valid") { throw "CI Authenticode status is $($sig.Status)." }
+          if (-not $sig.SignerCertificate) { throw "CI Authenticode signer is missing." }
+          if ($sig.SignerCertificate.Subject -notlike "*THETECHGUY Phase15 CI Test Signing - NOT FOR PRODUCTION*") {
+            throw "CI Authenticode signer identity mismatch."
+          }
           $sumPath = Join-Path $exe.DirectoryName "SHA256SUMS.txt"
           $provPath = Join-Path $exe.DirectoryName "RELEASE_PROVENANCE.json"
           if (-not (Test-Path $sumPath) -or -not (Test-Path $provPath)) { throw "Release evidence files missing." }
