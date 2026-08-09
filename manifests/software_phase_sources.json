@@ -45,8 +45,6 @@
   ],
   "phase12_kirin_capability_packs": [
     "docs/PHASE_12_KIRIN_CAPABILITY_PACKS.md",
-    "manifests/active_software_phase.json",
-    "manifests/software_phase_sources.json",
     "packs/kirin/error_pack.json",
     "packs/kirin/knowledge_pack.json",
     "packs/kirin/manifest.json",
@@ -56,5 +54,14 @@
     "techguy_huawei/capability_packs.py",
     "tests/test_capability_packs.py",
     "tools/prove_phase12_kirin_capability_packs.py"
+  ],
+  "phase13_ttg_xray_promotion": [
+    "docs/PHASE_13_TTG_XRAY_PROMOTION.md",
+    "manifests/active_software_phase.json",
+    "manifests/phase13_ttg_xray_promotion.json",
+    "manifests/software_phase_sources.json",
+    "techguy_huawei/ttg_xray_promotion.py",
+    "tests/test_ttg_xray_promotion.py",
+    "tools/prove_phase13_ttg_xray_promotion.py"
   ]
 }
