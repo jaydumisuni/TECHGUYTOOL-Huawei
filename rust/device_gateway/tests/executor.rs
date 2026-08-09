@@ -379,10 +379,10 @@ fn cancellation_is_fail_closed_before_and_during_adapter() {
 fn duplicate_adapter_identity_is_rejected() {
     let mut executor = BoundedExecutor::new(LeaseGuard::in_memory().unwrap());
     executor
-        .register_adapter(Box::new(MemoryAdapter::default()))
+        .register_adapter(Box::<MemoryAdapter>::default())
         .unwrap();
     let error = executor
-        .register_adapter(Box::new(MemoryAdapter::default()))
+        .register_adapter(Box::<MemoryAdapter>::default())
         .unwrap_err();
     assert_eq!(policy_code(error), "ADAPTER_ALREADY_REGISTERED");
 }
