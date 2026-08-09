@@ -1,0 +1,43 @@
+{
+  "schema": "techguytool-huawei.phase14-service-replay.v1",
+  "scenario_id": "qcom-reference-9008-gpt-read-v1",
+  "profile_id": "qcom.reference.9008-gpt-observation.v1",
+  "transport": {
+    "kind": "qualcomm_edl",
+    "mode": "edl",
+    "usb_vid": "05C6",
+    "usb_pid": "9008",
+    "present": true
+  },
+  "protocol_observation": {
+    "entry": "sahara",
+    "state": "HELLO_RESPONSE",
+    "service_family": "firehose",
+    "read_only": true
+  },
+  "artifact_identity": {
+    "kind": "firehose_programmer",
+    "sha256": "d4acc938d427b7082cbde9d997a996ed5974089cd5d02c7244b02073298624c9",
+    "target_binding": {
+      "chipset_family": "qualcomm",
+      "storage_type": "UFS",
+      "fixture_target": "reference-only"
+    },
+    "device_used": false
+  },
+  "storage": {
+    "type": "UFS",
+    "logical_block_size": 4096,
+    "capacity_bytes": 137438953472
+  },
+  "gpt_inventory": [
+    {"name": "xbl_a", "first_lba": 6, "last_lba": 1029},
+    {"name": "boot_a", "first_lba": 4096, "last_lba": 20479},
+    {"name": "super", "first_lba": 65536, "last_lba": 4194303}
+  ],
+  "evidence_sha256": "169e4c4c0dedb530d6daaecad4408fe90fb2a4c1f99ca7d104a8d8e6aa27c258",
+  "proof_level": "replay_supported",
+  "hardware_certification": "HARDWARE_PENDING",
+  "production_enabled": false,
+  "device_modification": "OUT_OF_SCOPE"
+}
