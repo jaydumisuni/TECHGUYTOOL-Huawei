@@ -1,4 +1,5 @@
 mod error;
+mod executor;
 mod gateway;
 mod lease;
 mod model;
@@ -8,6 +9,10 @@ mod server;
 mod storage;
 
 pub use error::GatewayError;
+pub use executor::{
+    BoundedAdapter, BoundedExecutor, BoundedStageRequest, CancellationFlag, ExecutorError,
+    ExecutorResult, RawAdapterResult,
+};
 pub use gateway::{now_utc, Gateway};
 pub use lease::{
     ExecutionLeaseContext, ExecutionPermit, LeaseGuard, LeaseGuardError, ModeLeaseContext,
