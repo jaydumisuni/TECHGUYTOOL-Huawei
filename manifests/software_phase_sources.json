@@ -31,11 +31,18 @@
   ],
   "phase10_inquiry_governor": [
     "docs/PHASE_10_INQUIRY_GOVERNOR.md",
-    "manifests/active_software_phase.json",
     "manifests/inquiry_probe_registry.json",
-    "manifests/software_phase_sources.json",
     "techguy_huawei/inquiry_governor.py",
     "tests/test_inquiry_governor.py",
     "tools/prove_phase10_inquiry_governor.py"
+  ],
+  "phase11_xray_knowledge_workshop": [
+    "docs/PHASE_11_XRAY_KNOWLEDGE_WORKSHOP.md",
+    "manifests/active_software_phase.json",
+    "manifests/knowledge_workshop_policy.json",
+    "manifests/software_phase_sources.json",
+    "techguy_huawei/knowledge_workshop.py",
+    "tests/test_knowledge_workshop.py",
+    "tools/prove_phase11_knowledge_workshop.py"
   ]
 }
