@@ -16,5 +16,14 @@
     "tools/prove_phase7_executor.py",
     "tools/verify_historical_phase6_authority.py",
     "tools/verify_software_phase_receipt.py"
+  ],
+  "phase8_p10revive_golden_theorem": [
+    "docs/PHASE_8_P10REVIVE_GOLDEN_THEOREM.md",
+    "manifests/active_software_phase.json",
+    "manifests/huawei_revive_golden_theorem.json",
+    "manifests/software_phase_sources.json",
+    "techguy_huawei/golden_theorem.py",
+    "tests/test_golden_theorem.py",
+    "tools/prove_phase8_golden_theorem.py"
   ]
 }
