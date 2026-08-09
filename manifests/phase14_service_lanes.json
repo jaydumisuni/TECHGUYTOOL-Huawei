@@ -1,0 +1,81 @@
+{
+  "schema": "techguytool-huawei.phase14-service-lanes.v1",
+  "production_enabled": false,
+  "device_modification": "OUT_OF_SCOPE",
+  "lanes": [
+    {
+      "profile_id": "qcom.reference.9008-gpt-observation.v1",
+      "chipset_family": "qualcomm",
+      "model_scope": "REFERENCE_FIXTURE_ONLY",
+      "operation_id": "read_only_gpt_inventory",
+      "proof_level": "replay_supported",
+      "hardware_certification": "HARDWARE_PENDING",
+      "transport": {
+        "kind": "qualcomm_edl",
+        "mode": "edl",
+        "usb_vid": "05C6",
+        "usb_pid": "9008"
+      },
+      "protocol_observation": {
+        "entry": "sahara",
+        "required_state": "HELLO_RESPONSE",
+        "service_family": "firehose"
+      },
+      "artifact_identity": {
+        "kind": "firehose_programmer",
+        "fixture_sha256": "d4acc938d427b7082cbde9d997a996ed5974089cd5d02c7244b02073298624c9",
+        "hash_required": true,
+        "target_binding_required": true,
+        "device_use_allowed": false
+      },
+      "read_only_proof": {
+        "storage_required": true,
+        "gpt_inventory_required": true,
+        "evidence_sha256": "169e4c4c0dedb530d6daaecad4408fe90fb2a4c1f99ca7d104a8d8e6aa27c258"
+      },
+      "limitations": [
+        "Reference fixture only; no physical Qualcomm hardware is certified.",
+        "The artifact hash proves deterministic identity matching only.",
+        "Device-changing operations are outside Phase 14."
+      ]
+    },
+    {
+      "profile_id": "mtk.reference.brom-partition-observation.v1",
+      "chipset_family": "mediatek",
+      "model_scope": "REFERENCE_FIXTURE_ONLY",
+      "operation_id": "read_only_partition_inventory",
+      "proof_level": "replay_supported",
+      "hardware_certification": "HARDWARE_PENDING",
+      "transport": {
+        "kind": "mtk_bootrom_preloader",
+        "accepted_modes": ["bootrom", "preloader"],
+        "usb_vid": "0E8D",
+        "bootrom_pid_fixture": "0003",
+        "preloader_pid": "2000"
+      },
+      "protocol_observation": {
+        "entry": "brom_or_preloader",
+        "security_state_required": true,
+        "allowed_security_states": ["NONE", "SLA_REQUIRED", "DAA_REQUIRED", "SLA_DAA_REQUIRED", "UNKNOWN"],
+        "service_family": "download_agent"
+      },
+      "artifact_identity": {
+        "kind": "download_agent",
+        "fixture_sha256": "fb9a02ed7857f4c91112635141a505267a40958be223127c9c049b3c74a3ebfa",
+        "hash_required": true,
+        "target_binding_required": true,
+        "device_use_allowed": false
+      },
+      "read_only_proof": {
+        "partition_inventory_required": true,
+        "evidence_sha256": "aeb5619ec5b9a697b89d855d3840a54624fb7ed854ddf4a56e7bdf68c1997dff"
+      },
+      "limitations": [
+        "Reference fixture only; no physical MediaTek hardware is certified.",
+        "The BootROM PID is a replay-fixture discriminator, not a hardware certification claim.",
+        "The artifact hash proves deterministic identity matching only.",
+        "Device-changing operations are outside Phase 14."
+      ]
+    }
+  ]
+}
