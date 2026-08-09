@@ -1,6 +1,9 @@
 {
+  "authority_request": {
+    "proof_run_id": 31322497031,
+    "tested_revision": "27ad1dd08488ec7aeeb94e434f02b44671efb4c2"
+  },
   "phase": 8,
-  "proof_trigger": "frozen-inventory",
   "schema": "techguytool-huawei.phase8-receipt.v1",
-  "status": "UNFROZEN"
+  "status": "PROVEN_PENDING_OWNER"
 }
