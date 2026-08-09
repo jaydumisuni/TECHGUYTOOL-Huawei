@@ -23,7 +23,7 @@
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 176,
+  "file_count": 186,
   "files": [
     {
       "origin": "phase2_shared_contracts",
@@ -206,6 +206,12 @@
       "size_bytes": 2905
     },
     {
+      "origin": "phase12_kirin_capability_packs",
+      "path": "docs/PHASE_12_KIRIN_CAPABILITY_PACKS.md",
+      "sha256": "93186a27986216f5095a76738ef858493878fdb7d29c18973b1bb88a58bb28cf",
+      "size_bytes": 3123
+    },
+    {
       "origin": "phase1_recovery_and_freeze",
       "path": "docs/PHASE_1_SOURCE_FREEZE.md",
       "sha256": "a29b49032752723e33af3e7ca0df9e319a7453dc638e66afc70e2fa8f3d2dfba",
@@ -266,10 +272,10 @@
       "size_bytes": 1408
     },
     {
-      "origin": "phase11_xray_knowledge_workshop",
+      "origin": "phase12_kirin_capability_packs",
       "path": "manifests/active_software_phase.json",
-      "sha256": "f33f5fd8cd65217296263d686d6d216c8a8fe902925fef3ca9edb33f4e449475",
-      "size_bytes": 372
+      "sha256": "d983c7485a6bb771457342a95d701e29027851b8a7a6ee65ab4e53335af76886",
+      "size_bytes": 366
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -308,10 +314,46 @@
       "size_bytes": 2671
     },
     {
-      "origin": "phase11_xray_knowledge_workshop",
+      "origin": "phase12_kirin_capability_packs",
       "path": "manifests/software_phase_sources.json",
-      "sha256": "bf83c5bfdeb1258d78f0e17ab76134693bc6953f697327b7e7298b4ac26a7181",
-      "size_bytes": 1805
+      "sha256": "d515a7ac73fa36216cf920f259737c160b5306407c40dd63b606a9f65a94aeee",
+      "size_bytes": 2250
+    },
+    {
+      "origin": "phase12_kirin_capability_packs",
+      "path": "packs/kirin/error_pack.json",
+      "sha256": "910f1fc29ade6afa24fe9e7bc440d5c3eca0c4123ea987d5153ecaab0336771b",
+      "size_bytes": 1003
+    },
+    {
+      "origin": "phase12_kirin_capability_packs",
+      "path": "packs/kirin/knowledge_pack.json",
+      "sha256": "d19cbfcea20bc227d8e1b3185b1ee1247fe5f2faa64396709402e02b74f99801",
+      "size_bytes": 1275
+    },
+    {
+      "origin": "phase12_kirin_capability_packs",
+      "path": "packs/kirin/manifest.json",
+      "sha256": "3859e0e71495a4847c8698714494b5ce94264d12d6d8eaa663d4d56c45b8fc9f",
+      "size_bytes": 1665
+    },
+    {
+      "origin": "phase12_kirin_capability_packs",
+      "path": "packs/kirin/provider_pack.json",
+      "sha256": "73815be698cb66dec76887893b5ba1c28e192c3d7f1395df6710a57846fe035f",
+      "size_bytes": 857
+    },
+    {
+      "origin": "phase12_kirin_capability_packs",
+      "path": "packs/kirin/replay_pack.json",
+      "sha256": "d97e62f8ca3510884865313d97cfd97256a12c99c0d1fe61ad6b95822061ddf7",
+      "size_bytes": 470
+    },
+    {
+      "origin": "phase12_kirin_capability_packs",
+      "path": "packs/kirin/verification_pack.json",
+      "sha256": "9ce2fbb76f08f3b6dd72c4671fbb78aa6f48bab43b8ed4ffefddf6255748a53a",
+      "size_bytes": 584
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -740,6 +782,12 @@
       "size_bytes": 8225
     },
     {
+      "origin": "phase12_kirin_capability_packs",
+      "path": "techguy_huawei/capability_packs.py",
+      "sha256": "6d2023f24cdaebf0579f681cffb8dcf5460a879d518048c4d9f0da1a1ba45dbb",
+      "size_bytes": 9399
+    },
+    {
       "origin": "phase2_shared_contracts",
       "path": "techguy_huawei/contract_fields.py",
       "sha256": "54f92d116a545c1686eee34b2ef91f9d8718e1f2407f92f47cbbd337b7a15ad3",
@@ -840,6 +888,12 @@
       "path": "tests/test_action_health.py",
       "sha256": "56da431eb2f7bea5bffacbd35a3795b7ce3adde16d294c289d118514997a569d",
       "size_bytes": 2091
+    },
+    {
+      "origin": "phase12_kirin_capability_packs",
+      "path": "tests/test_capability_packs.py",
+      "sha256": "9fb35f46065df4a21f08cf51abdb663b165e4f6b1bbc7d818688d0e5d888a0fb",
+      "size_bytes": 4334
     },
     {
       "origin": "phase5_repair_decision_corps",
@@ -1020,6 +1074,12 @@
       "path": "tools/prove_phase11_knowledge_workshop.py",
       "sha256": "dbde636be14163b5e3ec933a6fd6e325db2f6e17a5a32c8bc0de8470ae989b87",
       "size_bytes": 4045
+    },
+    {
+      "origin": "phase12_kirin_capability_packs",
+      "path": "tools/prove_phase12_kirin_capability_packs.py",
+      "sha256": "dec111179fd75c050d882f3745265004c1f8ef41f1f77d998694cc8cb2212c0a",
+      "size_bytes": 2678
     },
     {
       "origin": "phase6_mode_execution_leases",
