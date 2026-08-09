@@ -10,6 +10,7 @@ EXCLUDED = {
     "manifests/phase3_gateway.receipt.json",
     "manifests/phase4_kirin_xray.receipt.json",
     "manifests/phase5_decision_corps.receipt.json",
+    "manifests/phase6_leases.receipt.json",
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json",
 }
@@ -76,6 +77,16 @@ PHASE5_PATHS = {
     "tools/build_phase5_receipt.py",
     "tools/prove_decision_corps.py",
 }
+PHASE6_PATHS = {
+    ".github/workflows/phase6-authority.yml",
+    ".github/workflows/phase6-leases.yml",
+    "docs/PHASE_6_MODE_EXECUTION_LEASES.md",
+    "rust/device_gateway/src/lease.rs",
+    "rust/device_gateway/src/lib.rs",
+    "rust/device_gateway/tests/leases.rs",
+    "tools/build_phase6_receipt.py",
+    "tools/prove_phase6_leases.py",
+}
 
 
 def sha256(path: Path) -> str:
@@ -104,6 +115,8 @@ def source_files() -> list[Path]:
 
 
 def origin_for(rel: str) -> str:
+    if rel in PHASE6_PATHS:
+        return "phase6_mode_execution_leases"
     if rel in PHASE5_PATHS:
         return "phase5_repair_decision_corps"
     if rel in PHASE4_PATHS or rel.startswith(PHASE4_PREFIXES):
@@ -140,7 +153,7 @@ def build() -> dict[str, object]:
         "excluded_from_recursive_hashing": sorted(EXCLUDED),
         "file_count": len(records),
         "files": records,
-        "inventory_definition_date": "2026-08-07",
+        "inventory_definition_date": "2026-08-09",
         "private_recovery_authority": {
             "archive_sha256": "d98d44364387431f86d4bad2e725bb5e6612f32a1f1884436a4285872c87efc4",
             "copied_into_public_source": False,
