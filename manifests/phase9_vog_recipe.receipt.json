@@ -33,5 +33,8 @@
     "sha256": "87f13d8285114323bb2cf6de5c09709645475c1cccfa8a43dcc4dfbe3bacede5"
   },
   "status": "FROZEN",
+  "hardware_certification": "HARDWARE_PENDING",
+  "production_enabled": false,
+  "software_truth_boundary": "Simulation/replay proves recipe logic and fail-closed software authority only; physical VOG end-to-end certification remains separate and pending.",
   "truth_boundary": "This receipt proves only the software authority described by the active phase. Physical-device certification, external proprietary artifacts, Windows signing and hardware-specific destructive operations remain outside software-only proof unless the phase plan explicitly records independent physical evidence."
 }
