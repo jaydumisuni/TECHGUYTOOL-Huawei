@@ -1,5 +1,5 @@
 {
   "schema": "techguytool-huawei.phase5-decision-corps-receipt.v1",
   "status": "PHASE5_DECISION_CORPS_UNFROZEN",
-  "proof_trigger": "frozen-inventory"
+  "authority_request": "freeze-proven-source"
 }
