@@ -1,0 +1,16 @@
+{
+  "phase7_bounded_executor_framework": [
+    ".github/workflows/software-phase-proof.yml",
+    ".github/workflows/software-phase-source-freezer.yml",
+    ".github/workflows/software-rustfmt-request.yml",
+    "docs/PHASE_7_BOUNDED_EXECUTOR_FRAMEWORK.md",
+    "manifests/active_software_phase.json",
+    "manifests/software_phase_sources.json",
+    "rust/device_gateway/src/executor.rs",
+    "rust/device_gateway/src/lib.rs",
+    "rust/device_gateway/tests/executor.rs",
+    "tools/prove_active_software_phase.py",
+    "tools/prove_phase7_executor.py",
+    "tools/verify_software_phase_receipt.py"
+  ]
+}
