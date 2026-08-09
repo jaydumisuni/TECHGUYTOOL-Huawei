@@ -1,0 +1,43 @@
+{
+  "schema": "techguytool-huawei.phase14-service-replay.v1",
+  "scenario_id": "mtk-reference-brom-partition-read-v1",
+  "profile_id": "mtk.reference.brom-partition-observation.v1",
+  "transport": {
+    "kind": "mtk_bootrom_preloader",
+    "mode": "bootrom",
+    "usb_vid": "0E8D",
+    "usb_pid": "0003",
+    "present": true
+  },
+  "protocol_observation": {
+    "entry": "brom_or_preloader",
+    "security_state": "SLA_DAA_REQUIRED",
+    "service_family": "download_agent",
+    "read_only": true
+  },
+  "artifact_identity": {
+    "kind": "download_agent",
+    "sha256": "fb9a02ed7857f4c91112635141a505267a40958be223127c9c049b3c74a3ebfa",
+    "target_binding": {
+      "chipset_family": "mediatek",
+      "storage_type": "UFS",
+      "fixture_target": "reference-only"
+    },
+    "device_used": false
+  },
+  "storage": {
+    "type": "UFS",
+    "logical_block_size": 4096,
+    "capacity_bytes": 137438953472
+  },
+  "partition_inventory": [
+    {"name": "preloader", "first_lba": 0, "last_lba": 1023},
+    {"name": "boot_a", "first_lba": 4096, "last_lba": 20479},
+    {"name": "super", "first_lba": 65536, "last_lba": 4194303}
+  ],
+  "evidence_sha256": "aeb5619ec5b9a697b89d855d3840a54624fb7ed854ddf4a56e7bdf68c1997dff",
+  "proof_level": "replay_supported",
+  "hardware_certification": "HARDWARE_PENDING",
+  "production_enabled": false,
+  "device_modification": "OUT_OF_SCOPE"
+}
