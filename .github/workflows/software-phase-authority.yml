@@ -1,0 +1,93 @@
+name: Software Phase Authority Freeze
+
+on:
+  push:
+    branches: ["phase7/**", "phase8/**", "phase9/**", "phase10/**", "phase11/**", "phase12/**", "phase13/**", "phase14/**", "phase15/**"]
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  freeze:
+    if: startsWith(github.event.head_commit.message, 'Confirm active software phase authority') && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out owner-confirmed revision
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.sha }}
+
+      - name: Install Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+
+      - name: Build and verify frozen authority receipt
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          OWNER_AUTHORITY_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          readarray -t values < <(python - <<'PY'
+          import json
+          config = json.load(open('manifests/active_software_phase.json', encoding='utf-8'))
+          receipt = json.load(open(config['receipt_path'], encoding='utf-8'))
+          request = receipt.get('authority_request')
+          if not isinstance(request, dict):
+              raise SystemExit('authority_request missing from active receipt')
+          run_id = request.get('proof_run_id')
+          revision = request.get('tested_revision')
+          if not isinstance(run_id, int) or run_id <= 0:
+              raise SystemExit('authority proof_run_id invalid')
+          if not isinstance(revision, str) or len(revision) != 40:
+              raise SystemExit('authority tested_revision invalid')
+          print(run_id)
+          print(revision)
+          print(config['receipt_path'])
+          PY
+          )
+          run_id="${values[0]}"
+          tested_revision="${values[1]}"
+          receipt_path="${values[2]}"
+          python tools/build_active_software_phase_receipt.py --write --run-id "$run_id" --tested-revision "$tested_revision"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          config = json.load(open('manifests/active_software_phase.json', encoding='utf-8'))
+          path = Path(config['receipt_path'])
+          payload = json.loads(path.read_text(encoding='utf-8'))
+          hosted = payload['hosted_proof']
+          payload['owner_verification'] = {
+              'authority_commit': os.environ['OWNER_AUTHORITY_COMMIT'],
+              'source_proof_run_id': hosted['run_id'],
+              'source_revision': hosted['tested_revision'],
+              'status': 'CONFIRMED',
+          }
+          payload['status'] = 'FROZEN'
+          path.write_text(json.dumps(payload, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          PY
+          python tools/verify_software_phase_receipt.py --verify-hosted-run
+          git diff --check
+          changed="$(git diff --name-only)"
+          test "$changed" = "$receipt_path" || {
+            echo "Authority freezer changed unexpected files: $changed" >&2
+            exit 1
+          }
+
+      - name: Commit frozen receipt only
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          BRANCH_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          receipt_path="$(python -c 'import json; print(json.load(open("manifests/active_software_phase.json"))["receipt_path"])')"
+          git config user.name "THETECHGUY Software Phase Authority"
+          git config user.email "actions@users.noreply.github.com"
+          git add "$receipt_path"
+          git commit -m "Freeze active software phase authority receipt"
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:"$BRANCH_NAME"

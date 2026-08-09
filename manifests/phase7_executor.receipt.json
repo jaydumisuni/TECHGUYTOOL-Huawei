@@ -1,0 +1,37 @@
+{
+  "generated_at": "2026-08-09T15:37:13Z",
+  "hosted_proof": {
+    "repository": "jaydumisuni/TECHGUYTOOL-Huawei",
+    "run_id": 31319556945,
+    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/31319556945",
+    "tested_revision": "16b2f02cae698d7503aaa3d4bd9791d8f07d36c9",
+    "workflow": "Software Phase Proof"
+  },
+  "owner_verification": {
+    "authority_commit": "0046981e7b7ef028d7970cdb160a3afe66814c6e",
+    "source_proof_run_id": 31319556945,
+    "source_revision": "16b2f02cae698d7503aaa3d4bd9791d8f07d36c9",
+    "status": "CONFIRMED"
+  },
+  "phase": 7,
+  "phase_name": "Phase 7 Bounded Executor Framework",
+  "predecessor_merge": "a06ea6f18f18afa463d8e7544be45d4a9a040309",
+  "proof": {
+    "active_phase_proof": "PASS",
+    "complete_python_regression": "PASS",
+    "contract_core_regression": "PASS",
+    "device_gateway_regression": "PASS",
+    "rust_clippy": "PASS",
+    "rust_format": "PASS",
+    "rust_tests": "PASS",
+    "source_freeze_verifier": "PASS",
+    "srg_20_for_2": "40/40 PASS"
+  },
+  "schema": "techguytool-huawei.phase7-receipt.v1",
+  "source_inventory": {
+    "path": "manifests/source_inventory.json",
+    "sha256": "357ff5bdf2c1d7c778579e0e0e7d880f98e3f627d23233670231d5b76321e435"
+  },
+  "status": "FROZEN",
+  "truth_boundary": "This receipt proves only the software authority described by the active phase. Physical-device certification, external proprietary artifacts, Windows signing and hardware-specific destructive operations remain outside software-only proof unless the phase plan explicitly records independent physical evidence."
+}

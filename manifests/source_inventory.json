@@ -7,14 +7,23 @@
     "source_branch": "build/huawei-ui-v0.1"
   },
   "excluded_from_recursive_hashing": [
+    "manifests/phase10_inquiry_governor.receipt.json",
+    "manifests/phase11_knowledge_workshop.receipt.json",
+    "manifests/phase12_kirin_packs.receipt.json",
+    "manifests/phase13_ttg_xray_promotion.receipt.json",
+    "manifests/phase14_qcom_mtk.receipt.json",
+    "manifests/phase15_windows_release.receipt.json",
     "manifests/phase3_gateway.receipt.json",
     "manifests/phase4_kirin_xray.receipt.json",
     "manifests/phase5_decision_corps.receipt.json",
     "manifests/phase6_leases.receipt.json",
+    "manifests/phase7_executor.receipt.json",
+    "manifests/phase8_golden_theorem.receipt.json",
+    "manifests/phase9_vog_recipe.receipt.json",
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 142,
+  "file_count": 156,
   "files": [
     {
       "origin": "phase2_shared_contracts",
@@ -69,6 +78,30 @@
       "path": ".github/workflows/proof.yml",
       "sha256": "b14b96cf034f5ceb2a765f3c15b5a2f2c077881b84678c30ee7aa15d53fab09e",
       "size_bytes": 2196
+    },
+    {
+      "origin": "phase7_bounded_executor_framework",
+      "path": ".github/workflows/software-phase-authority.yml",
+      "sha256": "00b7c2b05ff401578daf44e7cf26924a2873c95e14a2d8a09ae12fa89bb11af9",
+      "size_bytes": 3953
+    },
+    {
+      "origin": "phase7_bounded_executor_framework",
+      "path": ".github/workflows/software-phase-proof.yml",
+      "sha256": "bc36fb14dd3a3ba1c0399b51b53ba270d51a0ea930b9ce0300549a14d8e088e5",
+      "size_bytes": 4960
+    },
+    {
+      "origin": "phase7_bounded_executor_framework",
+      "path": ".github/workflows/software-phase-source-freezer.yml",
+      "sha256": "18272f28a5e5a08b5e189ff4e7708265c37dcfdde5b7a74f0dbbf14a8026fc66",
+      "size_bytes": 1789
+    },
+    {
+      "origin": "phase7_bounded_executor_framework",
+      "path": ".github/workflows/software-rustfmt-request.yml",
+      "sha256": "b0df62fd7d14f2f14aed743ab9f6e6a8c6b651138bf3039d78b76fa4b8f6c938",
+      "size_bytes": 1880
     },
     {
       "origin": "phase2_shared_contracts",
@@ -197,10 +230,22 @@
       "size_bytes": 3576
     },
     {
+      "origin": "phase7_bounded_executor_framework",
+      "path": "docs/PHASE_7_BOUNDED_EXECUTOR_FRAMEWORK.md",
+      "sha256": "cf4926e8a68497c25794111219f440c6e1d7a84b2e4f7303291cdc99df8529c6",
+      "size_bytes": 4035
+    },
+    {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "main.py",
       "sha256": "4d3884f3d7643931fef4ccf666b296e83a20b19f663c35d49c7d41cb6f2439c9",
       "size_bytes": 1408
+    },
+    {
+      "origin": "phase7_bounded_executor_framework",
+      "path": "manifests/active_software_phase.json",
+      "sha256": "64b482205dc3c0450aea574953405b710fbd32375ff2d349281a6d0ac56dbb5f",
+      "size_bytes": 356
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -219,6 +264,12 @@
       "path": "manifests/private_source_archive.json",
       "sha256": "66a13007ad171d7793c294a44e8b978ca82352197e8c3e6949f965d130cc270d",
       "size_bytes": 2671
+    },
+    {
+      "origin": "phase7_bounded_executor_framework",
+      "path": "manifests/software_phase_sources.json",
+      "sha256": "aca40df0dfacb2abb1df17d3649174b5f7f7e100bd37106c87081e3a9a323513",
+      "size_bytes": 800
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -527,6 +578,12 @@
       "size_bytes": 1928
     },
     {
+      "origin": "phase7_bounded_executor_framework",
+      "path": "rust/device_gateway/src/executor.rs",
+      "sha256": "9d1121b00cc8cb569f45ab00fc51a82ec8ca713f7cb00c3d2444dfb16a8c56ef",
+      "size_bytes": 8407
+    },
+    {
       "origin": "phase3_device_gateway",
       "path": "rust/device_gateway/src/gateway.rs",
       "sha256": "5e6d05c9bde7fa9c0c7f7d9103dfdf1b419e0ba39212834854a87b003ed02b85",
@@ -539,10 +596,10 @@
       "size_bytes": 12759
     },
     {
-      "origin": "phase6_mode_execution_leases",
+      "origin": "phase7_bounded_executor_framework",
       "path": "rust/device_gateway/src/lib.rs",
-      "sha256": "906037324f694103809619892d9437c4e6c01692716837399d948b5546286ffb",
-      "size_bytes": 810
+      "sha256": "8bce1d61ff926082d06b2b65356320ca991da2a2dbf490f8b8d432deea12e9be",
+      "size_bytes": 976
     },
     {
       "origin": "phase3_device_gateway",
@@ -579,6 +636,12 @@
       "path": "rust/device_gateway/src/storage.rs",
       "sha256": "69890de15d6ac51c560d58c12ba65e2a322e685b451dd296578eb4595ce438d6",
       "size_bytes": 45694
+    },
+    {
+      "origin": "phase7_bounded_executor_framework",
+      "path": "rust/device_gateway/tests/executor.rs",
+      "sha256": "9d06fa75b9def32df1ede0ed1bdd08e064d22380057892ac94595578325d4535",
+      "size_bytes": 12061
     },
     {
       "origin": "phase3_device_gateway",
@@ -761,6 +824,12 @@
       "size_bytes": 996
     },
     {
+      "origin": "phase7_bounded_executor_framework",
+      "path": "tools/build_active_software_phase_receipt.py",
+      "sha256": "ddd975205f7e49646a3b375596dd31a8ceb7e5abe684a2d5f0bb79d80228fd3f",
+      "size_bytes": 3240
+    },
+    {
       "origin": "phase3_device_gateway",
       "path": "tools/build_phase2_receipt.py",
       "sha256": "94e45b9a7ad215cf24beed1382f400ef1c963d0abfbc78427c4b2a18772ba9e6",
@@ -791,10 +860,10 @@
       "size_bytes": 8511
     },
     {
-      "origin": "phase4_kirin_xray",
+      "origin": "phase7_bounded_executor_framework",
       "path": "tools/build_source_inventory.py",
-      "sha256": "12aed5af1492198a21dc321e776a32bd4643fd533ef5610844edcbef11073286",
-      "size_bytes": 6180
+      "sha256": "8f953147e98c73d65b7052d72e193398b3ba44bdecec05568434f2ac9094bb1d",
+      "size_bytes": 7851
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -807,6 +876,12 @@
       "path": "tools/generate_qrc.py",
       "sha256": "6434a2e2ce3d3ac323bd75a407cb3074555027511e5fe924be5e3658cce969cc",
       "size_bytes": 560
+    },
+    {
+      "origin": "phase7_bounded_executor_framework",
+      "path": "tools/prove_active_software_phase.py",
+      "sha256": "738b36ffbf220f1cb7e5cc0e8413464b25a55de0bec22d7ef8808912b7967756",
+      "size_bytes": 1094
     },
     {
       "origin": "phase2_shared_contracts",
@@ -845,6 +920,12 @@
       "size_bytes": 2323
     },
     {
+      "origin": "phase7_bounded_executor_framework",
+      "path": "tools/prove_phase7_executor.py",
+      "sha256": "be114df39e186c51d2a96d5c8393a22031619be2049e756f4847b1282c4713ff",
+      "size_bytes": 2816
+    },
+    {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "tools/review_20_for_2.py",
       "sha256": "202210df400ebc34004d419f628d6ef2aee596c33aa16a3c8d8fae6c6bacbc30",
@@ -857,10 +938,22 @@
       "size_bytes": 1561
     },
     {
+      "origin": "phase7_bounded_executor_framework",
+      "path": "tools/verify_historical_phase6_authority.py",
+      "sha256": "466a4e7fe9e816246971f80b5283b98eb00ec0f1d7940dcac2d3dfdc145329c8",
+      "size_bytes": 4696
+    },
+    {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "tools/verify_qml.py",
       "sha256": "3c51aa766e55dd13279b846c498dce6216d77fa7440b9468c706bb429f385158",
       "size_bytes": 4231
+    },
+    {
+      "origin": "phase7_bounded_executor_framework",
+      "path": "tools/verify_software_phase_receipt.py",
+      "sha256": "5c8ebca1deb1aceaefbae9e2bc2abb4d5036fc49793b2975d922c07829604109",
+      "size_bytes": 4984
     },
     {
       "origin": "phase3_device_gateway",

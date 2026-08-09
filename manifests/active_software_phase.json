@@ -1,0 +1,10 @@
+{
+  "branch": "phase7/bounded-executor-framework",
+  "name": "Phase 7 Bounded Executor Framework",
+  "phase": 7,
+  "predecessor_merge": "a06ea6f18f18afa463d8e7544be45d4a9a040309",
+  "proof_script": "tools/prove_phase7_executor.py",
+  "receipt_path": "manifests/phase7_executor.receipt.json",
+  "slug": "bounded_executor_framework",
+  "status": "WORKING"
+}
