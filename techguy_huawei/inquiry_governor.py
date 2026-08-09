@@ -190,6 +190,10 @@ def evaluate_inquiry(
     executor_outcome = executor_result["payload"]["outcome"]
     verification = verification_result["payload"]
     readback_ok = verification["readback_match"] is True and executor_result["payload"].get("readback_sha256") is not None
+    verification_unmet = (
+        verification["verdict"] != "verified"
+        or (pred.require_readback_match and not readback_ok)
+    )
 
     findings: list[OfficerFinding] = []
     findings.append(
@@ -233,9 +237,8 @@ def evaluate_inquiry(
     explained_executor_failure = executor_outcome != pred.required_executor_outcome
     unexplained_after_accepted = (
         executor_outcome == pred.required_executor_outcome
-        and (not missing_subjects)
-        and bool(mismatched_subjects or contradictory_subjects)
-        and (not pred.require_readback_match or readback_ok)
+        and not missing_subjects
+        and (bool(mismatched_subjects or contradictory_subjects) or verification_unmet)
     )
     findings.append(
         _finding(
@@ -247,7 +250,12 @@ def evaluate_inquiry(
         )
     )
 
-    needs_gap = bool(missing_subjects or mismatched_subjects or contradictory_subjects)
+    needs_gap = bool(
+        missing_subjects
+        or mismatched_subjects
+        or contradictory_subjects
+        or verification_unmet
+    )
     if explained_executor_failure:
         needs_gap = False
     findings.append(
@@ -270,7 +278,7 @@ def evaluate_inquiry(
     elif contradictory_subjects:
         governor_status = "KNOWLEDGE_GAP"
         gap_code = "XRAY_EXPLANATION_INCOMPLETE"
-    elif verification["verdict"] != "verified" or (pred.require_readback_match and not readback_ok):
+    elif verification_unmet:
         governor_status = "KNOWLEDGE_GAP"
         gap_code = "EXPECTED_RESULT_NOT_OBSERVED"
         probes = plan_read_only_probes(tuple(subject for subject, _ in pred.expected_subjects))
