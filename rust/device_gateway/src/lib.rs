@@ -1,5 +1,6 @@
 mod error;
 mod gateway;
+mod lease;
 mod model;
 mod policy;
 mod protocol;
@@ -8,6 +9,10 @@ mod storage;
 
 pub use error::GatewayError;
 pub use gateway::{now_utc, Gateway};
+pub use lease::{
+    ExecutionLeaseContext, ExecutionPermit, LeaseGuard, LeaseGuardError, ModeLeaseContext,
+    ModeLeaseDecision,
+};
 pub use model::{
     ContractIngressReceipt, DeviceAccess, DoctorReport, EndpointObservationRecord, GatewayEvent,
     GatewayEventKind, GatewayHealth, GatewaySnapshot, OperationSession, OperationStage,
