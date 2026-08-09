@@ -72,6 +72,7 @@
     "tools/prove_phase14_qcom_mtk.py"
   ],
   "phase15_windows_release": [
+    ".gitattributes",
     ".github/workflows/phase15-windows-release.yml",
     "build_windows.ps1",
     "docs/PHASE_15_WINDOWS_PACKAGING_CERTIFICATION.md",
