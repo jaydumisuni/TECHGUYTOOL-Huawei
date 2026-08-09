@@ -1,5 +1,6 @@
 {
   "phase7_bounded_executor_framework": [
+    ".github/workflows/software-phase-authority.yml",
     ".github/workflows/software-phase-proof.yml",
     ".github/workflows/software-phase-source-freezer.yml",
     ".github/workflows/software-rustfmt-request.yml",
