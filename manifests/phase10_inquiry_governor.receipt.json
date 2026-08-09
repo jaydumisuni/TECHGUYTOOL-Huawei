@@ -4,5 +4,5 @@
   "status": "UNFROZEN",
   "device_authority": "none",
   "execution_authority": "none",
-  "freeze_request": "owner"
+  "proof_trigger": "frozen-inventory"
 }
