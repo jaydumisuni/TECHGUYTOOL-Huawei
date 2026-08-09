@@ -1,8 +1,6 @@
 {
-  "clippy_test_correction_request": "owner",
   "phase": 7,
-  "rustfmt_request": "owner",
   "schema": "techguytool-huawei.phase7-receipt.v1",
   "status": "UNFROZEN",
-  "test_helper_correction_request": "owner"
+  "workflow_retirement_request": "owner"
 }
