@@ -41,7 +41,7 @@
     "manifests/knowledge_workshop_policy.json",
     "techguy_huawei/knowledge_workshop.py",
     "tests/test_knowledge_workshop.py",
-    "tools/prove_phase11_xray_knowledge_workshop.py"
+    "tools/prove_phase11_knowledge_workshop.py"
   ],
   "phase12_kirin_capability_packs": [
     "docs/PHASE_12_KIRIN_CAPABILITY_PACKS.md",
