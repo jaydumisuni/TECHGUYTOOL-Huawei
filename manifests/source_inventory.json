@@ -964,8 +964,8 @@
     {
       "origin": "phase15_windows_release",
       "path": "techguy_huawei/windows_release.py",
-      "sha256": "38879a293edf8414ed0d6e86b54f22a0d1b2d20d4b1a93e73f3c1d3aaa9ad513",
-      "size_bytes": 9586
+      "sha256": "3803b8f8562b9e59305b1473875118adc6a625fef3b82a706313ee45e14486bb",
+      "size_bytes": 9815
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
