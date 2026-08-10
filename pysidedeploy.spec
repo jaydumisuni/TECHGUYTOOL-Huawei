@@ -17,4 +17,4 @@ plugins = platforms,imageformats
 
 [nuitka]
 mode = onefile
-extra_args = --quiet --noinclude-qt-translations=True --include-data-dir=data=data --include-data-dir=assets=assets --include-data-dir=runtime=runtime --windows-console-mode=disable --output-filename=TECHGUYTOOL_Huawei.exe
+extra_args = --quiet --noinclude-qt-translations --include-data-dir=data=data --include-data-dir=assets=assets --include-data-dir=runtime=runtime --windows-console-mode=disable --output-filename=TECHGUYTOOL_Huawei.exe
