@@ -4,6 +4,8 @@ project_dir = .
 input_file = main.py
 exec_directory = dist
 icon = assets/brand/techguy_huawei.ico
+# Frozen final release filename applied by build_windows.ps1 after pyside6-deploy:
+# TECHGUYTOOL_Huawei.exe
 
 [python]
 python_path = python
