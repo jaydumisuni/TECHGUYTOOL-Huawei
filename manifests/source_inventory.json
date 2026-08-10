@@ -148,8 +148,8 @@
     {
       "origin": "phase15_windows_release",
       "path": "build_windows.ps1",
-      "sha256": "cc1d68d4b7919c6b0e7dcf9a152e209b1e8df00c9960bc2f48ee92ef9b67c248",
-      "size_bytes": 5472
+      "sha256": "1121cd2f2dccb109bd5133ca99dff2c5f5a0da34a2610093d687a0bbaf1a0793",
+      "size_bytes": 6372
     },
     {
       "origin": "phase2_shared_contracts",
@@ -418,8 +418,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "pysidedeploy.spec",
-      "sha256": "3f8ddf2892d037d80caea040de5497bb85d3afc815af9f40cb36047c2038c00a",
-      "size_bytes": 1113
+      "sha256": "b11bf35901576fd45be4e1b272396a129b60462bf8e2733d1e84c31f49abdfd9",
+      "size_bytes": 1099
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
