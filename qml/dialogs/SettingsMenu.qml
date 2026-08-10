@@ -16,10 +16,20 @@ Popup {
     modal: false
     focus: true
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-    background: GlassPanel { panelOpacity: 0.97; borderColor: "#557797" }
+    background: GlassPanel {
+        panelOpacity: 0.97
+        borderColor: "#557797"
+    }
     contentItem: ColumnLayout {
         spacing: 7
-        Text { text: "SETTINGS"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 16; letterSpacing: 0.8; Layout.leftMargin: 5 }
+        Text {
+            text: "SETTINGS"
+            color: Theme.text
+            font.family: Theme.fontFamily
+            font.pixelSize: 16
+            letterSpacing: 0.8
+            Layout.leftMargin: 5
+        }
         Repeater {
             model: [
                 {label: "Fix Drivers", detail: "Repair Huawei USB and Fastboot drivers", glyph: "⚒", action: "drivers"},
@@ -30,11 +40,38 @@ Popup {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 61
                 hoverEnabled: true
-                background: Rectangle { radius: 7; color: parent.hovered ? "#142b42" : "#0c1b2c"; border.width: 1; border.color: parent.hovered ? Theme.cyan : "#3c5872" }
+                background: Rectangle {
+                    radius: 7
+                    color: parent.hovered ? "#142b42" : "#0c1b2c"
+                    border.width: 1
+                    border.color: parent.hovered ? Theme.cyan : "#3c5872"
+                }
                 contentItem: RowLayout {
                     spacing: 14
-                    Text { text: modelData.glyph; color: "#77a5ff"; font.family: "Segoe UI Symbol"; font.pixelSize: 28; Layout.preferredWidth: 40; horizontalAlignment: Text.AlignHCenter }
-                    ColumnLayout { Layout.fillWidth: true; spacing: 3; Text { text: modelData.label; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 16 }; Text { text: modelData.detail; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 } }
+                    Text {
+                        text: modelData.glyph
+                        color: "#77a5ff"
+                        font.family: "Segoe UI Symbol"
+                        font.pixelSize: 28
+                        Layout.preferredWidth: 40
+                        horizontalAlignment: Text.AlignHCenter
+                    }
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 3
+                        Text {
+                            text: modelData.label
+                            color: Theme.text
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 16
+                        }
+                        Text {
+                            text: modelData.detail
+                            color: Theme.muted
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 12
+                        }
+                    }
                 }
                 onClicked: {
                     root.close()
