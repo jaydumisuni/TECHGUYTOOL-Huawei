@@ -68,20 +68,23 @@ if (-not $Rcc) { throw "pyside6-rcc is unavailable." }
 if ($LASTEXITCODE -ne 0) { throw "pyside6-rcc failed." }
 Assert-File "techguy_huawei\resources_rc.py" "Compiled Qt resources"
 
-if (Test-Path dist) { Remove-Item dist -Recurse -Force }
+$TargetDirectory = Join-Path $Root "dist"
+if (Test-Path $TargetDirectory) { Remove-Item $TargetDirectory -Recurse -Force }
 if (Test-Path deployment) { Remove-Item deployment -Recurse -Force }
+New-Item -ItemType Directory -Force $TargetDirectory | Out-Null
 if (-not (Get-Command pyside6-deploy -ErrorAction SilentlyContinue)) {
     throw "pyside6-deploy was not installed with PySide6."
 }
 pyside6-deploy -c pysidedeploy.spec -f
 if ($LASTEXITCODE -ne 0) { throw "pyside6-deploy failed." }
 
-# pyside6-deploy owns its intermediate executable name (main.exe for main.py).
+# pyside6-deploy owns its intermediate executable name from [app].title.
 # Preserve that contract during deployment, then apply the frozen product filename.
-$TargetDirectory = Join-Path $Root "dist"
-New-Item -ItemType Directory -Force $TargetDirectory | Out-Null
 $TargetPath = Join-Path $TargetDirectory "TECHGUYTOOL_Huawei.exe"
-$BuiltExe = Get-ChildItem -Path $TargetDirectory -Filter "main.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+$BuiltExe = Get-ChildItem -Path $TargetDirectory -Filter "TECHGUY TOOL Huawei.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+if (-not $BuiltExe) {
+    $BuiltExe = Get-ChildItem -Path $TargetDirectory -Filter "main.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+}
 if (-not $BuiltExe) {
     $BuiltExe = Get-ChildItem -Path $TargetDirectory -Filter "TECHGUYTOOL_Huawei.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
 }
