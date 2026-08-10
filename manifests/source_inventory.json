@@ -418,8 +418,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "pysidedeploy.spec",
-      "sha256": "c6583d7d6069b15d49dcb43ce1203822d8036c156a05d0205084c632acdd0379",
-      "size_bytes": 1099
+      "sha256": "3f8ddf2892d037d80caea040de5497bb85d3afc815af9f40cb36047c2038c00a",
+      "size_bytes": 1113
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
