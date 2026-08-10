@@ -964,8 +964,8 @@
     {
       "origin": "phase15_windows_release",
       "path": "techguy_huawei/windows_release.py",
-      "sha256": "d6b80d967fa232414d9349f1872ac06313753f3bfb6d8641447b2ca3690458ea",
-      "size_bytes": 9297
+      "sha256": "38879a293edf8414ed0d6e86b54f22a0d1b2d20d4b1a93e73f3c1d3aaa9ad513",
+      "size_bytes": 9586
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -1036,8 +1036,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "tests/test_repository_contracts.py",
-      "sha256": "656fa9c096080b36b40241548395495f6abf768513380387101c2165878b9410",
-      "size_bytes": 2435
+      "sha256": "f091e777d4a327b24ab98ac5b22b67a2799f742e61f2bfe4d3f226978d02d8ff",
+      "size_bytes": 2638
     },
     {
       "origin": "phase14_qcom_mtk",
@@ -1054,8 +1054,8 @@
     {
       "origin": "phase1_recovery_and_freeze",
       "path": "tests/test_source_freeze.py",
-      "sha256": "b88e29cb5b02c8f6cb9390d0e69a205930e990a49683cb604022df447d0b1cce",
-      "size_bytes": 996
+      "sha256": "6eaee5c1a000cec7ed2892b5745b2a237ecdc59518cd6d8283c5cfd07de0e766",
+      "size_bytes": 1137
     },
     {
       "origin": "phase13_ttg_xray_promotion",
