@@ -9,5 +9,5 @@
   "physical_proof_matrix": "INCOMPLETE",
   "production_release_status": "EXTERNAL_CERTIFICATION_PENDING",
   "production_enabled": false,
-  "proof_trigger": "freeze-deploy-naming-contract"
+  "proof_trigger": "frozen-deploy-naming-owner-proof"
 }
