@@ -156,7 +156,9 @@ def validate_windows_release_sources() -> dict[str, Any]:
 
     build_requirements = {
         "one-file deploy": "pyside6-deploy -c pysidedeploy.spec -f",
-        "intermediate executable": 'Filter "main.exe"',
+        "PySide title intermediate": 'Filter "TECHGUY TOOL Huawei.exe"',
+        "fallback main executable": 'Filter "main.exe"',
+        "target directory precreated": "New-Item -ItemType Directory -Force $TargetDirectory",
         "exact executable": '"TECHGUYTOOL_Huawei.exe"',
         "deterministic rename": "Move-Item",
         "tests": "python -m pytest",
@@ -172,6 +174,7 @@ def validate_windows_release_sources() -> dict[str, Any]:
 
     spec_requirements = {
         "onefile": "mode = onefile",
+        "application title": "title = TECHGUY TOOL Huawei",
         "msvc": "--msvc=latest",
         "noninteractive helper downloads": "--assume-yes-for-downloads",
         "runtime data": "--include-data-dir=runtime=runtime",
