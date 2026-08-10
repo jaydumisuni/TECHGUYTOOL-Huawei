@@ -51,6 +51,7 @@ def test_reference_geometry_and_brand_assets_exist() -> None:
 def test_onefile_deployment_contract() -> None:
     spec = (ROOT / "pysidedeploy.spec").read_text(encoding="utf-8")
     assert "mode = onefile" in spec
+    assert "title = TECHGUY TOOL Huawei" in spec
     assert "--msvc=latest" in spec
     assert "--assume-yes-for-downloads" in spec
     assert "--output-filename=" not in spec
@@ -58,7 +59,9 @@ def test_onefile_deployment_contract() -> None:
     build = (ROOT / "build_windows.ps1").read_text(encoding="utf-8")
     assert "pyside6-deploy" in build
     assert "pyside6-rcc" in build
+    assert 'Filter "TECHGUY TOOL Huawei.exe"' in build
     assert 'Filter "main.exe"' in build
     assert '"TECHGUYTOOL_Huawei.exe"' in build
+    assert "New-Item -ItemType Directory -Force $TargetDirectory" in build
     assert "Move-Item" in build
     assert "Get-FileHash -Algorithm SHA256" in build
