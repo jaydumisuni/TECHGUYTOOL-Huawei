@@ -41,7 +41,7 @@
     "manifests/knowledge_workshop_policy.json",
     "techguy_huawei/knowledge_workshop.py",
     "tests/test_knowledge_workshop.py",
-    "tools/prove_phase11_knowledge_workshop.py"
+    "tools/prove_phase11_xray_knowledge_workshop.py"
   ],
   "phase12_kirin_capability_packs": [
     "docs/PHASE_12_KIRIN_CAPABILITY_PACKS.md",
@@ -78,6 +78,7 @@
     "docs/PHASE_15_WINDOWS_PACKAGING_CERTIFICATION.md",
     "manifests/active_software_phase.json",
     "manifests/phase15_physical_proof_matrix.json",
+    "manifests/phase15_windows_release.receipt.json",
     "manifests/phase15_windows_release_policy.json",
     "manifests/software_phase_sources.json",
     "techguy_huawei/windows_release.py",
