@@ -62,22 +62,37 @@ Assert-File "assets\brand\techguy_huawei.ico" "Generated Windows icon"
 python tools\generate_qrc.py
 if ($LASTEXITCODE -ne 0) { throw "Qt resource generation failed." }
 
-python -m PySide6.scripts.pyside_tool rcc resources.qrc -o techguy_huawei\resources_rc.py
-if ($LASTEXITCODE -ne 0) {
-    pyside6-rcc resources.qrc -o techguy_huawei\resources_rc.py
-    if ($LASTEXITCODE -ne 0) { throw "pyside6-rcc failed." }
-}
+$Rcc = Get-Command pyside6-rcc -ErrorAction SilentlyContinue
+if (-not $Rcc) { throw "pyside6-rcc is unavailable." }
+& $Rcc.Source resources.qrc -o techguy_huawei\resources_rc.py
+if ($LASTEXITCODE -ne 0) { throw "pyside6-rcc failed." }
 Assert-File "techguy_huawei\resources_rc.py" "Compiled Qt resources"
 
 if (Test-Path dist) { Remove-Item dist -Recurse -Force }
+if (Test-Path deployment) { Remove-Item deployment -Recurse -Force }
 if (-not (Get-Command pyside6-deploy -ErrorAction SilentlyContinue)) {
     throw "pyside6-deploy was not installed with PySide6."
 }
 pyside6-deploy -c pysidedeploy.spec -f
 if ($LASTEXITCODE -ne 0) { throw "pyside6-deploy failed." }
 
-$Exe = Get-ChildItem -Path dist -Filter "TECHGUYTOOL_Huawei.exe" -Recurse | Select-Object -First 1
-if (-not $Exe) { throw "TECHGUYTOOL_Huawei.exe was not produced." }
+# pyside6-deploy owns its intermediate executable name (main.exe for main.py).
+# Preserve that contract during deployment, then apply the frozen product filename.
+$TargetDirectory = Join-Path $Root "dist"
+New-Item -ItemType Directory -Force $TargetDirectory | Out-Null
+$TargetPath = Join-Path $TargetDirectory "TECHGUYTOOL_Huawei.exe"
+$BuiltExe = Get-ChildItem -Path $TargetDirectory -Filter "main.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+if (-not $BuiltExe) {
+    $BuiltExe = Get-ChildItem -Path $TargetDirectory -Filter "TECHGUYTOOL_Huawei.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+}
+if (-not $BuiltExe) {
+    throw "pyside6-deploy completed but produced no expected one-file executable."
+}
+if ($BuiltExe.FullName -ne $TargetPath) {
+    Move-Item -LiteralPath $BuiltExe.FullName -Destination $TargetPath -Force
+}
+Assert-File $TargetPath "TECHGUYTOOL_Huawei.exe"
+$Exe = Get-Item $TargetPath
 
 $SigningMode = "unsigned"
 if ($CiTestSigning -or $CertificateThumbprint) {
@@ -116,6 +131,8 @@ $Provenance = [ordered]@{
     filename = $Exe.Name
     sha256 = $Hash.Hash.ToLowerInvariant()
     packaging = "onefile"
+    deploy_wrapper = "pyside6-deploy"
+    compiler = "msvc"
     signing_mode = $SigningMode
     authenticode_required_for_production = $true
     ci_test_signature = [bool]$CiTestSigning
