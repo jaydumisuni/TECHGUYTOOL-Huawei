@@ -9,5 +9,5 @@
   "physical_proof_matrix": "INCOMPLETE",
   "production_release_status": "EXTERNAL_CERTIFICATION_PENDING",
   "production_enabled": false,
-  "proof_trigger": "frozen-msvc-owner-proof"
+  "proof_trigger": "freeze-windows-2022-pin"
 }
