@@ -34,8 +34,8 @@
     {
       "origin": "phase15_windows_release",
       "path": ".github/workflows/phase15-windows-release.yml",
-      "sha256": "64f40d54eb542c5bda3994c6d05f740062c6f1dd35fe2e44a932bf270ad8821e",
-      "size_bytes": 7671
+      "sha256": "bb6e2cae9798ceb665f87754452c66d517049ddfc5a3acb2643f02dc99f3504e",
+      "size_bytes": 7818
     },
     {
       "origin": "phase2_shared_contracts",
