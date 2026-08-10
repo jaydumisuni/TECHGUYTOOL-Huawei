@@ -13,12 +13,12 @@ from techguy_huawei.windows_release import validate_windows_release_sources  # n
 def main() -> int:
     result = validate_windows_release_sources()
     print(json.dumps(result, sort_keys=True))
-    if result["status"] != "PASS":
-        raise SystemExit("Phase 15 software release readiness failed")
+    if result["status"] not in {"SOURCES_ONLY_PENDING_CI", "CI_PROVEN"}:
+        raise SystemExit("Phase 15 software release source proof failed")
     if result["packaging"] != "ONEFILE_READY":
         raise SystemExit("Phase 15 one-file packaging boundary failed")
     if result["physical_matrix"] != "INCOMPLETE":
-        raise SystemExit("Phase 15 physical proof matrix was overstated")
+        raise SystemExit("Phase 15 current physical proof matrix was overstated")
     if result["production_release_status"] != "EXTERNAL_CERTIFICATION_PENDING":
         raise SystemExit("Phase 15 production status was overstated")
     if result["production_enabled"] is not False:
