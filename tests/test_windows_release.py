@@ -17,14 +17,22 @@ from techguy_huawei.windows_release import (
 )
 
 
-def test_phase15_sources_report_pending_until_ci_receipt_is_frozen() -> None:
+def test_phase15_readiness_matches_receipt_authority_state() -> None:
+    receipt = load_release_receipt()
     result = validate_windows_release_sources()
-    assert result["status"] == "SOURCES_ONLY_PENDING_CI"
     assert result["release_filename"] == "TECHGUYTOOL_Huawei.exe"
     assert result["packaging"] == "ONEFILE_READY"
-    assert result["signing_path"] == "AUTHENTICODE_REQUIRED_CI_TESTABLE"
-    assert result["checksums"] == "SHA256_REQUIRED"
-    assert result["clean_windows_ci"] == "PENDING"
+    if receipt["status"] == "FROZEN":
+        assert result["status"] == "CI_PROVEN"
+        assert result["signing_path"] == "CI_AUTHENTICODE_PROVEN"
+        assert result["checksums"] == "SHA256_PROVEN"
+        assert result["clean_windows_ci"] == "PASS"
+    else:
+        assert receipt["status"] == "UNFROZEN"
+        assert result["status"] == "SOURCES_ONLY_PENDING_CI"
+        assert result["signing_path"] == "AUTHENTICODE_REQUIRED_CI_TESTABLE"
+        assert result["checksums"] == "SHA256_REQUIRED"
+        assert result["clean_windows_ci"] == "PENDING"
     assert result["physical_matrix"] == "INCOMPLETE"
     assert result["production_release_status"] == "EXTERNAL_CERTIFICATION_PENDING"
     assert result["production_enabled"] is False
