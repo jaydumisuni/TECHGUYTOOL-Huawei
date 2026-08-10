@@ -72,7 +72,10 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          $password = "phase15-ci-$($env:GITHUB_RUN_ID)"
+          $passwordBytes = [byte[]]::new(32)
+          [System.Security.Cryptography.RandomNumberGenerator]::Fill($passwordBytes)
+          $password = [Convert]::ToBase64String($passwordBytes)
+          Write-Output "::add-mask::$password"
           $rsa = [System.Security.Cryptography.RSA]::Create(2048)
           try {
             $request = [System.Security.Cryptography.X509Certificates.CertificateRequest]::new(
