@@ -34,8 +34,8 @@
     {
       "origin": "phase15_windows_release",
       "path": ".github/workflows/phase15-windows-release.yml",
-      "sha256": "7a82c5e5943efe43777a10095dbeb1b44bc033e88328862ee5ac98ae9d03485c",
-      "size_bytes": 7487
+      "sha256": "64f40d54eb542c5bda3994c6d05f740062c6f1dd35fe2e44a932bf270ad8821e",
+      "size_bytes": 7671
     },
     {
       "origin": "phase2_shared_contracts",
@@ -238,8 +238,8 @@
     {
       "origin": "phase15_windows_release",
       "path": "docs/PHASE_15_WINDOWS_PACKAGING_CERTIFICATION.md",
-      "sha256": "5c2526d54404401b0c34e9bddb4b1307d88fcf544e087d7aec3afedfe6e838d2",
-      "size_bytes": 3267
+      "sha256": "14cced33793c63d24781c6be78ccff307d141ea4196cce49695508882972519c",
+      "size_bytes": 3640
     },
     {
       "origin": "phase1_recovery_and_freeze",
