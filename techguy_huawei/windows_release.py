@@ -156,7 +156,9 @@ def validate_windows_release_sources() -> dict[str, Any]:
 
     build_requirements = {
         "one-file deploy": "pyside6-deploy -c pysidedeploy.spec -f",
+        "intermediate executable": 'Filter "main.exe"',
         "exact executable": '"TECHGUYTOOL_Huawei.exe"',
+        "deterministic rename": "Move-Item",
         "tests": "python -m pytest",
         "independent review": "review_20_for_2.py --strict",
         "rust health core": 'rust\\health_core\\Cargo.toml',
@@ -170,7 +172,8 @@ def validate_windows_release_sources() -> dict[str, Any]:
 
     spec_requirements = {
         "onefile": "mode = onefile",
-        "exact output": "--output-filename=TECHGUYTOOL_Huawei.exe",
+        "msvc": "--msvc=latest",
+        "noninteractive helper downloads": "--assume-yes-for-downloads",
         "runtime data": "--include-data-dir=runtime=runtime",
         "application data": "--include-data-dir=data=data",
         "brand assets": "--include-data-dir=assets=assets",
@@ -179,6 +182,8 @@ def validate_windows_release_sources() -> dict[str, Any]:
     missing_spec = [name for name, token in spec_requirements.items() if token not in spec]
     if missing_spec:
         raise WindowsReleaseError(f"PySide deploy spec missing requirements: {missing_spec}")
+    if "--output-filename=" in spec:
+        raise WindowsReleaseError("PySide deploy spec may not override the wrapper-owned final executable name")
 
     lower_spec = spec.lower()
     forbidden_bundles = ("firmware=firmware", "super=super", "backups=", "testpoints=")
