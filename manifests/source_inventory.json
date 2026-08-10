@@ -418,8 +418,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "pysidedeploy.spec",
-      "sha256": "606d28d4588a037d83dccf10df5e5a5c331ac36886afea92155288fb5a69dc50",
-      "size_bytes": 1104
+      "sha256": "c6583d7d6069b15d49dcb43ce1203822d8036c156a05d0205084c632acdd0379",
+      "size_bytes": 1099
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -496,8 +496,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "qml/dialogs/SettingsMenu.qml",
-      "sha256": "fce9d9e02326278a69acc146dff85caf3356a3316aa62373655730f3af37b4a3",
-      "size_bytes": 2289
+      "sha256": "ad0e30e8df63a4e9dafa32afc6dd98ca11a5a6edbb22282c0030ed26097e4921",
+      "size_bytes": 3014
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -508,8 +508,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "qml/pages/FirmwareFlashPage.qml",
-      "sha256": "140e0414b4c6ea0bd68f01f7f8c2696be3d56b33e1b7f2e7e9fd1e2e46455b2f",
-      "size_bytes": 6208
+      "sha256": "050b8451d64aff25854a2dc5abe5d6302d089a9f5f464ce6c488b6b638e4a61e",
+      "size_bytes": 8942
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
