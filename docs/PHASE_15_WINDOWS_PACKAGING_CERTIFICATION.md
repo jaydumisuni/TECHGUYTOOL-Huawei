@@ -28,7 +28,7 @@ Production signing remains strict:
 - the canonical build uses Authenticode and timestamping when the production certificate is present;
 - absence of a production certificate means the binary is not production-release eligible.
 
-GitHub Actions may use a short-lived self-signed **CI test certificate** solely to prove that the exact executable can be signed and its Authenticode signature validated. CI test signing is blocked outside GitHub Actions and is never represented as production signing.
+GitHub Actions may use a short-lived self-signed **CI test certificate** solely to prove that the exact executable can be signed, exposes the expected signer identity, and carries the expected Authenticode structure. The temporary PFX password is generated cryptographically at runtime, masked before it is exported to later workflow steps, and is never committed. CI does not add the self-signed certificate to the Windows trust store. CI test signing is blocked outside GitHub Actions and is never represented as production signing or production trust.
 
 ## Windows CI proof
 
@@ -36,9 +36,9 @@ The Phase 15 Windows workflow runs on `windows-latest` and proves:
 
 1. a fresh Windows runner exposes PnP and driver-management tooling;
 2. Python/Rust dependencies install from the frozen source;
-3. a temporary CI-only code-signing certificate can be created and trusted for the job;
+3. a temporary CI-only code-signing certificate and randomized masked PFX password are created for the job without trust-store mutation;
 4. the canonical builder creates the one-file executable;
-5. Authenticode validation succeeds for the CI test signature;
+5. the resulting executable exposes the expected CI-only Authenticode signer and signing provenance;
 6. the emitted SHA-256 checksum matches the executable;
 7. the one-file binary starts, is forcibly terminated, and starts again, exercising runtime extraction and restart-after-abnormal-close behavior;
 8. release provenance records the distinction between CI test signing and production signing.
