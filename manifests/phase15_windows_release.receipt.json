@@ -9,5 +9,5 @@
   "physical_proof_matrix": "INCOMPLETE",
   "production_release_status": "EXTERNAL_CERTIFICATION_PENDING",
   "production_enabled": false,
-  "proof_trigger": "frozen-inventory-owner-proof"
+  "proof_trigger": "source-freeze-after-ci-signing-hardening"
 }
