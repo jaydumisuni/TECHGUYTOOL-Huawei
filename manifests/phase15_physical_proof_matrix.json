@@ -2,6 +2,18 @@
   "schema": "techguytool-huawei.phase15-physical-proof-matrix.v1",
   "overall_status": "INCOMPLETE",
   "production_enabled": false,
+  "physical_pass_evidence_requirements": {
+    "required_fields": [
+      "evidence_id",
+      "evidence_sha256",
+      "evidence_refs",
+      "subject_identity_hash",
+      "verified_at",
+      "verifier"
+    ],
+    "hash_algorithm": "sha256",
+    "timestamp_format": "RFC3339_UTC"
+  },
   "entries": [
     {"id": "vog_kirin980_full_recovery_branding", "status": "HARDWARE_PENDING"},
     {"id": "historical_p10_vtr_regression", "status": "REPLAY_PROVEN_PHYSICAL_PENDING"},
@@ -25,5 +37,5 @@
     {"id": "mediatek_brom_preloader_read_only", "status": "REPLAY_PROVEN_PHYSICAL_PENDING"},
     {"id": "clean_windows_driver_install", "status": "WINDOWS_CI_PENDING_PHYSICAL_DRIVER_PROOF"}
   ],
-  "rule": "Only PHYSICAL_PASS may satisfy a physical proof matrix entry. Software/replay evidence remains explicitly distinct."
+  "rule": "Only PHYSICAL_PASS with a complete validated external evidence record may satisfy a physical proof matrix entry. Software/replay evidence remains explicitly distinct."
 }
