@@ -352,8 +352,8 @@
     {
       "origin": "phase15_windows_release",
       "path": "manifests/phase15_physical_proof_matrix.json",
-      "sha256": "859ef1a5c95727fa1f58853626411dbf9a25741ded22e0322364c1dc63c35b0f",
-      "size_bytes": 2016
+      "sha256": "5d605fc62f65b98399ce1d13c22a123c0e8c17343870b43b0a340015ddabffe6",
+      "size_bytes": 2355
     },
     {
       "origin": "phase15_windows_release",
@@ -370,8 +370,8 @@
     {
       "origin": "phase15_windows_release",
       "path": "manifests/software_phase_sources.json",
-      "sha256": "b52cc9550f9a4c13e3234a5682a08b564e1847bf9fc7a62f393c034ace072482",
-      "size_bytes": 3264
+      "sha256": "7041d9071fb9e965baa52ab71d9af7bad872bea588d9edad372ecda6b3208a23",
+      "size_bytes": 3318
     },
     {
       "origin": "phase12_kirin_capability_packs",
@@ -964,8 +964,8 @@
     {
       "origin": "phase15_windows_release",
       "path": "techguy_huawei/windows_release.py",
-      "sha256": "3803b8f8562b9e59305b1473875118adc6a625fef3b82a706313ee45e14486bb",
-      "size_bytes": 9815
+      "sha256": "3f93b3b50061295d235dc6ce64a847f60d88a8821db1c2ff7b2877495c1ad842",
+      "size_bytes": 16146
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -1072,8 +1072,8 @@
     {
       "origin": "phase15_windows_release",
       "path": "tests/test_windows_release.py",
-      "sha256": "134be942b04979350e6f85dbb85a542ce2a275cbb1a3d9ced0f277b76f207495",
-      "size_bytes": 2635
+      "sha256": "b1e49c60f8e199cbe6ae5adb4277866345501911f30212e2781b0d51458b84a5",
+      "size_bytes": 5817
     },
     {
       "origin": "phase7_bounded_executor_framework",
@@ -1198,8 +1198,8 @@
     {
       "origin": "phase15_windows_release",
       "path": "tools/prove_phase15_windows_release.py",
-      "sha256": "a74347939506e51a154b19eeb6746d7af2290397e9339103b845366a751c5118",
-      "size_bytes": 1051
+      "sha256": "63711b01fcffb6fd8b89140e4b85930bd0e87c29599f1ae16eef03bcac715c63",
+      "size_bytes": 1100
     },
     {
       "origin": "phase6_mode_execution_leases",
