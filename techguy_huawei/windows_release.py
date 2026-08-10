@@ -1,16 +1,33 @@
 from __future__ import annotations
 
 import json
+import re
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Mapping
 
 ROOT = Path(__file__).resolve().parents[1]
 POLICY_PATH = ROOT / "manifests" / "phase15_windows_release_policy.json"
 MATRIX_PATH = ROOT / "manifests" / "phase15_physical_proof_matrix.json"
+RECEIPT_PATH = ROOT / "manifests" / "phase15_windows_release.receipt.json"
 BUILD_SCRIPT = ROOT / "build_windows.ps1"
 DEPLOY_SPEC = ROOT / "pysidedeploy.spec"
 POLICY_SCHEMA = "techguytool-huawei.phase15-windows-release-policy.v1"
 MATRIX_SCHEMA = "techguytool-huawei.phase15-physical-proof-matrix.v1"
+RECEIPT_SCHEMA = "techguytool-huawei.phase15-receipt.v1"
+SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+REVISION_RE = re.compile(r"^[0-9a-f]{40}$")
+INCLUDE_DATA_RE = re.compile(r"--include-data-dir=([^\s]+)", re.IGNORECASE)
+PHYSICAL_EVIDENCE_FIELDS = frozenset(
+    {
+        "evidence_id",
+        "evidence_sha256",
+        "evidence_refs",
+        "subject_identity_hash",
+        "verified_at",
+        "verifier",
+    }
+)
 
 REQUIRED_MATRIX_IDS = frozenset(
     {
@@ -60,6 +77,12 @@ def load_release_policy() -> dict[str, Any]:
 def load_physical_matrix() -> dict[str, Any]:
     payload = _load_json(MATRIX_PATH)
     validate_physical_matrix(payload)
+    return payload
+
+
+def load_release_receipt() -> dict[str, Any]:
+    payload = _load_json(RECEIPT_PATH)
+    validate_release_receipt(payload)
     return payload
 
 
@@ -118,17 +141,64 @@ def validate_release_policy(payload: Mapping[str, Any]) -> None:
         raise WindowsReleaseError("Production release status overstated")
 
 
+def validate_release_receipt(payload: Mapping[str, Any]) -> None:
+    if payload.get("schema") != RECEIPT_SCHEMA or payload.get("phase") != 15:
+        raise WindowsReleaseError("Phase 15 receipt schema mismatch")
+    if payload.get("release_filename") != "TECHGUYTOOL_Huawei.exe":
+        raise WindowsReleaseError("Phase 15 receipt filename mismatch")
+    if payload.get("production_signing") != "EXTERNAL_CERTIFICATE_REQUIRED":
+        raise WindowsReleaseError("Phase 15 receipt production signing boundary mismatch")
+    if payload.get("production_release_status") != "EXTERNAL_CERTIFICATION_PENDING":
+        raise WindowsReleaseError("Phase 15 receipt production status overstated")
+    if payload.get("production_enabled") is not False:
+        raise WindowsReleaseError("Phase 15 receipt may not enable production")
+    if payload.get("physical_proof_matrix") not in {"INCOMPLETE", "COMPLETE"}:
+        raise WindowsReleaseError("Phase 15 receipt physical matrix status invalid")
+
+    status = payload.get("status")
+    if status == "UNFROZEN":
+        if payload.get("windows_ci") != "PENDING" or payload.get("ci_test_signing") != "PENDING":
+            raise WindowsReleaseError("Unfrozen Phase 15 receipt must keep CI evidence pending")
+        return
+    if status != "FROZEN":
+        raise WindowsReleaseError("Phase 15 receipt status invalid")
+    if payload.get("windows_ci") != "PASS" or payload.get("ci_test_signing") != "PASS":
+        raise WindowsReleaseError("Frozen Phase 15 receipt requires passing Windows CI and test signing")
+    required = {
+        "tested_revision": REVISION_RE,
+        "source_inventory_sha256": SHA256_RE,
+        "executable_sha256": SHA256_RE,
+    }
+    for field, pattern in required.items():
+        value = payload.get(field)
+        if not isinstance(value, str) or not pattern.fullmatch(value):
+            raise WindowsReleaseError(f"Frozen Phase 15 receipt {field} invalid")
+    for field in ("windows_run_id", "software_proof_run_id", "artifact_id"):
+        value = payload.get(field)
+        if not isinstance(value, int) or value <= 0:
+            raise WindowsReleaseError(f"Frozen Phase 15 receipt {field} invalid")
+    artifact_name = payload.get("artifact_name")
+    if not isinstance(artifact_name, str) or not artifact_name.strip():
+        raise WindowsReleaseError("Frozen Phase 15 receipt artifact_name invalid")
+
+
 def validate_physical_matrix(payload: Mapping[str, Any]) -> None:
     if payload.get("schema") != MATRIX_SCHEMA:
         raise WindowsReleaseError("Physical matrix schema mismatch")
-    if payload.get("overall_status") != "INCOMPLETE":
-        raise WindowsReleaseError("Physical matrix may not be marked complete without physical evidence")
     if payload.get("production_enabled") is not False:
         raise WindowsReleaseError("Physical matrix cannot enable production")
+    requirements = _mapping(payload.get("physical_pass_evidence_requirements"), "physical pass evidence requirements")
+    fields = requirements.get("required_fields")
+    if not isinstance(fields, list) or set(fields) != PHYSICAL_EVIDENCE_FIELDS:
+        raise WindowsReleaseError("Physical-pass evidence requirements mismatch")
+    if requirements.get("hash_algorithm") != "sha256" or requirements.get("timestamp_format") != "RFC3339_UTC":
+        raise WindowsReleaseError("Physical-pass evidence encoding requirements mismatch")
+
     entries = payload.get("entries")
     if not isinstance(entries, list) or not entries:
         raise WindowsReleaseError("Physical matrix entries missing")
     ids: list[str] = []
+    pass_count = 0
     for entry in entries:
         if not isinstance(entry, Mapping):
             raise WindowsReleaseError("Physical matrix entry must be an object")
@@ -136,21 +206,43 @@ def validate_physical_matrix(payload: Mapping[str, Any]) -> None:
         status = entry.get("status")
         if not isinstance(entry_id, str) or not entry_id:
             raise WindowsReleaseError("Physical matrix id invalid")
-        if status not in ALLOWED_NONPHYSICAL_STATUS:
+        if status == "PHYSICAL_PASS":
+            _validate_physical_evidence(entry_id, entry.get("evidence"))
+            pass_count += 1
+        elif status in ALLOWED_NONPHYSICAL_STATUS:
+            if "evidence" in entry:
+                raise WindowsReleaseError(f"Pending physical matrix entry may not carry pass evidence: {entry_id}")
+        else:
             raise WindowsReleaseError(f"Physical matrix status is unsupported or overstated: {entry_id}={status}")
         ids.append(entry_id)
     if len(ids) != len(set(ids)):
         raise WindowsReleaseError("Physical matrix ids must be unique")
     if set(ids) != REQUIRED_MATRIX_IDS:
         raise WindowsReleaseError("Physical matrix does not match the frozen plan")
+    expected_status = "COMPLETE" if pass_count == len(entries) else "INCOMPLETE"
+    if payload.get("overall_status") != expected_status:
+        raise WindowsReleaseError("Physical matrix overall status does not match validated evidence")
     rule = payload.get("rule")
     if not isinstance(rule, str) or "Only PHYSICAL_PASS" not in rule:
         raise WindowsReleaseError("Physical matrix proof rule missing")
 
 
+def find_prohibited_external_data_sources(spec: str) -> list[str]:
+    prohibited_tokens = ("firmware", "super", "backup", "testpoint", "journal", "registration", "license", "download")
+    hits: list[str] = []
+    for match in INCLUDE_DATA_RE.finditer(spec):
+        mapping = match.group(1)
+        source = mapping.rsplit("=", 1)[0].replace("\\", "/").strip('"\'')
+        normalized_parts = [re.sub(r"[^a-z0-9]", "", part.lower()) for part in source.split("/") if part]
+        if any(any(token in part for token in prohibited_tokens) for part in normalized_parts):
+            hits.append(source)
+    return sorted(set(hits))
+
+
 def validate_windows_release_sources() -> dict[str, Any]:
     policy = load_release_policy()
     matrix = load_physical_matrix()
+    receipt = load_release_receipt()
     build = BUILD_SCRIPT.read_text(encoding="utf-8")
     spec = DEPLOY_SPEC.read_text(encoding="utf-8")
 
@@ -188,24 +280,50 @@ def validate_windows_release_sources() -> dict[str, Any]:
     if "--output-filename=" in spec:
         raise WindowsReleaseError("PySide deploy spec may not override the wrapper-owned final executable name")
 
-    lower_spec = spec.lower()
-    forbidden_bundles = ("firmware=firmware", "super=super", "backups=", "testpoints=")
-    present_forbidden = [item for item in forbidden_bundles if item in lower_spec]
+    present_forbidden = find_prohibited_external_data_sources(spec)
     if present_forbidden:
         raise WindowsReleaseError(f"External-data boundary violated by deploy spec: {present_forbidden}")
 
+    ci_proven = receipt["status"] == "FROZEN"
+    status = "CI_PROVEN" if ci_proven else "SOURCES_ONLY_PENDING_CI"
     return {
         "schema": "techguytool-huawei.phase15-software-release-readiness.v1",
-        "status": "PASS",
+        "status": status,
         "release_filename": policy["release_filename"],
         "packaging": "ONEFILE_READY",
-        "signing_path": "AUTHENTICODE_REQUIRED_CI_TESTABLE",
-        "checksums": "SHA256_REQUIRED",
-        "clean_windows_ci": "REQUIRED",
+        "signing_path": "CI_AUTHENTICODE_PROVEN" if ci_proven else "AUTHENTICODE_REQUIRED_CI_TESTABLE",
+        "checksums": "SHA256_PROVEN" if ci_proven else "SHA256_REQUIRED",
+        "clean_windows_ci": "PASS" if ci_proven else "PENDING",
         "physical_matrix": matrix["overall_status"],
         "production_release_status": policy["production_release_status"],
         "production_enabled": False,
     }
+
+
+def _validate_physical_evidence(entry_id: str, value: Any) -> None:
+    evidence = _mapping(value, f"physical evidence for {entry_id}")
+    if set(evidence) != PHYSICAL_EVIDENCE_FIELDS:
+        raise WindowsReleaseError(f"Physical evidence fields invalid: {entry_id}")
+    for field in ("evidence_id", "verifier"):
+        item = evidence.get(field)
+        if not isinstance(item, str) or not item.strip():
+            raise WindowsReleaseError(f"Physical evidence {field} invalid: {entry_id}")
+    for field in ("evidence_sha256", "subject_identity_hash"):
+        item = evidence.get(field)
+        if not isinstance(item, str) or not SHA256_RE.fullmatch(item):
+            raise WindowsReleaseError(f"Physical evidence {field} invalid: {entry_id}")
+    refs = evidence.get("evidence_refs")
+    if not isinstance(refs, list) or not refs or any(not isinstance(ref, str) or not ref.strip() for ref in refs):
+        raise WindowsReleaseError(f"Physical evidence references invalid: {entry_id}")
+    timestamp = evidence.get("verified_at")
+    if not isinstance(timestamp, str) or not timestamp.endswith("Z"):
+        raise WindowsReleaseError(f"Physical evidence verified_at invalid: {entry_id}")
+    try:
+        parsed = datetime.fromisoformat(timestamp[:-1] + "+00:00")
+    except ValueError as exc:
+        raise WindowsReleaseError(f"Physical evidence verified_at invalid: {entry_id}") from exc
+    if parsed.utcoffset() is None or parsed.utcoffset().total_seconds() != 0:
+        raise WindowsReleaseError(f"Physical evidence verified_at must be UTC: {entry_id}")
 
 
 def _load_json(path: Path) -> dict[str, Any]:
