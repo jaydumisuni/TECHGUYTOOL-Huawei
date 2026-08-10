@@ -12,7 +12,9 @@ permissions:
 
 jobs:
   windows-release-candidate:
-    runs-on: windows-latest
+    # Nuitka 2.6.8 is frozen for this release. Pin the hosted image so
+    # GitHub's windows-latest Visual Studio generation cannot drift under it.
+    runs-on: windows-2022
     steps:
       - name: Check out reviewed source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
