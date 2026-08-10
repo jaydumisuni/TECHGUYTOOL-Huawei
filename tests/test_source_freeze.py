@@ -23,7 +23,6 @@ def test_phase1_source_freeze_is_coherent() -> None:
 def test_release_filename_matches_frozen_plan() -> None:
     expected = "TECHGUYTOOL_Huawei.exe"
     checked = (
-        "pysidedeploy.spec",
         "build_windows.ps1",
         "README.md",
         "tools/review_20_for_2.py",
@@ -33,3 +32,7 @@ def test_release_filename_matches_frozen_plan() -> None:
         text = (ROOT / rel).read_text(encoding="utf-8")
         assert expected in text
         assert "TECHGUY" + "_TOOL_Huawei.exe" not in text
+
+    deploy_spec = (ROOT / "pysidedeploy.spec").read_text(encoding="utf-8")
+    assert "mode = onefile" in deploy_spec
+    assert "--output-filename=" not in deploy_spec
