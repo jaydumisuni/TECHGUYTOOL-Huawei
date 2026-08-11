@@ -223,7 +223,6 @@ ApplicationWindow {
                                     selectionColor: "#245782"
                                     font.family: "Consolas"
                                     font.pixelSize: 12
-                                    lineHeight: 1.35
                                     background: Rectangle { color: "transparent" }
                                 }
                             }
