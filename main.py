@@ -41,11 +41,11 @@ def _write_diagnostic(stage: str, *, errors: list[str] | None = None, exception:
         payload["exception_type"] = type(exception).__name__
         payload["exception"] = str(exception)
         payload["traceback"] = "".join(traceback.format_exception(exception))
-    path = _diagnostic_path()
     try:
+        path = _diagnostic_path()
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
-    except OSError:
+    except Exception:
         # Diagnostics must never become a new startup failure.
         pass
 
