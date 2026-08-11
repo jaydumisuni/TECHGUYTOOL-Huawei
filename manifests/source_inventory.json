@@ -1078,8 +1078,8 @@
     {
       "origin": "phase7_bounded_executor_framework",
       "path": "tools/build_active_software_phase_receipt.py",
-      "sha256": "ddd975205f7e49646a3b375596dd31a8ceb7e5abe684a2d5f0bb79d80228fd3f",
-      "size_bytes": 3240
+      "sha256": "227d70d96c1dd118e03976bdf93e5c16f9dced32474a55fe008fc32c38ba8f8a",
+      "size_bytes": 6379
     },
     {
       "origin": "phase3_device_gateway",
@@ -1252,8 +1252,8 @@
     {
       "origin": "phase7_bounded_executor_framework",
       "path": "tools/verify_software_phase_receipt.py",
-      "sha256": "5c8ebca1deb1aceaefbae9e2bc2abb4d5036fc49793b2975d922c07829604109",
-      "size_bytes": 4984
+      "sha256": "0427565b27e4c06bd891a3fc3a2795a83e77de1fc825a06a3beb91e5610a8765",
+      "size_bytes": 11418
     },
     {
       "origin": "phase3_device_gateway",
