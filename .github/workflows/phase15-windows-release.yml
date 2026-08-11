@@ -113,10 +113,16 @@ jobs:
           $ErrorActionPreference = "Stop"
           $diag = Join-Path $env:RUNNER_TEMP "phase15-source-startup.json"
           $env:TECHGUY_STARTUP_DIAGNOSTIC_PATH = $diag
-          python main.py
-          if ($LASTEXITCODE -ne 0) {
+          $probe = Start-Process -FilePath "python" -ArgumentList @("main.py") -PassThru
+          if (-not $probe.WaitForExit(30000)) {
+            Stop-Process -Id $probe.Id -Force -ErrorAction SilentlyContinue
             if (Test-Path $diag) { Get-Content $diag -Raw | Write-Host }
-            throw "Source-mode startup probe failed with exit code $LASTEXITCODE."
+            throw "Source-mode startup probe exceeded the 30-second deadline."
+          }
+          $probeExit = $probe.ExitCode
+          if ($probeExit -ne 0) {
+            if (Test-Path $diag) { Get-Content $diag -Raw | Write-Host }
+            throw "Source-mode startup probe failed with exit code $probeExit."
           }
           if (-not (Test-Path $diag)) { throw "Source-mode startup diagnostic was not created." }
           $state = Get-Content $diag -Raw | ConvertFrom-Json
@@ -169,8 +175,14 @@ jobs:
           $diag = Join-Path $env:RUNNER_TEMP "phase15-packaged-startup.json"
           $env:TECHGUY_STARTUP_DIAGNOSTIC_PATH = $diag
           $env:TECHGUY_STARTUP_PROBE = "1"
-          & $exe.FullName
-          $probeExit = $LASTEXITCODE
+          $probe = Start-Process -FilePath $exe.FullName -PassThru
+          if (-not $probe.WaitForExit(30000)) {
+            Stop-Process -Id $probe.Id -Force -ErrorAction SilentlyContinue
+            Remove-Item Env:TECHGUY_STARTUP_PROBE -ErrorAction SilentlyContinue
+            if (Test-Path $diag) { Get-Content $diag -Raw | Write-Host }
+            throw "Packaged startup probe exceeded the 30-second deadline."
+          }
+          $probeExit = $probe.ExitCode
           Remove-Item Env:TECHGUY_STARTUP_PROBE -ErrorAction SilentlyContinue
           if ($probeExit -ne 0) {
             if (Test-Path $diag) { Get-Content $diag -Raw | Write-Host }
