@@ -82,8 +82,8 @@
     {
       "origin": "phase6_mode_execution_leases",
       "path": ".github/workflows/phase6-leases.yml",
-      "sha256": "1557032e7c1aa94adf6d813b94759a204deaa9f9d40f7b6ae987ee099ca03b06",
-      "size_bytes": 5333
+      "sha256": "9d17183580bdbc4e406ba24c1e92ae5de6bf805dbf34a5f5658cb2095f3bc169",
+      "size_bytes": 5602
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -1240,8 +1240,8 @@
     {
       "origin": "phase7_bounded_executor_framework",
       "path": "tools/verify_historical_phase6_authority.py",
-      "sha256": "466a4e7fe9e816246971f80b5283b98eb00ec0f1d7940dcac2d3dfdc145329c8",
-      "size_bytes": 4696
+      "sha256": "1a3d13fc195dc9d2fdb3622f26a4bba817eb859da1a46f3754e086c6b4f28fdb",
+      "size_bytes": 5961
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
