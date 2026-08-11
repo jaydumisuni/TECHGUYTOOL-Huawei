@@ -5,7 +5,6 @@ on:
     branches: ["phase7/**", "phase8/**", "phase9/**", "phase10/**", "phase11/**", "phase12/**", "phase13/**", "phase14/**", "phase15/**"]
 
 permissions:
-  actions: read
   contents: write
 
 jobs:
@@ -25,10 +24,9 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Build and verify frozen authority receipt
+      - name: Build and structurally verify frozen authority receipt
         shell: bash
         env:
-          GITHUB_TOKEN: ${{ github.token }}
           OWNER_AUTHORITY_COMMIT: ${{ github.sha }}
         run: |
           set -euo pipefail
@@ -70,7 +68,12 @@ jobs:
           payload['status'] = 'FROZEN'
           path.write_text(json.dumps(payload, indent=2, sort_keys=True) + '\n', encoding='utf-8')
           PY
-          python tools/verify_software_phase_receipt.py --verify-hosted-run
+          # The freezer proves only local receipt structure and source ancestry.
+          # Hosted software-run and Windows artifact authority is intentionally
+          # re-proved by the owner-triggered Software Phase Proof after this
+          # receipt is committed, so any remote-evidence failure is visible on
+          # the final PR head instead of being trapped in this push-only job.
+          python tools/verify_software_phase_receipt.py
           git diff --check
           changed="$(git diff --name-only)"
           test "$changed" = "$receipt_path" || {
