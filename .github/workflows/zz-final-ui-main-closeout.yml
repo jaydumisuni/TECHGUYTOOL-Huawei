@@ -1,0 +1,53 @@
+name: One-shot final Huawei UI closeout
+
+on:
+  push:
+    branches: ["phase15/final-ui-closeout"]
+
+permissions:
+  contents: write
+
+jobs:
+  closeout:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: true
+      - name: Apply deterministic routing and ambience correction
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('qml/Main.qml')
+          s = p.read_text(encoding='utf-8')
+          replacements = {
+              '            opacity: 0.48\n': '            opacity: 0.72\n',
+              'g1.addColorStop(0, "rgba(160,65,255,0.28)")': 'g1.addColorStop(0, "rgba(172,58,255,0.46)")',
+              'g2.addColorStop(0, "rgba(0,164,255,0.28)")': 'g2.addColorStop(0, "rgba(0,177,255,0.40)")',
+              'ctx.strokeStyle = "rgba(126,62,255,0.16)"': 'ctx.strokeStyle = "rgba(165,70,255,0.34)"',
+              'ctx.lineWidth = 18': 'ctx.lineWidth = 24',
+              'sourceComponent: app.pageIndex === 0 ? serviceComponent : app.pageIndex === 2 ? firmwareComponent : placeholderComponent': 'sourceComponent: app.pageIndex === 0 ? serviceComponent : app.pageIndex === 1 ? deviceInformationComponent : app.pageIndex === 2 ? firmwareComponent : app.pageIndex === 3 ? partitionManagerComponent : app.pageIndex === 4 ? backupRestoreComponent : operationHistoryComponent',
+              '                    Text { text: "Windows / macOS / Linux source"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }': '                    Text { text: "Windows 11 Pro 23H2 (64-bit)"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }',
+              '    Component { id: serviceComponent; ServiceCenterPage {} }\n    Component { id: firmwareComponent; FirmwareFlashPage {} }\n    Component { id: placeholderComponent; PlaceholderPage { title: app.pageTitle.toUpperCase(); message: "The interface is present and wired to the shared evidence and action-health core. Device-specific write engines remain guarded until their proof contracts are implemented." } }': '    Component { id: serviceComponent; ServiceCenterPage {} }\n    Component { id: deviceInformationComponent; DeviceInformationPage {} }\n    Component { id: firmwareComponent; FirmwareFlashPage {} }\n    Component { id: partitionManagerComponent; PartitionManagerPage {} }\n    Component { id: backupRestoreComponent; BackupRestorePage {} }\n    Component { id: operationHistoryComponent; OperationHistoryPage {} }',
+          }
+          for old, new in replacements.items():
+              if old not in s:
+                  raise SystemExit(f'Main.qml expected fragment missing: {old[:100]!r}')
+              s = s.replace(old, new, 1)
+
+          marker = '        ColumnLayout {\n            anchors.fill: parent\n            anchors.margins: 7'
+          if marker not in s:
+              raise SystemExit('Main.qml body marker missing')
+          extra = '''        Canvas {\n            anchors.fill: parent\n            opacity: 0.82\n            onPaint: {\n                var ctx = getContext("2d")\n                ctx.clearRect(0, 0, width, height)\n                var bottomGlow = ctx.createRadialGradient(width * 0.58, height * 0.94, 10, width * 0.58, height * 0.94, width * 0.34)\n                bottomGlow.addColorStop(0, "rgba(0,139,255,0.24)")\n                bottomGlow.addColorStop(1, "rgba(0,0,0,0)")\n                ctx.fillStyle = bottomGlow; ctx.fillRect(0, 0, width, height)\n                ctx.strokeStyle = "rgba(202,62,255,0.24)"\n                ctx.lineWidth = 7\n                ctx.beginPath(); ctx.moveTo(width * 0.74, -70); ctx.bezierCurveTo(width * 0.80, height * 0.24, width * 0.73, height * 0.56, width * 0.87, height + 70); ctx.stroke()\n                ctx.strokeStyle = "rgba(75,168,255,0.16)"\n                ctx.lineWidth = 10\n                ctx.beginPath(); ctx.moveTo(width * 0.50, height + 40); ctx.bezierCurveTo(width * 0.58, height * 0.72, width * 0.61, height * 0.42, width * 0.66, -50); ctx.stroke()\n            }\n        }\n\n'''
+          s = s.replace(marker, extra + marker, 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+          rm .github/workflows/zz-final-ui-main-closeout.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add qml/Main.qml .github/workflows/zz-final-ui-main-closeout.yml
+          git diff --cached --check
+          git commit -m "Finalize direct Huawei UI routing and approved ambience"
+          git push
