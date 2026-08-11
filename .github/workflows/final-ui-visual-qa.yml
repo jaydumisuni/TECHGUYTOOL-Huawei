@@ -40,7 +40,7 @@ jobs:
       - name: Capture all six main UI states at approved dimensions
         shell: pwsh
         env:
-          QT_QPA_PLATFORM: windows
+          QT_QPA_PLATFORM: offscreen
         run: |
           $ErrorActionPreference = "Stop"
           python tools/capture_ui_states.py
