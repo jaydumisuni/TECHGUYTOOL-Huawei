@@ -31,7 +31,11 @@ GlassPanel {
                     anchors.fill: parent
                     Rectangle {
                         width: parent.width / 2; height: parent.height; radius: 6
-                        gradient: Gradient { orientation: Gradient.Horizontal; GradientStop { position: 0; color: "#5a33ad" }; GradientStop { position: 1; color: "#10598f" } }
+                        gradient: Gradient {
+                            orientation: Gradient.Horizontal
+                            GradientStop { position: 0; color: "#5a33ad" }
+                            GradientStop { position: 1; color: "#10598f" }
+                        }
                         Text { anchors.centerIn: parent; text: "MODEL"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
                     }
                     Rectangle { width: parent.width / 2; height: parent.height; color: "transparent"; Text { anchors.centerIn: parent; text: "CHIPSET"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 } }
