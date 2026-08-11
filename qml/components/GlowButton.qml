@@ -34,7 +34,9 @@ Button {
     contentItem: Text {
         text: root.text
         color: root.enabled ? Theme.text : "#7c8793"
-        font: root.font
+        font.family: root.font.family
+        font.pixelSize: root.font.pixelSize
+        font.weight: root.font.weight
         font.letterSpacing: 1.1
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
