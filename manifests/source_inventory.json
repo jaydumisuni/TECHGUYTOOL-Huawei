@@ -34,8 +34,8 @@
     {
       "origin": "phase15_windows_release",
       "path": ".github/workflows/phase15-windows-release.yml",
-      "sha256": "9b8a599226df4682018199fff4cf30c7b6c83b0c5e98eef8247098a1262a2fac",
-      "size_bytes": 9807
+      "sha256": "41416466946ec60caacfa868920d106e66e61b13d65f788f6451b58dbd722533",
+      "size_bytes": 10600
     },
     {
       "origin": "phase2_shared_contracts",
@@ -298,8 +298,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "main.py",
-      "sha256": "6a00051d42f5cd713167101675c49909532b30b669ff337c8bf9b45537a89d3c",
-      "size_bytes": 3502
+      "sha256": "f77a14a35b700ad5e3618ce9527eff12360fe1f8f3340a2e14c3d2c6158a3e71",
+      "size_bytes": 3508
     },
     {
       "origin": "phase15_windows_release",
@@ -964,8 +964,8 @@
     {
       "origin": "phase15_windows_release",
       "path": "techguy_huawei/windows_release.py",
-      "sha256": "3f93b3b50061295d235dc6ce64a847f60d88a8821db1c2ff7b2877495c1ad842",
-      "size_bytes": 16146
+      "sha256": "91a8b066c29f8053e3f5f056c2967d904f7ac3dca7eac353e7bd49544570dbb0",
+      "size_bytes": 18147
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -1072,8 +1072,8 @@
     {
       "origin": "phase15_windows_release",
       "path": "tests/test_windows_release.py",
-      "sha256": "f196b49c1c00e3cc65b133fc6fb11159e32a88ad85ff2cefee8fe8561e3e70fe",
-      "size_bytes": 6176
+      "sha256": "bb8d244718e47622b459c440f6c37a7ab77419175012d96fc9dc43e3fdb87cfa",
+      "size_bytes": 7760
     },
     {
       "origin": "phase7_bounded_executor_framework",
