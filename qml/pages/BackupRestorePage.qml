@@ -30,7 +30,11 @@ GlassPanel {
                     anchors.fill: parent
                     Rectangle {
                         width: parent.width / 2; height: parent.height; radius: 6
-                        gradient: Gradient { orientation: Gradient.Horizontal; GradientStop { position: 0; color: "#5a33ad" }; GradientStop { position: 1; color: "#10598f" } }
+                        gradient: Gradient {
+                            orientation: Gradient.Horizontal
+                            GradientStop { position: 0; color: "#5a33ad" }
+                            GradientStop { position: 1; color: "#10598f" }
+                        }
                         Text { anchors.centerIn: parent; text: "MODEL"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
                     }
                     Rectangle { width: parent.width / 2; height: parent.height; color: "transparent"; Text { anchors.centerIn: parent; text: "CHIPSET"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 } }
@@ -99,7 +103,6 @@ GlassPanel {
                     Rectangle {
                         Layout.fillWidth: true; Layout.preferredHeight: 160; radius: 7
                         color: "#071320"; border.width: 1; border.color: "#285078"
-                        border.style: Qt.DashLine
                         Column {
                             anchors.centerIn: parent; spacing: 9
                             Text { anchors.horizontalCenter: parent.horizontalCenter; text: "⇧"; color: "#84aaff"; font.pixelSize: 35 }
