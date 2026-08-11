@@ -6,6 +6,7 @@ import "../components"
 
 Popup {
     id: root
+    objectName: "settingsMenu"
     property var ownerWindow
     signal fixDriversRequested()
     signal registerRequested()
