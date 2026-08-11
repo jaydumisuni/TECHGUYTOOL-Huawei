@@ -85,6 +85,7 @@
     "manifests/phase15_windows_release_policy.json",
     "manifests/software_phase_sources.json",
     "qml/Main.qml",
+    "qml/components/GlassPanel.qml",
     "qml/dialogs/AboutDialog.qml",
     "qml/dialogs/DriverDialog.qml",
     "qml/dialogs/RegisterDialog.qml",
