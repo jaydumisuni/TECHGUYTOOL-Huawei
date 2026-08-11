@@ -12,8 +12,8 @@ os.environ.setdefault("QSG_RHI_BACKEND", "software")
 os.environ.setdefault("QT_OPENGL", "software")
 
 import shiboken6
-from PySide6.QtCore import QCoreApplication, QUrl
-from PySide6.QtGui import QFont, QFontDatabase, QGuiApplication, QRawFont
+from PySide6.QtCore import QCoreApplication, QMetaObject, QObject, Qt, QUrl
+from PySide6.QtGui import QFont, QFontDatabase, QGuiApplication, QPainter, QRawFont
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtQuick import QQuickWindow
 from PySide6.QtTest import QTest
@@ -23,22 +23,18 @@ sys.path.insert(0, str(ROOT))
 
 from techguy_huawei.backend import Backend
 
-STATES = [
-    (0, "Service Center", "service-center.png"),
-    (1, "Device Information", "device-information.png"),
-    (2, "Firmware Flash", "firmware-flash.png"),
-    (3, "Partition Manager", "partition-manager.png"),
-    (4, "Backup & Restore", "backup-restore.png"),
-    (5, "Operation History", "operation-history.png"),
+APPROVED_STATES = [
+    ("Firmware Flash", "01-firmware-flash.png"),
+    ("Settings", "02-settings.png"),
+    ("About", "03-about.png"),
+    ("Fix Drivers", "04-fix-drivers.png"),
+    ("Register Device", "05-register-device.png"),
+    ("Terminal", "06-terminal.png"),
 ]
 
 
 def load_visual_qa_fonts(app: QGuiApplication) -> dict[str, object]:
-    """Make the headless Windows renderer use the same UI fonts as a real desktop.
-
-    The offscreen platform can otherwise resolve a family name but render missing-glyph
-    boxes. Explicit application-font registration makes the visual artifact meaningful.
-    """
+    """Make the headless Windows renderer use the same UI fonts as a real desktop."""
     loaded_files: list[str] = []
     loaded_families: list[str] = []
     if sys.platform == "win32":
@@ -55,10 +51,9 @@ def load_visual_qa_fonts(app: QGuiApplication) -> dict[str, object]:
             loaded_families.extend(QFontDatabase.applicationFontFamilies(font_id))
 
     available = set(QFontDatabase.families())
-    if "Segoe UI" not in available:
-        raise SystemExit("Segoe UI is unavailable to the visual-QA renderer")
-    if "Consolas" not in available:
-        raise SystemExit("Consolas is unavailable to the visual-QA renderer")
+    for required_family in ("Segoe UI", "Consolas"):
+        if required_family not in available:
+            raise SystemExit(f"{required_family} is unavailable to the visual-QA renderer")
 
     app.setFont(QFont("Segoe UI", 10))
     raw = QRawFont.fromFont(QFont("Segoe UI", 12))
@@ -77,11 +72,62 @@ def load_visual_qa_fonts(app: QGuiApplication) -> dict[str, object]:
 
 
 def as_quick_window(window: object) -> QQuickWindow:
+    if isinstance(window, QQuickWindow):
+        return window
     pointer = shiboken6.getCppPointer(window)[0]
     quick_window = shiboken6.wrapInstance(pointer, QQuickWindow)
     if quick_window is None:
-        raise SystemExit("Could not wrap the QML ApplicationWindow as QQuickWindow")
+        raise SystemExit("Could not wrap a QML window as QQuickWindow")
     return quick_window
+
+
+def find_named(root: QObject, name: str) -> QObject:
+    obj = root.findChild(QObject, name, Qt.FindChildrenRecursively)
+    if obj is None:
+        raise SystemExit(f"Visual-QA object was not found: {name}")
+    return obj
+
+
+def invoke(obj: QObject, method: str) -> None:
+    if not QMetaObject.invokeMethod(obj, method, Qt.DirectConnection):
+        raise SystemExit(f"Could not invoke {method} on {obj.objectName()}")
+    QCoreApplication.processEvents()
+    QTest.qWait(350)
+
+
+def capture_main(window: QQuickWindow, path: Path) -> tuple[int, int]:
+    image = window.grabWindow()
+    if image.isNull():
+        raise SystemExit(f"Failed to capture {path.name}")
+    if not image.save(str(path), "PNG"):
+        raise SystemExit(f"Failed to save {path}")
+    return image.width(), image.height()
+
+
+def capture_terminal(main_window: QQuickWindow, terminal: QObject, path: Path) -> tuple[int, int]:
+    invoke(terminal, "show")
+    terminal_window = as_quick_window(terminal)
+    QCoreApplication.processEvents()
+    QTest.qWait(500)
+    main_image = main_window.grabWindow()
+    terminal_image = terminal_window.grabWindow()
+    if main_image.isNull() or terminal_image.isNull():
+        raise SystemExit("Failed to capture terminal composition")
+
+    # Match the approved terminal placement without depending on a desktop compositor.
+    x = 160
+    y = 640
+    painter = QPainter(main_image)
+    painter.fillRect(x - 1, y - 29, terminal_image.width() + 2, 29, Qt.black)
+    painter.setPen(Qt.lightGray)
+    painter.setFont(QFont("Segoe UI", 10))
+    painter.drawText(x + 10, y - 10, "TECHGUY Fastboot Terminal")
+    painter.drawImage(x, y, terminal_image)
+    painter.end()
+    invoke(terminal, "hide")
+    if not main_image.save(str(path), "PNG"):
+        raise SystemExit(f"Failed to save {path}")
+    return main_image.width(), main_image.height()
 
 
 def main() -> int:
@@ -99,46 +145,75 @@ def main() -> int:
     if not engine.rootObjects():
         raise SystemExit("Main.qml did not create a root object")
 
-    window = engine.rootObjects()[0]
-    window.setProperty("width", 1586)
-    window.setProperty("height", 992)
-    window.setProperty("visible", True)
+    root = engine.rootObjects()[0]
+    root.setProperty("width", 1586)
+    root.setProperty("height", 992)
+    root.setProperty("visible", True)
     QCoreApplication.processEvents()
     QTest.qWait(700)
-    quick_window = as_quick_window(window)
+    main_window = as_quick_window(root)
+
+    settings = find_named(root, "settingsMenu")
+    about = find_named(root, "aboutDialog")
+    drivers = find_named(root, "driverDialog")
+    register = find_named(root, "registerDialog")
+    terminal = find_named(root, "terminalDialog")
 
     captures: list[dict[str, object]] = []
     warning_cursor = len(warnings)
-    for index, title, filename in STATES:
-        window.setProperty("pageTitle", title)
-        window.setProperty("pageIndex", index)
-        QCoreApplication.processEvents()
-        QTest.qWait(700)
-        image = quick_window.grabWindow()
-        if image.isNull():
-            raise SystemExit(f"Failed to capture {title}")
-        target = output / filename
-        if not image.save(str(target), "PNG"):
-            raise SystemExit(f"Failed to save {target}")
+
+    def record(title: str, filename: str, size: tuple[int, int]) -> None:
+        nonlocal warning_cursor
         state_warnings = warnings[warning_cursor:]
         warning_cursor = len(warnings)
         captures.append(
             {
-                "page_index": index,
                 "title": title,
                 "file": filename,
-                "width": image.width(),
-                "height": image.height(),
+                "width": size[0],
+                "height": size[1],
                 "qml_warnings": state_warnings,
             }
         )
 
+    # 01: approved Firmware Flash state.
+    root.setProperty("pageTitle", "Firmware Flash")
+    root.setProperty("pageIndex", 2)
+    QCoreApplication.processEvents()
+    QTest.qWait(500)
+    record("Firmware Flash", APPROVED_STATES[0][1], capture_main(main_window, output / APPROVED_STATES[0][1]))
+
+    # Remaining approved states share the Service Center background.
+    root.setProperty("pageTitle", "Service Center")
+    root.setProperty("pageIndex", 0)
+    QCoreApplication.processEvents()
+    QTest.qWait(500)
+
+    invoke(settings, "open")
+    record("Settings", APPROVED_STATES[1][1], capture_main(main_window, output / APPROVED_STATES[1][1]))
+    invoke(settings, "close")
+
+    invoke(about, "open")
+    record("About", APPROVED_STATES[2][1], capture_main(main_window, output / APPROVED_STATES[2][1]))
+    invoke(about, "close")
+
+    invoke(drivers, "open")
+    record("Fix Drivers", APPROVED_STATES[3][1], capture_main(main_window, output / APPROVED_STATES[3][1]))
+    invoke(drivers, "close")
+
+    invoke(register, "open")
+    record("Register Device", APPROVED_STATES[4][1], capture_main(main_window, output / APPROVED_STATES[4][1]))
+    invoke(register, "close")
+
+    record("Terminal", APPROVED_STATES[5][1], capture_terminal(main_window, terminal, output / APPROVED_STATES[5][1]))
+
     manifest = {
-        "schema": "techguytool-huawei.final-ui-capture.v2",
+        "schema": "techguytool-huawei.final-ui-capture.v3",
         "source_revision": os.environ.get("GITHUB_SHA", "local"),
         "expected_size": [1586, 992],
         "renderer": "qt-quick-software-scenegraph",
         "font_evidence": font_evidence,
+        "approved_state_order": [title for title, _ in APPROVED_STATES],
         "captures": captures,
     }
     (output / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
@@ -146,7 +221,7 @@ def main() -> int:
     bad = [entry for entry in captures if entry["width"] != 1586 or entry["height"] != 992 or entry["qml_warnings"]]
     if bad:
         print(json.dumps(bad, indent=2))
-        raise SystemExit("Visual capture dimensions or QML warning contract failed")
+        raise SystemExit("Approved-state capture dimensions or QML warning contract failed")
     print(json.dumps(manifest, indent=2))
     return 0
 
