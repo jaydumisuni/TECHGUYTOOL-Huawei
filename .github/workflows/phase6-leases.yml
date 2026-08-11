@@ -55,6 +55,7 @@ jobs:
           python -m compileall -q
           tools/build_phase6_receipt.py
           tools/prove_phase6_leases.py
+          tools/verify_historical_phase6_authority.py
           tools/build_source_inventory.py
 
       - name: Prove static lease authority boundary
@@ -106,6 +107,7 @@ jobs:
         shell: bash
         env:
           EVENT_NAME: ${{ github.event_name }}
+          HEAD_REF: ${{ github.head_ref }}
           GITHUB_TOKEN: ${{ github.token }}
           IS_SOURCE_FREEZE: ${{ startsWith(github.event.head_commit.message, 'Freeze Phase 6 source inventory') }}
           IS_AUTHORITY_FREEZE: ${{ startsWith(github.event.head_commit.message, 'Freeze Phase 6 lease proof authority') }}
@@ -127,5 +129,9 @@ jobs:
           if [[ "$IS_AUTHORITY_FREEZE" == "true" || "$IS_OWNER_VERIFICATION" == "true" ]]; then
             python tools/build_phase6_receipt.py --verify --verify-hosted-run
           elif [[ "$EVENT_NAME" == "pull_request" && "$receipt_status" != "PHASE6_LEASES_UNFROZEN" ]]; then
-            python tools/build_phase6_receipt.py --verify --verify-hosted-run
+            if [[ "$HEAD_REF" == "phase6/mode-execution-leases" ]]; then
+              python tools/build_phase6_receipt.py --verify --verify-hosted-run
+            else
+              python tools/verify_historical_phase6_authority.py
+            fi
           fi
