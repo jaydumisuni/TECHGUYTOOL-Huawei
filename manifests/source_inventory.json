@@ -34,8 +34,8 @@
     {
       "origin": "phase15_windows_release",
       "path": ".github/workflows/phase15-windows-release.yml",
-      "sha256": "bb6e2cae9798ceb665f87754452c66d517049ddfc5a3acb2643f02dc99f3504e",
-      "size_bytes": 7818
+      "sha256": "9b8a599226df4682018199fff4cf30c7b6c83b0c5e98eef8247098a1262a2fac",
+      "size_bytes": 9807
     },
     {
       "origin": "phase2_shared_contracts",
@@ -298,8 +298,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "main.py",
-      "sha256": "4d3884f3d7643931fef4ccf666b296e83a20b19f663c35d49c7d41cb6f2439c9",
-      "size_bytes": 1408
+      "sha256": "6a00051d42f5cd713167101675c49909532b30b669ff337c8bf9b45537a89d3c",
+      "size_bytes": 3502
     },
     {
       "origin": "phase15_windows_release",
@@ -424,8 +424,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "qml/Main.qml",
-      "sha256": "a2e7e60e5e574ed4e216d5089d4326b7eb311b6b07babd9652320d744ea7ec7f",
-      "size_bytes": 15139
+      "sha256": "bb331988e53bcfbf35de2dd58f1d98ac7020a35a9ffb7036e1bbf638f355ef33",
+      "size_bytes": 15101
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -442,8 +442,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "qml/components/GlowButton.qml",
-      "sha256": "c759d8268b84568fdb9d12785654f9347f3d9a459205b31b6cee586fb445d6d5",
-      "size_bytes": 1470
+      "sha256": "7c87e622c2ea8fb032a78f5d467f804d21fc29e0c0d8f5c6c0f2e152439c5fb6",
+      "size_bytes": 1566
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -460,8 +460,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "qml/components/SectionLabel.qml",
-      "sha256": "c6e7d803b640d72111ccc2f2e1b3e0974b5d8526d45883ee9f407107bb8067ec",
-      "size_bytes": 545
+      "sha256": "901e4d3ef8243afa3997b94793b2d2664044c6e474f55c28acdf7068440d2137",
+      "size_bytes": 550
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -478,8 +478,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "qml/dialogs/AboutDialog.qml",
-      "sha256": "93316a276a81d2cdcd7679326ed454dbcb2d8135521ea8a42773420bbeb7a328",
-      "size_bytes": 2306
+      "sha256": "a53992ed70e285f90f2b72afa52184db01fd61cfb2ba7f0db4e1302290f518f9",
+      "size_bytes": 2311
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -496,8 +496,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "qml/dialogs/SettingsMenu.qml",
-      "sha256": "ad0e30e8df63a4e9dafa32afc6dd98ca11a5a6edbb22282c0030ed26097e4921",
-      "size_bytes": 3014
+      "sha256": "ea1fb5d42ec79df6080fe77835f56f744f6e7df0ad6bd80428105467426d8da0",
+      "size_bytes": 3019
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -520,8 +520,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "qml/pages/ServiceCenterPage.qml",
-      "sha256": "a30901e00a911e2681a786d6d6ba330003409712d0dbaa11bd06b1187cf92aa5",
-      "size_bytes": 10266
+      "sha256": "52b51206544c3f856d49b902b8e7d24af6f1f2a2a1ca14eb919c2baaf9e0d8c9",
+      "size_bytes": 10306
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
