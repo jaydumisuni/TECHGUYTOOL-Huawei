@@ -23,13 +23,19 @@
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 206,
+  "file_count": 213,
   "files": [
     {
       "origin": "phase15_windows_release",
       "path": ".gitattributes",
       "sha256": "00be1a2d6decc2692e5cc6cbac96c2e6c32398d6d469f567ee8e6653a9702008",
       "size_bytes": 203
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": ".github/workflows/final-ui-visual-qa.yml",
+      "sha256": "32a6bfecd9f392bd4319bfa625aab22717f6491423b912b5c2e804a68c29f41e",
+      "size_bytes": 1511
     },
     {
       "origin": "phase15_windows_release",
@@ -507,15 +513,39 @@
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "qml/pages/BackupRestorePage.qml",
+      "sha256": "ff3dfd2949d0820c35803236618c4f77e551f903a1d8c208c81b7e7d1c862911",
+      "size_bytes": 12500
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "qml/pages/DeviceInformationPage.qml",
+      "sha256": "e2a2e74d53b5f65df98b3b5a9dfa8f6c2ec1bb27b5c6617d236160c57d5a51f7",
+      "size_bytes": 13389
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "qml/pages/FirmwareFlashPage.qml",
       "sha256": "050b8451d64aff25854a2dc5abe5d6302d089a9f5f464ce6c488b6b638e4a61e",
       "size_bytes": 8942
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "qml/pages/OperationHistoryPage.qml",
+      "sha256": "40e382626825418c878e063022f60325e8af59b8d5d16bdcd09788b45343cf16",
+      "size_bytes": 11346
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "qml/pages/PartitionManagerPage.qml",
+      "sha256": "217dc258dd62cda93eec8f08146ee38e84bb0e3b491a2a9be1412f33b9f86967",
+      "size_bytes": 11076
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "qml/pages/PlaceholderPage.qml",
-      "sha256": "61451b0be2e2424af19cafb5440a16793908c0d47f0a9c63e657eb74990590a2",
-      "size_bytes": 827
+      "sha256": "aa4fba1249cc104f69e17bffa4d94cc2266d05e91c1592e5ad4ebb87076a422d",
+      "size_bytes": 872
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -568,8 +598,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "resources.qrc",
-      "sha256": "04ca6dee5521e580db23ae7c9241fc445b9c809c7fdc4c81fedb9ab0e39733b9",
-      "size_bytes": 1659
+      "sha256": "b01946ee725b94a952a6e7c2518a384c5ddaf86f124ae4a9bab3f911a3bba870",
+      "size_bytes": 2035
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -1064,6 +1094,12 @@
       "size_bytes": 2230
     },
     {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "tests/test_ui_closeout.py",
+      "sha256": "8d66a9acc6fd9e02daf9ae36f1da9544318a9466858ec929e46a5201e0937549",
+      "size_bytes": 1337
+    },
+    {
       "origin": "phase9_vog_l29_c185_recipe",
       "path": "tests/test_vog_recipe.py",
       "sha256": "c1188a2f63517eeff5a1688cfe144f305565ecee83e7fe8bd795cc2cbb782d4c",
@@ -1116,6 +1152,12 @@
       "path": "tools/build_source_inventory.py",
       "sha256": "8f953147e98c73d65b7052d72e193398b3ba44bdecec05568434f2ac9094bb1d",
       "size_bytes": 7851
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "tools/capture_ui_states.py",
+      "sha256": "474022ca68efeb4ca8b380f088c188bbcf63022415548f7f472abef502f26fdc",
+      "size_bytes": 3827
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
