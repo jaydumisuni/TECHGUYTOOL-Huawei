@@ -14,9 +14,13 @@
     <file alias="qml/dialogs/RegisterDialog.qml">qml/dialogs/RegisterDialog.qml</file>
     <file alias="qml/dialogs/SettingsMenu.qml">qml/dialogs/SettingsMenu.qml</file>
     <file alias="qml/dialogs/TerminalDialog.qml">qml/dialogs/TerminalDialog.qml</file>
-    <file alias="qml/pages/FirmwareFlashPage.qml">qml/pages/FirmwareFlashPage.qml</file>
-    <file alias="qml/pages/PlaceholderPage.qml">qml/pages/PlaceholderPage.qml</file>
     <file alias="qml/pages/ServiceCenterPage.qml">qml/pages/ServiceCenterPage.qml</file>
+    <file alias="qml/pages/DeviceInformationPage.qml">qml/pages/DeviceInformationPage.qml</file>
+    <file alias="qml/pages/FirmwareFlashPage.qml">qml/pages/FirmwareFlashPage.qml</file>
+    <file alias="qml/pages/PartitionManagerPage.qml">qml/pages/PartitionManagerPage.qml</file>
+    <file alias="qml/pages/BackupRestorePage.qml">qml/pages/BackupRestorePage.qml</file>
+    <file alias="qml/pages/OperationHistoryPage.qml">qml/pages/OperationHistoryPage.qml</file>
+    <file alias="qml/pages/PlaceholderPage.qml">qml/pages/PlaceholderPage.qml</file>
     <file alias="qml/qmldir">qml/qmldir</file>
     <file alias="assets/brand/techguy_logo.svg">assets/brand/techguy_logo.svg</file>
     <file alias="assets/brand/techguy_mascot.svg">assets/brand/techguy_mascot.svg</file>
