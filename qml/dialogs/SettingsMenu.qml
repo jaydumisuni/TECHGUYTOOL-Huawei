@@ -27,7 +27,7 @@ Popup {
             color: Theme.text
             font.family: Theme.fontFamily
             font.pixelSize: 16
-            letterSpacing: 0.8
+            font.letterSpacing: 0.8
             Layout.leftMargin: 5
         }
         Repeater {
