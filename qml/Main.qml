@@ -107,8 +107,8 @@ ApplicationWindow {
                     ColumnLayout {
                         Layout.preferredWidth: 570
                         spacing: 4
-                        Text { text: "TECHGUY TOOL — HUAWEI"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 28; font.weight: Font.DemiBold; letterSpacing: 0.8 }
-                        Text { text: "SERVICE & RECOVERY EDITION"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 14; letterSpacing: 1.7 }
+                        Text { text: "TECHGUY TOOL — HUAWEI"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 28; font.weight: Font.DemiBold; font.letterSpacing: 0.8 }
+                        Text { text: "SERVICE & RECOVERY EDITION"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 14; font.letterSpacing: 1.7 }
                     }
                     Item { Layout.fillWidth: true }
                     RowLayout {
@@ -193,7 +193,7 @@ ApplicationWindow {
                         anchors.fill: parent
                         anchors.margins: 13
                         spacing: 10
-                        Text { text: "LIVE OPERATION LOG"; color: "#72a7ff"; font.family: Theme.fontFamily; font.pixelSize: 17; letterSpacing: 0.7 }
+                        Text { text: "LIVE OPERATION LOG"; color: "#72a7ff"; font.family: Theme.fontFamily; font.pixelSize: 17; font.letterSpacing: 0.7 }
                         GridLayout {
                             Layout.fillWidth: true
                             Layout.preferredHeight: 164
