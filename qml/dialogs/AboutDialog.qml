@@ -6,6 +6,7 @@ import "../components"
 
 Dialog {
     id: root
+    objectName: "aboutDialog"
     width: 455
     height: 340
     modal: true
