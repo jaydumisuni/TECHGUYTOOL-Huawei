@@ -7,6 +7,9 @@ import sys
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 os.environ.setdefault("QT_QUICK_CONTROLS_STYLE", "Basic")
+os.environ.setdefault("QT_QUICK_BACKEND", "software")
+os.environ.setdefault("QSG_RHI_BACKEND", "software")
+os.environ.setdefault("QT_OPENGL", "software")
 
 from PySide6.QtCore import QCoreApplication, QUrl
 from PySide6.QtGui import QGuiApplication
@@ -47,7 +50,7 @@ def main() -> int:
     window.setProperty("height", 992)
     window.setProperty("visible", True)
     QCoreApplication.processEvents()
-    QTest.qWait(500)
+    QTest.qWait(700)
 
     screen = window.screen() or QGuiApplication.primaryScreen()
     if screen is None:
@@ -59,7 +62,7 @@ def main() -> int:
         window.setProperty("pageTitle", title)
         window.setProperty("pageIndex", index)
         QCoreApplication.processEvents()
-        QTest.qWait(500)
+        QTest.qWait(700)
         pixmap = screen.grabWindow(int(window.winId()))
         image = pixmap.toImage()
         if image.isNull():
@@ -84,6 +87,7 @@ def main() -> int:
         "schema": "techguytool-huawei.final-ui-capture.v1",
         "source_revision": os.environ.get("GITHUB_SHA", "local"),
         "expected_size": [1586, 992],
+        "renderer": "software",
         "captures": captures,
     }
     (output / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
