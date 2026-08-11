@@ -1,88 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="300" height="370" viewBox="0 0 300 370">
   <defs>
-    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#20d7ff"/>
-      <stop offset="0.42" stop-color="#4c7bff"/>
-      <stop offset="1" stop-color="#cf4dff"/>
-    </linearGradient>
-    <linearGradient id="edge2" x1="1" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#e94dff"/>
-      <stop offset="0.55" stop-color="#7955ff"/>
-      <stop offset="1" stop-color="#20d7ff"/>
-    </linearGradient>
-    <radialGradient id="hood" cx="50%" cy="29%" r="75%">
-      <stop offset="0" stop-color="#17213f"/>
-      <stop offset="0.42" stop-color="#0a1123"/>
-      <stop offset="1" stop-color="#01040b"/>
-    </radialGradient>
-    <linearGradient id="cloak" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#071424"/>
-      <stop offset="0.52" stop-color="#020711"/>
-      <stop offset="1" stop-color="#0a0718"/>
-    </linearGradient>
-    <linearGradient id="android" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#e4ff68"/>
-      <stop offset="1" stop-color="#62e32f"/>
-    </linearGradient>
-    <filter id="glow" x="-45%" y="-45%" width="190%" height="190%">
-      <feGaussianBlur stdDeviation="5.2" result="blur"/>
-      <feGaussianBlur in="SourceGraphic" stdDeviation="1.1" result="soft"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="soft"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <filter id="smallGlow" x="-60%" y="-60%" width="220%" height="220%">
-      <feGaussianBlur stdDeviation="2.3" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2.4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
   </defs>
-
-  <ellipse cx="151" cy="327" rx="105" ry="25" fill="#204dff" opacity="0.08" filter="url(#glow)"/>
-
-  <!-- Hood and cloak -->
-  <g filter="url(#glow)">
-    <path d="M150 18 C105 27 83 61 80 111 C58 136 47 173 49 215 C51 278 82 326 111 348 C128 361 172 361 190 348 C220 326 250 278 252 215 C254 174 244 136 220 111 C217 61 195 27 150 18 Z"
-          fill="url(#cloak)" stroke="url(#edge)" stroke-width="3.1"/>
-    <path d="M83 116 C94 79 116 48 150 33 C185 48 207 79 218 116 C201 98 177 88 150 88 C123 88 100 98 83 116 Z"
-          fill="url(#hood)" stroke="url(#edge2)" stroke-width="2.2"/>
-    <path d="M84 115 C65 142 60 170 63 201" fill="none" stroke="#28cfff" stroke-width="2.1" opacity="0.75"/>
-    <path d="M216 115 C235 143 240 171 237 202" fill="none" stroke="#b14dff" stroke-width="2.1" opacity="0.85"/>
-  </g>
-
-  <!-- Face shadow and glasses -->
-  <ellipse cx="150" cy="132" rx="53" ry="43" fill="#010309" opacity="0.94"/>
-  <g fill="none" stroke="#e7f3ff" stroke-width="3" filter="url(#smallGlow)">
-    <rect x="105" y="119" width="41" height="27" rx="10"/>
-    <rect x="155" y="119" width="41" height="27" rx="10"/>
-    <path d="M146 130 H155 M99 126 L106 130 M196 130 L202 125"/>
-  </g>
-  <path d="M112 155 C133 168 168 168 189 155" fill="none" stroke="#142646" stroke-width="3" opacity="0.9"/>
-
-  <!-- Cloak folds -->
-  <path d="M86 189 C104 205 116 227 119 265" fill="none" stroke="#1b3563" stroke-width="2" opacity="0.55"/>
-  <path d="M214 189 C196 205 184 228 181 266" fill="none" stroke="#5c2b78" stroke-width="2" opacity="0.55"/>
-  <path d="M150 181 C142 229 140 285 150 345" fill="none" stroke="#263a68" stroke-width="2" opacity="0.32"/>
-
-  <!-- Left arm / Android -->
-  <g filter="url(#smallGlow)">
-    <path d="M100 212 C72 208 48 220 35 245 C27 260 30 278 44 284 C55 289 65 281 67 270 C74 286 94 290 107 276"
-          fill="#03101b" stroke="#27cfff" stroke-width="2.7"/>
-    <g transform="translate(24 226)">
-      <path d="M19 18 L14 7 M51 18 L56 7" stroke="#d5ff65" stroke-width="3" stroke-linecap="round"/>
-      <path d="M16 24 Q35 8 54 24 V59 Q54 67 47 67 H23 Q16 67 16 59 Z" fill="url(#android)" stroke="#e1ff79" stroke-width="2"/>
-      <circle cx="27" cy="29" r="2.5" fill="#08250e"/><circle cx="43" cy="29" r="2.5" fill="#08250e"/>
-      <path d="M10 35 V55 M60 35 V55 M25 67 V80 M45 67 V80" stroke="#a2f044" stroke-width="7" stroke-linecap="round"/>
-    </g>
-  </g>
-
-  <!-- Right arm / service tool -->
-  <g filter="url(#smallGlow)">
-    <path d="M200 212 C229 207 253 221 265 246 C273 262 268 279 255 284 C244 288 235 281 233 270 C226 286 206 290 193 276"
-          fill="#08091a" stroke="#aa4dff" stroke-width="2.7"/>
-    <g transform="translate(223 205) rotate(14)">
-      <path d="M26 0 C36 5 38 16 32 25 L18 40 L8 30 L22 16 C25 13 24 9 21 7 Z" fill="#14223d" stroke="#d356ff" stroke-width="3"/>
-      <path d="M8 30 L-24 61 C-30 67 -19 77 -13 71 L18 40 Z" fill="#07172c" stroke="#6e93ff" stroke-width="3"/>
-      <circle cx="-18" cy="66" r="4" fill="none" stroke="#d45cff" stroke-width="2"/>
-    </g>
-  </g>
-
-  <path d="M101 335 C124 353 176 353 199 335" fill="none" stroke="#8b5aff" stroke-width="2" opacity="0.8" filter="url(#smallGlow)"/>
+  <rect width="300" height="370" fill="#06111d" opacity="0"/>
+  <image x="0" y="0" width="300" height="370" preserveAspectRatio="xMidYMid meet"
+         href="data:image/webp;base64,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" filter="url(#softGlow)"/>
 </svg>
