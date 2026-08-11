@@ -9,7 +9,7 @@
   "physical_proof_matrix": "INCOMPLETE",
   "production_release_status": "EXTERNAL_CERTIFICATION_PENDING",
   "production_enabled": false,
-  "proof_trigger": "owner-authority-request",
+  "proof_trigger": "owner-authority-request-v2",
   "authority_request": {
     "proof_run_id": 31449576646,
     "tested_revision": "59c1e10e656ec5b6ce685e99f51a7b1d83036455",
