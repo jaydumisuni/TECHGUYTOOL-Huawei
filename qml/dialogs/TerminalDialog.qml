@@ -6,6 +6,7 @@ import ".."
 
 Window {
     id: root
+    objectName: "terminalDialog"
     width: 520
     height: 300
     title: "TECHGUY Fastboot Terminal"
