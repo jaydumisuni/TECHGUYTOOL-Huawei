@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import re
+import subprocess
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Mapping
@@ -10,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 POLICY_PATH = ROOT / "manifests" / "phase15_windows_release_policy.json"
 MATRIX_PATH = ROOT / "manifests" / "phase15_physical_proof_matrix.json"
 RECEIPT_PATH = ROOT / "manifests" / "phase15_windows_release.receipt.json"
+SOURCE_INVENTORY_PATH = ROOT / "manifests" / "source_inventory.json"
 BUILD_SCRIPT = ROOT / "build_windows.ps1"
 DEPLOY_SPEC = ROOT / "pysidedeploy.spec"
 POLICY_SCHEMA = "techguytool-huawei.phase15-windows-release-policy.v1"
@@ -17,7 +20,7 @@ MATRIX_SCHEMA = "techguytool-huawei.phase15-physical-proof-matrix.v1"
 RECEIPT_SCHEMA = "techguytool-huawei.phase15-receipt.v1"
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 REVISION_RE = re.compile(r"^[0-9a-f]{40}$")
-INCLUDE_DATA_RE = re.compile(r"--include-data-dir=([^\s]+)", re.IGNORECASE)
+INCLUDE_DATA_RE = re.compile(r"--include-data-dir=(?:\"([^\"]+)\"|'([^']+)'|([^\s]+))", re.IGNORECASE)
 PHYSICAL_EVIDENCE_FIELDS = frozenset(
     {
         "evidence_id",
@@ -84,6 +87,13 @@ def load_release_receipt() -> dict[str, Any]:
     payload = _load_json(RECEIPT_PATH)
     validate_release_receipt(payload)
     return payload
+
+
+def source_inventory_sha256() -> str:
+    try:
+        return hashlib.sha256(SOURCE_INVENTORY_PATH.read_bytes()).hexdigest()
+    except OSError as exc:
+        raise WindowsReleaseError(str(exc)) from exc
 
 
 def validate_release_policy(payload: Mapping[str, Any]) -> None:
@@ -182,6 +192,11 @@ def validate_release_receipt(payload: Mapping[str, Any]) -> None:
         raise WindowsReleaseError("Frozen Phase 15 receipt artifact_name invalid")
 
 
+def validate_receipt_matrix_alignment(receipt: Mapping[str, Any], matrix: Mapping[str, Any]) -> None:
+    if receipt.get("physical_proof_matrix") != matrix.get("overall_status"):
+        raise WindowsReleaseError("Phase 15 receipt physical matrix status does not match the physical proof matrix")
+
+
 def validate_physical_matrix(payload: Mapping[str, Any]) -> None:
     if payload.get("schema") != MATRIX_SCHEMA:
         raise WindowsReleaseError("Physical matrix schema mismatch")
@@ -231,7 +246,7 @@ def find_prohibited_external_data_sources(spec: str) -> list[str]:
     prohibited_tokens = ("firmware", "super", "backup", "testpoint", "journal", "registration", "license", "download")
     hits: list[str] = []
     for match in INCLUDE_DATA_RE.finditer(spec):
-        mapping = match.group(1)
+        mapping = next((group for group in match.groups() if group is not None), "")
         source = mapping.rsplit("=", 1)[0].replace("\\", "/").strip('"\'')
         normalized_parts = [re.sub(r"[^a-z0-9]", "", part.lower()) for part in source.split("/") if part]
         if any(any(token in part for token in prohibited_tokens) for part in normalized_parts):
@@ -239,10 +254,43 @@ def find_prohibited_external_data_sources(spec: str) -> list[str]:
     return sorted(set(hits))
 
 
+def receipt_matches_active_source(receipt: Mapping[str, Any]) -> bool:
+    if receipt.get("status") != "FROZEN":
+        return False
+    if receipt.get("source_inventory_sha256") != source_inventory_sha256():
+        return False
+    tested_revision = receipt.get("tested_revision")
+    if not isinstance(tested_revision, str) or not REVISION_RE.fullmatch(tested_revision):
+        return False
+
+    inventory = _load_json(SOURCE_INVENTORY_PATH)
+    excluded = inventory.get("excluded_from_recursive_hashing")
+    if not isinstance(excluded, list) or any(not isinstance(path, str) for path in excluded):
+        return False
+    allowed_authority_paths = {path.replace("\\", "/") for path in excluded}
+
+    try:
+        completed = subprocess.run(
+            ["git", "diff", "--name-only", f"{tested_revision}..HEAD"],
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return False
+    if completed.returncode != 0:
+        return False
+    changed_paths = {line.strip().replace("\\", "/") for line in completed.stdout.splitlines() if line.strip()}
+    return changed_paths <= allowed_authority_paths
+
+
 def validate_windows_release_sources() -> dict[str, Any]:
     policy = load_release_policy()
     matrix = load_physical_matrix()
     receipt = load_release_receipt()
+    validate_receipt_matrix_alignment(receipt, matrix)
     build = BUILD_SCRIPT.read_text(encoding="utf-8")
     spec = DEPLOY_SPEC.read_text(encoding="utf-8")
 
@@ -284,7 +332,7 @@ def validate_windows_release_sources() -> dict[str, Any]:
     if present_forbidden:
         raise WindowsReleaseError(f"External-data boundary violated by deploy spec: {present_forbidden}")
 
-    ci_proven = receipt["status"] == "FROZEN"
+    ci_proven = receipt_matches_active_source(receipt)
     status = "CI_PROVEN" if ci_proven else "SOURCES_ONLY_PENDING_CI"
     return {
         "schema": "techguytool-huawei.phase15-software-release-readiness.v1",
