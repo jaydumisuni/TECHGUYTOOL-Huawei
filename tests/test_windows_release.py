@@ -10,7 +10,10 @@ from techguy_huawei.windows_release import (
     load_physical_matrix,
     load_release_policy,
     load_release_receipt,
+    receipt_matches_active_source,
+    source_inventory_sha256,
     validate_physical_matrix,
+    validate_receipt_matrix_alignment,
     validate_release_policy,
     validate_release_receipt,
     validate_windows_release_sources,
@@ -22,13 +25,12 @@ def test_phase15_readiness_matches_receipt_authority_state() -> None:
     result = validate_windows_release_sources()
     assert result["release_filename"] == "TECHGUYTOOL_Huawei.exe"
     assert result["packaging"] == "ONEFILE_READY"
-    if receipt["status"] == "FROZEN":
+    if receipt["status"] == "FROZEN" and receipt_matches_active_source(receipt):
         assert result["status"] == "CI_PROVEN"
         assert result["signing_path"] == "CI_AUTHENTICODE_PROVEN"
         assert result["checksums"] == "SHA256_PROVEN"
         assert result["clean_windows_ci"] == "PASS"
     else:
-        assert receipt["status"] == "UNFROZEN"
         assert result["status"] == "SOURCES_ONLY_PENDING_CI"
         assert result["signing_path"] == "AUTHENTICODE_REQUIRED_CI_TESTABLE"
         assert result["checksums"] == "SHA256_REQUIRED"
@@ -62,6 +64,8 @@ def test_policy_rejects_missing_authenticode_requirement() -> None:
 def test_frozen_receipt_requires_bound_ci_evidence() -> None:
     receipt = copy.deepcopy(load_release_receipt())
     receipt.update({"status": "FROZEN", "windows_ci": "PASS", "ci_test_signing": "PASS"})
+    for field in ("tested_revision", "source_inventory_sha256", "executable_sha256"):
+        receipt.pop(field, None)
     with pytest.raises(WindowsReleaseError, match="tested_revision invalid"):
         validate_release_receipt(receipt)
 
@@ -85,6 +89,34 @@ def test_evidence_bound_frozen_receipt_is_valid() -> None:
     validate_release_receipt(receipt)
 
 
+def test_stale_but_well_formed_frozen_receipt_is_not_active_authority() -> None:
+    receipt = copy.deepcopy(load_release_receipt())
+    receipt.update(
+        {
+            "status": "FROZEN",
+            "windows_ci": "PASS",
+            "ci_test_signing": "PASS",
+            "tested_revision": "0" * 40,
+            "source_inventory_sha256": source_inventory_sha256(),
+            "executable_sha256": "3" * 64,
+            "windows_run_id": 123,
+            "software_proof_run_id": 456,
+            "artifact_id": 789,
+            "artifact_name": "TECHGUYTOOL-Huawei-phase15-windows-candidate",
+        }
+    )
+    validate_release_receipt(receipt)
+    assert receipt_matches_active_source(receipt) is False
+
+
+def test_receipt_physical_matrix_claim_must_match_manifest() -> None:
+    receipt = copy.deepcopy(load_release_receipt())
+    matrix = copy.deepcopy(load_physical_matrix())
+    receipt["physical_proof_matrix"] = "COMPLETE"
+    with pytest.raises(WindowsReleaseError, match="does not match the physical proof matrix"):
+        validate_receipt_matrix_alignment(receipt, matrix)
+
+
 def test_physical_matrix_rejects_fake_completion_without_passes() -> None:
     matrix = copy.deepcopy(load_physical_matrix())
     matrix["overall_status"] = "COMPLETE"
@@ -95,6 +127,7 @@ def test_physical_matrix_rejects_fake_completion_without_passes() -> None:
 def test_physical_matrix_rejects_unproven_physical_pass() -> None:
     matrix = copy.deepcopy(load_physical_matrix())
     matrix["entries"][0]["status"] = "PHYSICAL_PASS"
+    matrix["entries"][0].pop("evidence", None)
     with pytest.raises(WindowsReleaseError, match="physical evidence"):
         validate_physical_matrix(matrix)
 
@@ -152,6 +185,11 @@ def test_physical_matrix_rejects_missing_required_entry() -> None:
 def test_deploy_spec_rejects_every_external_data_class(source: str) -> None:
     spec = f"extra_args = --include-data-dir={source}=bundled"
     assert find_prohibited_external_data_sources(spec) == [source]
+
+
+def test_deploy_spec_rejects_quoted_spaced_source() -> None:
+    spec = 'extra_args = --include-data-dir="C:/Customer Backups/x"=data'
+    assert find_prohibited_external_data_sources(spec) == ["C:/Customer Backups/x"]
 
 
 def test_deploy_spec_allows_reviewed_static_sources() -> None:
