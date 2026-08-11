@@ -36,7 +36,7 @@ Dialog {
                 Text { text: "v0.1.0"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 15 }
                 Item { Layout.preferredHeight: 5 }
                 Text { text: "Publisher"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
-                Text { text: "THETECHGUY DIGITAL SOLUTIONS"; color: Theme.purple; font.family: Theme.fontFamily; font.pixelSize: 13; letterSpacing: 0.6 }
+                Text { text: "THETECHGUY DIGITAL SOLUTIONS"; color: Theme.purple; font.family: Theme.fontFamily; font.pixelSize: 13; font.letterSpacing: 0.6 }
                 Text { text: "UI Version 1.0"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
                 Text { text: "Engine adapters managed separately"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
             }

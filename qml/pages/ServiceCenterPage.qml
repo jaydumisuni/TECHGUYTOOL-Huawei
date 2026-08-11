@@ -45,7 +45,7 @@ Item {
                         Rectangle {
                             width: 54; height: 24; radius: 5
                             color: "#0d2236"; border.width: 1; border.color: "#2c6996"
-                            Text { anchors.centerIn: parent; text: "AUTO"; color: Theme.cyan; font.family: Theme.fontFamily; font.pixelSize: 11; letterSpacing: 0.8 }
+                            Text { anchors.centerIn: parent; text: "AUTO"; color: Theme.cyan; font.family: Theme.fontFamily; font.pixelSize: 11; font.letterSpacing: 0.8 }
                         }
                     }
                     Text {
@@ -59,7 +59,7 @@ Item {
                     Item { Layout.preferredHeight: 4 }
                     RowLayout {
                         Layout.fillWidth: true
-                        Text { text: "SELECT DEVICE BY"; color: "#d7dce4"; font.family: Theme.fontFamily; font.pixelSize: 13; letterSpacing: 0.6 }
+                        Text { text: "SELECT DEVICE BY"; color: "#d7dce4"; font.family: Theme.fontFamily; font.pixelSize: 13; font.letterSpacing: 0.6 }
                         Rectangle {
                             Layout.preferredWidth: 290; Layout.preferredHeight: 34; radius: 7
                             color: "#0b1727"; border.width: 1; border.color: "#3a4e70"
@@ -68,11 +68,11 @@ Item {
                                 Rectangle {
                                     width: parent.width / 2; height: parent.height; radius: 6
                                     gradient: Gradient { orientation: Gradient.Horizontal; GradientStop { position: 0; color: "#5030a0" } GradientStop { position: 1; color: "#12528e" } }
-                                    Text { anchors.centerIn: parent; text: "MODEL"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 13; letterSpacing: 1 }
+                                    Text { anchors.centerIn: parent; text: "MODEL"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 13; font.letterSpacing: 1 }
                                 }
                                 Rectangle {
                                     width: parent.width / 2; height: parent.height; color: "transparent"
-                                    Text { anchors.centerIn: parent; text: "CHIPSET"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 13; letterSpacing: 0.8 }
+                                    Text { anchors.centerIn: parent; text: "CHIPSET"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 13; font.letterSpacing: 0.8 }
                                 }
                             }
                         }
@@ -134,8 +134,8 @@ Item {
                 spacing: 10
                 RowLayout {
                     Layout.fillWidth: true
-                    Text { text: "SELECTED OPERATION: "; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 13; letterSpacing: 1 }
-                    Text { text: root.selectedLabel; color: Theme.purple; font.family: Theme.fontFamily; font.pixelSize: 13; letterSpacing: 1 }
+                    Text { text: "SELECTED OPERATION: "; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 13; font.letterSpacing: 1 }
+                    Text { text: root.selectedLabel; color: Theme.purple; font.family: Theme.fontFamily; font.pixelSize: 13; font.letterSpacing: 1 }
                     Item { Layout.fillWidth: true }
                     Text { text: "♢"; color: Theme.green; font.family: "Segoe UI Symbol"; font.pixelSize: 24 }
                     Text { text: "Backup before write enabled"; color: Theme.green; font.family: Theme.fontFamily; font.pixelSize: 13 }
@@ -145,12 +145,12 @@ Item {
                     spacing: 20
                     ColumnLayout {
                         Layout.fillWidth: true
-                        Text { text: "DEVICE / PLATFORM"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 11; letterSpacing: 0.8 }
+                        Text { text: "DEVICE / PLATFORM"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 11; font.letterSpacing: 0.8 }
                         ComboBox { Layout.fillWidth: true; model: ["Auto Detect", "Huawei / Honor", "Kirin Platform"]; currentIndex: 0 }
                     }
                     ColumnLayout {
                         Layout.fillWidth: true
-                        Text { text: "SERVICE MODE"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 11; letterSpacing: 0.8 }
+                        Text { text: "SERVICE MODE"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 11; font.letterSpacing: 0.8 }
                         ComboBox { Layout.fillWidth: true; model: ["Auto (Recommended)", "ADB", "Fastboot", "Upgrade / Rescue"]; currentIndex: 0 }
                     }
                 }

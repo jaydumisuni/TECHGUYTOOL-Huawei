@@ -11,5 +11,5 @@ Row {
         color: "#203b5a"
         Text { anchors.centerIn: parent; text: root.number; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
     }
-    Text { text: root.text; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 14; font.weight: Font.Medium; letterSpacing: 0.7; anchors.verticalCenter: parent.verticalCenter }
+    Text { text: root.text; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 14; font.weight: Font.Medium; font.letterSpacing: 0.7; anchors.verticalCenter: parent.verticalCenter }
 }

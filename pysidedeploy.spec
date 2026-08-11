@@ -4,6 +4,8 @@ project_dir = .
 input_file = main.py
 exec_directory = dist
 icon = assets/brand/techguy_huawei.ico
+# Frozen final release filename applied by build_windows.ps1 after pyside6-deploy:
+# TECHGUYTOOL_Huawei.exe
 
 [python]
 python_path = python
@@ -17,4 +19,4 @@ plugins = platforms,imageformats
 
 [nuitka]
 mode = onefile
-extra_args = --quiet --noinclude-qt-translations=True --include-data-dir=data=data --include-data-dir=assets=assets --include-data-dir=runtime=runtime --windows-console-mode=disable --output-filename=TECHGUYTOOL_Huawei.exe
+extra_args = --quiet --msvc=latest --assume-yes-for-downloads --noinclude-qt-translations --include-data-dir=data=data --include-data-dir=assets=assets --include-data-dir=runtime=runtime --windows-console-mode=disable

@@ -1,6 +1,9 @@
 param(
     [switch]$SkipInstall,
     [switch]$SkipRust,
+    [switch]$CiTestSigning,
+    [string]$CiTestSigningPfx = $env:TECHGUY_CI_TEST_SIGNING_PFX,
+    [string]$CiTestSigningPassword = $env:TECHGUY_CI_TEST_SIGNING_PASSWORD,
     [string]$CertificateThumbprint = $env:TECHGUY_SIGNING_CERT_THUMBPRINT
 )
 
@@ -19,11 +22,28 @@ Write-Host "TECHGUY TOOL Huawei one-file release" -ForegroundColor Cyan
 if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
     throw "Python 3.11+ is required."
 }
+if ($CiTestSigning -and $env:GITHUB_ACTIONS -ne "true") {
+    throw "CI test signing is permitted only inside GitHub Actions."
+}
+if ($CiTestSigning) {
+    if (-not $CiTestSigningPfx -or -not (Test-Path $CiTestSigningPfx)) {
+        throw "CI test signing requires an explicit temporary PFX path."
+    }
+    if (-not $CiTestSigningPassword) {
+        throw "CI test signing requires an explicit temporary PFX password."
+    }
+}
 
 if (-not $SkipInstall) {
     python -m pip install --upgrade pip
-    python -m pip install -e ".[test]" pyside6-deploy
+    python -m pip install -e ".[test]" "nuitka==2.6.8" ordered_set zstandard
 }
+
+# Prove the checked-out source before creating any build/generated files.
+python -m pytest
+if ($LASTEXITCODE -ne 0) { throw "Tests failed." }
+python tools\review_20_for_2.py --strict
+if ($LASTEXITCODE -ne 0) { throw "20-for-2 review failed." }
 
 if (-not $SkipRust) {
     if (-not (Get-Command cargo -ErrorAction SilentlyContinue)) {
@@ -41,34 +61,85 @@ if ($LASTEXITCODE -ne 0) { throw "Application icon generation failed." }
 Assert-File "assets\brand\techguy_huawei.ico" "Generated Windows icon"
 python tools\generate_qrc.py
 if ($LASTEXITCODE -ne 0) { throw "Qt resource generation failed." }
-python -m pytest
-if ($LASTEXITCODE -ne 0) { throw "Tests failed." }
-python tools\review_20_for_2.py --strict
-if ($LASTEXITCODE -ne 0) { throw "20-for-2 review failed." }
 
-python -m PySide6.scripts.pyside_tool rcc resources.qrc -o techguy_huawei\resources_rc.py
-if ($LASTEXITCODE -ne 0) {
-    pyside6-rcc resources.qrc -o techguy_huawei\resources_rc.py
-    if ($LASTEXITCODE -ne 0) { throw "pyside6-rcc failed." }
-}
+$Rcc = Get-Command pyside6-rcc -ErrorAction SilentlyContinue
+if (-not $Rcc) { throw "pyside6-rcc is unavailable." }
+& $Rcc.Source resources.qrc -o techguy_huawei\resources_rc.py
+if ($LASTEXITCODE -ne 0) { throw "pyside6-rcc failed." }
 Assert-File "techguy_huawei\resources_rc.py" "Compiled Qt resources"
 
-if (Test-Path dist) { Remove-Item dist -Recurse -Force }
+$TargetDirectory = Join-Path $Root "dist"
+if (Test-Path $TargetDirectory) { Remove-Item $TargetDirectory -Recurse -Force }
+if (Test-Path deployment) { Remove-Item deployment -Recurse -Force }
+New-Item -ItemType Directory -Force $TargetDirectory | Out-Null
+if (-not (Get-Command pyside6-deploy -ErrorAction SilentlyContinue)) {
+    throw "pyside6-deploy was not installed with PySide6."
+}
 pyside6-deploy -c pysidedeploy.spec -f
 if ($LASTEXITCODE -ne 0) { throw "pyside6-deploy failed." }
 
-$Exe = Get-ChildItem -Path dist -Filter "TECHGUYTOOL_Huawei.exe" -Recurse | Select-Object -First 1
-if (-not $Exe) { throw "TECHGUYTOOL_Huawei.exe was not produced." }
+# pyside6-deploy owns its intermediate executable name from [app].title.
+# Preserve that contract during deployment, then apply the frozen product filename.
+$TargetPath = Join-Path $TargetDirectory "TECHGUYTOOL_Huawei.exe"
+$BuiltExe = Get-ChildItem -Path $TargetDirectory -Filter "TECHGUY TOOL Huawei.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+if (-not $BuiltExe) {
+    $BuiltExe = Get-ChildItem -Path $TargetDirectory -Filter "main.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+}
+if (-not $BuiltExe) {
+    $BuiltExe = Get-ChildItem -Path $TargetDirectory -Filter "TECHGUYTOOL_Huawei.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+}
+if (-not $BuiltExe) {
+    throw "pyside6-deploy completed but produced no expected one-file executable."
+}
+if ($BuiltExe.FullName -ne $TargetPath) {
+    Move-Item -LiteralPath $BuiltExe.FullName -Destination $TargetPath -Force
+}
+Assert-File $TargetPath "TECHGUYTOOL_Huawei.exe"
+$Exe = Get-Item $TargetPath
 
-if ($CertificateThumbprint) {
+$SigningMode = "unsigned"
+if ($CiTestSigning -or $CertificateThumbprint) {
     $SignTool = Get-Command signtool.exe -ErrorAction SilentlyContinue
-    if (-not $SignTool) { throw "Signing thumbprint was supplied, but signtool.exe is unavailable." }
-    & $SignTool.Source sign /sha1 $CertificateThumbprint /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 $Exe.FullName
+    if (-not $SignTool) { throw "A signing mode was requested, but signtool.exe is unavailable." }
+    if ($CiTestSigning) {
+        & $SignTool.Source sign /f $CiTestSigningPfx /p $CiTestSigningPassword /fd SHA256 $Exe.FullName
+        $SigningMode = "ci-test-authenticode"
+    } else {
+        & $SignTool.Source sign /sha1 $CertificateThumbprint /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 $Exe.FullName
+        $SigningMode = "production-authenticode"
+    }
     if ($LASTEXITCODE -ne 0) { throw "Code signing failed." }
+    $Signature = Get-AuthenticodeSignature $Exe.FullName
+    if (-not $Signature.SignerCertificate) {
+        throw "Authenticode signer certificate was not present after signing."
+    }
+    if ($CiTestSigning) {
+        if ($Signature.SignerCertificate.Subject -notlike "*THETECHGUY Phase15 CI Test Signing - NOT FOR PRODUCTION*") {
+            throw "CI Authenticode signer identity mismatch."
+        }
+    } elseif ($Signature.Status -ne "Valid") {
+        throw "Production Authenticode signature validation failed: $($Signature.Status)"
+    }
 } else {
-    Write-Warning "No signing certificate thumbprint supplied. The executable is verified but unsigned."
+    Write-Warning "No signing certificate supplied. The executable is verified but unsigned and is not production-release eligible."
 }
 
 $Hash = Get-FileHash -Algorithm SHA256 $Exe.FullName
-"$($Hash.Hash.ToLowerInvariant())  $($Exe.Name)" | Set-Content -Encoding ASCII (Join-Path $Exe.DirectoryName "SHA256SUMS.txt")
-Write-Host "Release ready: $($Exe.FullName)" -ForegroundColor Green
+$ChecksumPath = Join-Path $Exe.DirectoryName "SHA256SUMS.txt"
+"$($Hash.Hash.ToLowerInvariant())  $($Exe.Name)" | Set-Content -Encoding ASCII $ChecksumPath
+Assert-File $ChecksumPath "SHA-256 checksum file"
+
+$Provenance = [ordered]@{
+    schema = "techguytool-huawei.windows-release-provenance.v1"
+    filename = $Exe.Name
+    sha256 = $Hash.Hash.ToLowerInvariant()
+    packaging = "onefile"
+    deploy_wrapper = "pyside6-deploy"
+    compiler = "msvc"
+    signing_mode = $SigningMode
+    authenticode_required_for_production = $true
+    ci_test_signature = [bool]$CiTestSigning
+    production_signature = [bool]($SigningMode -eq "production-authenticode")
+}
+$Provenance | ConvertTo-Json -Depth 4 | Set-Content -Encoding UTF8 (Join-Path $Exe.DirectoryName "RELEASE_PROVENANCE.json")
+Write-Host "Release candidate ready: $($Exe.FullName)" -ForegroundColor Green
