@@ -1,41 +1,88 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="300" height="370" viewBox="0 0 300 370">
   <defs>
     <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#27cfff"/>
-      <stop offset="0.53" stop-color="#397cff"/>
-      <stop offset="1" stop-color="#c04bff"/>
+      <stop offset="0" stop-color="#20d7ff"/>
+      <stop offset="0.42" stop-color="#4c7bff"/>
+      <stop offset="1" stop-color="#cf4dff"/>
     </linearGradient>
-    <radialGradient id="hood" cx="50%" cy="34%" r="72%">
-      <stop offset="0" stop-color="#101b35"/>
-      <stop offset="0.58" stop-color="#071120"/>
-      <stop offset="1" stop-color="#02050c"/>
+    <linearGradient id="edge2" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e94dff"/>
+      <stop offset="0.55" stop-color="#7955ff"/>
+      <stop offset="1" stop-color="#20d7ff"/>
+    </linearGradient>
+    <radialGradient id="hood" cx="50%" cy="29%" r="75%">
+      <stop offset="0" stop-color="#17213f"/>
+      <stop offset="0.42" stop-color="#0a1123"/>
+      <stop offset="1" stop-color="#01040b"/>
     </radialGradient>
-    <linearGradient id="android" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#d8ff67"/>
-      <stop offset="1" stop-color="#61de31"/>
+    <linearGradient id="cloak" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071424"/>
+      <stop offset="0.52" stop-color="#020711"/>
+      <stop offset="1" stop-color="#0a0718"/>
     </linearGradient>
+    <linearGradient id="android" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e4ff68"/>
+      <stop offset="1" stop-color="#62e32f"/>
+    </linearGradient>
+    <filter id="glow" x="-45%" y="-45%" width="190%" height="190%">
+      <feGaussianBlur stdDeviation="5.2" result="blur"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.1" result="soft"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="soft"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="smallGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="2.3" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
   </defs>
-  <path d="M150 19 C105 28 82 63 82 112 C54 143 46 195 56 246 C72 316 110 349 150 354 C190 349 228 316 244 246 C254 195 246 143 218 112 C218 63 195 28 150 19 Z"
-        fill="url(#hood)" stroke="url(#edge)" stroke-width="3.2"/>
-  <path d="M86 115 C101 85 116 64 150 48 C184 64 199 85 214 115" fill="none" stroke="#3d72ff" stroke-width="2" opacity="0.6"/>
-  <path d="M73 194 C38 195 16 215 13 243 C10 266 30 280 47 266 C49 291 75 303 91 282" fill="url(#hood)" stroke="#27cfff" stroke-width="2.5"/>
-  <path d="M227 194 C262 195 284 215 287 243 C290 266 270 280 253 266 C251 291 225 303 209 282" fill="url(#hood)" stroke="#ad4cff" stroke-width="2.5"/>
-  <g fill="none" stroke="#e4efff" stroke-width="3">
-    <rect x="107" y="124" width="38" height="24" rx="9"/>
-    <rect x="155" y="124" width="38" height="24" rx="9"/>
-    <path d="M145 133 H155 M101 130 L107 133 M193 133 L199 129"/>
+
+  <ellipse cx="151" cy="327" rx="105" ry="25" fill="#204dff" opacity="0.08" filter="url(#glow)"/>
+
+  <!-- Hood and cloak -->
+  <g filter="url(#glow)">
+    <path d="M150 18 C105 27 83 61 80 111 C58 136 47 173 49 215 C51 278 82 326 111 348 C128 361 172 361 190 348 C220 326 250 278 252 215 C254 174 244 136 220 111 C217 61 195 27 150 18 Z"
+          fill="url(#cloak)" stroke="url(#edge)" stroke-width="3.1"/>
+    <path d="M83 116 C94 79 116 48 150 33 C185 48 207 79 218 116 C201 98 177 88 150 88 C123 88 100 98 83 116 Z"
+          fill="url(#hood)" stroke="url(#edge2)" stroke-width="2.2"/>
+    <path d="M84 115 C65 142 60 170 63 201" fill="none" stroke="#28cfff" stroke-width="2.1" opacity="0.75"/>
+    <path d="M216 115 C235 143 240 171 237 202" fill="none" stroke="#b14dff" stroke-width="2.1" opacity="0.85"/>
   </g>
-  <path d="M107 157 C128 171 172 171 193 157" fill="none" stroke="#10233d" stroke-width="3" opacity="0.7"/>
-  <g transform="translate(19 205)">
-    <path d="M19 19 L14 8 M51 19 L56 8" stroke="#a6ff52" stroke-width="3" stroke-linecap="round"/>
-    <path d="M16 24 Q35 8 54 24 V61 Q54 68 47 68 H23 Q16 68 16 61 Z" fill="url(#android)" stroke="#d5ff72" stroke-width="2"/>
-    <circle cx="27" cy="28" r="2.5" fill="#0b2413"/><circle cx="43" cy="28" r="2.5" fill="#0b2413"/>
-    <path d="M10 35 V56 M60 35 V56 M25 68 V80 M45 68 V80" stroke="#9ef044" stroke-width="7" stroke-linecap="round"/>
+
+  <!-- Face shadow and glasses -->
+  <ellipse cx="150" cy="132" rx="53" ry="43" fill="#010309" opacity="0.94"/>
+  <g fill="none" stroke="#e7f3ff" stroke-width="3" filter="url(#smallGlow)">
+    <rect x="105" y="119" width="41" height="27" rx="10"/>
+    <rect x="155" y="119" width="41" height="27" rx="10"/>
+    <path d="M146 130 H155 M99 126 L106 130 M196 130 L202 125"/>
   </g>
-  <g transform="translate(222 194) rotate(12)">
-    <path d="M25 0 C35 5 37 16 31 25 L17 40 L7 30 L21 16 C24 13 23 9 20 7 Z" fill="#10213c" stroke="#b24cff" stroke-width="3"/>
-    <path d="M7 30 L-22 59 C-28 65 -18 75 -12 69 L17 40 Z" fill="#0b1830" stroke="#5f8dff" stroke-width="3"/>
-    <circle cx="-17" cy="64" r="4" fill="none" stroke="#c35cff" stroke-width="2"/>
+  <path d="M112 155 C133 168 168 168 189 155" fill="none" stroke="#142646" stroke-width="3" opacity="0.9"/>
+
+  <!-- Cloak folds -->
+  <path d="M86 189 C104 205 116 227 119 265" fill="none" stroke="#1b3563" stroke-width="2" opacity="0.55"/>
+  <path d="M214 189 C196 205 184 228 181 266" fill="none" stroke="#5c2b78" stroke-width="2" opacity="0.55"/>
+  <path d="M150 181 C142 229 140 285 150 345" fill="none" stroke="#263a68" stroke-width="2" opacity="0.32"/>
+
+  <!-- Left arm / Android -->
+  <g filter="url(#smallGlow)">
+    <path d="M100 212 C72 208 48 220 35 245 C27 260 30 278 44 284 C55 289 65 281 67 270 C74 286 94 290 107 276"
+          fill="#03101b" stroke="#27cfff" stroke-width="2.7"/>
+    <g transform="translate(24 226)">
+      <path d="M19 18 L14 7 M51 18 L56 7" stroke="#d5ff65" stroke-width="3" stroke-linecap="round"/>
+      <path d="M16 24 Q35 8 54 24 V59 Q54 67 47 67 H23 Q16 67 16 59 Z" fill="url(#android)" stroke="#e1ff79" stroke-width="2"/>
+      <circle cx="27" cy="29" r="2.5" fill="#08250e"/><circle cx="43" cy="29" r="2.5" fill="#08250e"/>
+      <path d="M10 35 V55 M60 35 V55 M25 67 V80 M45 67 V80" stroke="#a2f044" stroke-width="7" stroke-linecap="round"/>
+    </g>
   </g>
-  <path d="M102 336 C123 350 177 350 198 336" fill="none" stroke="#8755ff" stroke-width="2" opacity="0.7"/>
+
+  <!-- Right arm / service tool -->
+  <g filter="url(#smallGlow)">
+    <path d="M200 212 C229 207 253 221 265 246 C273 262 268 279 255 284 C244 288 235 281 233 270 C226 286 206 290 193 276"
+          fill="#08091a" stroke="#aa4dff" stroke-width="2.7"/>
+    <g transform="translate(223 205) rotate(14)">
+      <path d="M26 0 C36 5 38 16 32 25 L18 40 L8 30 L22 16 C25 13 24 9 21 7 Z" fill="#14223d" stroke="#d356ff" stroke-width="3"/>
+      <path d="M8 30 L-24 61 C-30 67 -19 77 -13 71 L18 40 Z" fill="#07172c" stroke="#6e93ff" stroke-width="3"/>
+      <circle cx="-18" cy="66" r="4" fill="none" stroke="#d45cff" stroke-width="2"/>
+    </g>
+  </g>
+
+  <path d="M101 335 C124 353 176 353 199 335" fill="none" stroke="#8b5aff" stroke-width="2" opacity="0.8" filter="url(#smallGlow)"/>
 </svg>
