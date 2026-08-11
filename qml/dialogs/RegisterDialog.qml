@@ -6,6 +6,7 @@ import "../components"
 
 Dialog {
     id: root
+    objectName: "registerDialog"
     width: 520
     height: 390
     modal: true
