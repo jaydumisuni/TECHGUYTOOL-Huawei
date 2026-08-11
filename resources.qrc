@@ -20,7 +20,6 @@
     <file alias="qml/pages/PartitionManagerPage.qml">qml/pages/PartitionManagerPage.qml</file>
     <file alias="qml/pages/BackupRestorePage.qml">qml/pages/BackupRestorePage.qml</file>
     <file alias="qml/pages/OperationHistoryPage.qml">qml/pages/OperationHistoryPage.qml</file>
-    <file alias="qml/pages/PlaceholderPage.qml">qml/pages/PlaceholderPage.qml</file>
     <file alias="qml/qmldir">qml/qmldir</file>
     <file alias="assets/brand/techguy_logo.svg">assets/brand/techguy_logo.svg</file>
     <file alias="assets/brand/techguy_mascot.svg">assets/brand/techguy_mascot.svg</file>
