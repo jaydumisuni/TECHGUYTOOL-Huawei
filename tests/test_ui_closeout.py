@@ -17,20 +17,16 @@ def test_all_navigation_pages_are_real_and_packaged() -> None:
         assert f"qml/pages/{name}" in qrc, name
 
 
-def test_compatibility_router_renders_real_pages_not_placeholder_copy() -> None:
-    router = (PAGES / "PlaceholderPage.qml").read_text(encoding="utf-8")
-    for qml_type in (
-        "DeviceInformationPage",
-        "PartitionManagerPage",
-        "BackupRestorePage",
-        "OperationHistoryPage",
-    ):
-        assert qml_type in router
-    assert "This module is connected to the common engine interface" not in router
-    assert "root.message" not in router
+def test_placeholder_router_is_completely_removed() -> None:
+    assert not (PAGES / "PlaceholderPage.qml").exists()
+    qrc = (ROOT / "resources.qrc").read_text(encoding="utf-8")
+    main = (ROOT / "qml" / "Main.qml").read_text(encoding="utf-8")
+    assert "PlaceholderPage.qml" not in qrc
+    assert "PlaceholderPage" not in main
+    assert "placeholderComponent" not in main
 
 
-def test_main_navigation_has_no_unhandled_page_index() -> None:
+def test_main_navigation_routes_all_six_pages_directly() -> None:
     main = (ROOT / "qml" / "Main.qml").read_text(encoding="utf-8")
     for title in (
         "Service Center",
@@ -41,3 +37,12 @@ def test_main_navigation_has_no_unhandled_page_index() -> None:
         "Operation History",
     ):
         assert title in main
+    for component in (
+        "ServiceCenterPage",
+        "DeviceInformationPage",
+        "FirmwareFlashPage",
+        "PartitionManagerPage",
+        "BackupRestorePage",
+        "OperationHistoryPage",
+    ):
+        assert component in main
