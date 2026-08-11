@@ -9,5 +9,5 @@
   "physical_proof_matrix": "INCOMPLETE",
   "production_release_status": "EXTERNAL_CERTIFICATION_PENDING",
   "production_enabled": false,
-  "proof_trigger": "freeze-phase15-after-historical-phase6-correction"
+  "proof_trigger": "final-frozen-phase15-proof-after-phase6-history-fix"
 }
