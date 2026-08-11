@@ -164,12 +164,17 @@ def verify_phase15_windows(receipt: dict[str, object]) -> None:
         if actual_sha256 != expected_sha256:
             raise SystemExit("Phase 15 executable SHA-256 does not match hosted artifact")
 
-        checksum_text = archive.read(checksum_member).decode("ascii", errors="strict").strip()
-        checksum_parts = checksum_text.split()
-        if len(checksum_parts) < 2 or checksum_parts[0].lower() != expected_sha256:
+        checksum_text = archive.read(checksum_member).decode("ascii", errors="strict")
+        entries = [line.split() for line in checksum_text.splitlines() if line.strip()]
+        matched = [
+            parts
+            for parts in entries
+            if len(parts) >= 2 and Path(parts[-1]).name == "TECHGUYTOOL_Huawei.exe"
+        ]
+        if len(matched) != 1:
+            raise SystemExit("Phase 15 SHA256SUMS.txt must contain exactly one TECHGUYTOOL_Huawei.exe entry")
+        if matched[0][0].lower() != expected_sha256:
             raise SystemExit("Phase 15 SHA256SUMS.txt does not match hosted executable")
-        if Path(checksum_parts[-1]).name != "TECHGUYTOOL_Huawei.exe":
-            raise SystemExit("Phase 15 checksum filename mismatch")
 
         provenance = json.loads(archive.read(provenance_member).decode("utf-8-sig"))
         if not isinstance(provenance, dict):
