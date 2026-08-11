@@ -2,16 +2,35 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import io
 import json
 import os
 import subprocess
+import urllib.parse
 import urllib.request
+import zipfile
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG_PATH = ROOT / "manifests" / "active_software_phase.json"
 INVENTORY = ROOT / "manifests" / "source_inventory.json"
 REPOSITORY = "jaydumisuni/TECHGUYTOOL-Huawei"
+GITHUB_API = f"https://api.github.com/repos/{REPOSITORY}"
+
+
+class _SafeRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):  # type: ignore[no-untyped-def]
+        redirected = super().redirect_request(req, fp, code, msg, headers, newurl)
+        if redirected is not None:
+            old_host = urllib.parse.urlparse(req.full_url).netloc.lower()
+            new_host = urllib.parse.urlparse(newurl).netloc.lower()
+            if old_host != new_host:
+                redirected.remove_header("Authorization")
+        return redirected
+
+
+_OPENER = urllib.request.build_opener(_SafeRedirect)
 
 
 def sha256(path: Path) -> str:
@@ -36,15 +55,16 @@ def is_ancestor(older: str, newer: str) -> bool:
     ).returncode == 0
 
 
-def verify_hosted(receipt: dict[str, object]) -> None:
+def _token() -> str:
     token = os.environ.get("GITHUB_TOKEN")
     if not token:
         raise SystemExit("GITHUB_TOKEN is required for hosted proof verification")
-    hosted = receipt["hosted_proof"]
-    assert isinstance(hosted, dict)
-    run_id = int(hosted["run_id"])
-    request = urllib.request.Request(
-        f"https://api.github.com/repos/{REPOSITORY}/actions/runs/{run_id}",
+    return token
+
+
+def _request(url: str, token: str) -> urllib.request.Request:
+    return urllib.request.Request(
+        url,
         headers={
             "Accept": "application/vnd.github+json",
             "Authorization": f"Bearer {token}",
@@ -52,14 +72,116 @@ def verify_hosted(receipt: dict[str, object]) -> None:
             "User-Agent": "TECHGUYTOOL-Huawei-software-phase",
         },
     )
-    with urllib.request.urlopen(request, timeout=20) as response:
-        run = json.load(response)
+
+
+def _github_json(url: str, token: str) -> dict[str, Any]:
+    with _OPENER.open(_request(url, token), timeout=30) as response:
+        payload = json.load(response)
+    if not isinstance(payload, dict):
+        raise SystemExit("GitHub API response root must be an object")
+    return payload
+
+
+def verify_hosted(receipt: dict[str, object]) -> dict[str, Any]:
+    token = _token()
+    hosted = receipt["hosted_proof"]
+    assert isinstance(hosted, dict)
+    run_id = int(hosted["run_id"])
+    run = _github_json(f"{GITHUB_API}/actions/runs/{run_id}", token)
     if run.get("name") != "Software Phase Proof":
         raise SystemExit("hosted proof workflow mismatch")
     if run.get("head_sha") != hosted.get("tested_revision"):
         raise SystemExit("hosted proof revision mismatch")
     if run.get("status") != "completed" or run.get("conclusion") != "success":
         raise SystemExit("hosted proof is not successful")
+    return run
+
+
+def _artifact_member(archive: zipfile.ZipFile, basename: str) -> str:
+    matches = [name for name in archive.namelist() if Path(name).name == basename]
+    if len(matches) != 1:
+        raise SystemExit(f"Phase 15 artifact must contain exactly one {basename}; found {len(matches)}")
+    return matches[0]
+
+
+def verify_phase15_windows(receipt: dict[str, object]) -> None:
+    from techguy_huawei.windows_release import (
+        load_physical_matrix,
+        validate_receipt_matrix_alignment,
+        validate_release_receipt,
+    )
+
+    validate_release_receipt(receipt)
+    validate_receipt_matrix_alignment(receipt, load_physical_matrix())
+
+    token = _token()
+    windows_run_id = int(receipt["windows_run_id"])
+    tested_revision = str(receipt["tested_revision"])
+    run = _github_json(f"{GITHUB_API}/actions/runs/{windows_run_id}", token)
+    if run.get("name") != "Phase 15 Windows Release Candidate":
+        raise SystemExit("Phase 15 Windows workflow mismatch")
+    if run.get("head_sha") != tested_revision:
+        raise SystemExit("Phase 15 Windows tested revision mismatch")
+    if run.get("status") != "completed" or run.get("conclusion") != "success":
+        raise SystemExit("Phase 15 Windows run is not successful")
+
+    artifacts_payload = _github_json(f"{GITHUB_API}/actions/runs/{windows_run_id}/artifacts?per_page=100", token)
+    artifacts = artifacts_payload.get("artifacts")
+    if not isinstance(artifacts, list):
+        raise SystemExit("Phase 15 Windows artifact listing missing")
+    artifact_id = int(receipt["artifact_id"])
+    artifact_name = str(receipt["artifact_name"])
+    matches = [item for item in artifacts if isinstance(item, dict) and item.get("id") == artifact_id]
+    if len(matches) != 1:
+        raise SystemExit("Phase 15 Windows artifact ID was not found uniquely in the hosted run")
+    artifact = matches[0]
+    if artifact.get("name") != artifact_name:
+        raise SystemExit("Phase 15 Windows artifact name mismatch")
+    if artifact_name != "TECHGUYTOOL-Huawei-phase15-windows-candidate":
+        raise SystemExit("Phase 15 Windows artifact canonical name mismatch")
+    if artifact.get("expired") is True:
+        raise SystemExit("Phase 15 Windows artifact expired before authority freeze")
+
+    archive_url = artifact.get("archive_download_url")
+    if not isinstance(archive_url, str) or not archive_url:
+        raise SystemExit("Phase 15 Windows artifact download URL missing")
+    with _OPENER.open(_request(archive_url, token), timeout=120) as response:
+        archive_bytes = response.read()
+    if not archive_bytes:
+        raise SystemExit("Phase 15 Windows artifact download was empty")
+
+    expected_sha256 = str(receipt["executable_sha256"])
+    with zipfile.ZipFile(io.BytesIO(archive_bytes), "r") as archive:
+        exe_member = _artifact_member(archive, "TECHGUYTOOL_Huawei.exe")
+        checksum_member = _artifact_member(archive, "SHA256SUMS.txt")
+        provenance_member = _artifact_member(archive, "RELEASE_PROVENANCE.json")
+
+        digest = hashlib.sha256()
+        with archive.open(exe_member, "r") as stream:
+            for block in iter(lambda: stream.read(1024 * 1024), b""):
+                digest.update(block)
+        actual_sha256 = digest.hexdigest()
+        if actual_sha256 != expected_sha256:
+            raise SystemExit("Phase 15 executable SHA-256 does not match hosted artifact")
+
+        checksum_text = archive.read(checksum_member).decode("ascii", errors="strict").strip()
+        checksum_parts = checksum_text.split()
+        if len(checksum_parts) < 2 or checksum_parts[0].lower() != expected_sha256:
+            raise SystemExit("Phase 15 SHA256SUMS.txt does not match hosted executable")
+        if Path(checksum_parts[-1]).name != "TECHGUYTOOL_Huawei.exe":
+            raise SystemExit("Phase 15 checksum filename mismatch")
+
+        provenance = json.loads(archive.read(provenance_member).decode("utf-8-sig"))
+        if not isinstance(provenance, dict):
+            raise SystemExit("Phase 15 release provenance root must be an object")
+        if provenance.get("filename") != "TECHGUYTOOL_Huawei.exe":
+            raise SystemExit("Phase 15 release provenance filename mismatch")
+        if provenance.get("sha256") != expected_sha256:
+            raise SystemExit("Phase 15 release provenance SHA-256 mismatch")
+        if provenance.get("signing_mode") != "ci-test-authenticode":
+            raise SystemExit("Phase 15 release provenance signing mode mismatch")
+        if provenance.get("ci_test_signature") is not True or provenance.get("production_signature") is not False:
+            raise SystemExit("Phase 15 release provenance signature boundary mismatch")
 
 
 def main() -> int:
@@ -111,6 +233,15 @@ def main() -> int:
         allowed = {str(config["receipt_path"]), "manifests/active_software_phase.json"}
         if changed - allowed:
             raise SystemExit(f"post-proof source drift: {sorted(changed - allowed)}")
+        if phase == 15:
+            if receipt.get("tested_revision") != tested_revision:
+                raise SystemExit("Phase 15 Windows receipt tested revision differs from software authority")
+            if int(receipt.get("software_proof_run_id", -1)) != int(hosted["run_id"]):
+                raise SystemExit("Phase 15 Windows receipt software proof run differs from software authority")
+            if receipt.get("source_inventory_sha256") != inventory.get("sha256"):
+                raise SystemExit("Phase 15 Windows receipt inventory hash differs from software authority")
+            if args.verify_hosted_run:
+                verify_phase15_windows(receipt)
     print(f"VERIFIED phase={phase} status={receipt['status']}")
     return 0
 
