@@ -11,9 +11,11 @@ os.environ.setdefault("QT_QUICK_BACKEND", "software")
 os.environ.setdefault("QSG_RHI_BACKEND", "software")
 os.environ.setdefault("QT_OPENGL", "software")
 
+import shiboken6
 from PySide6.QtCore import QCoreApplication, QUrl
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtQml import QQmlApplicationEngine
+from PySide6.QtQuick import QQuickWindow
 from PySide6.QtTest import QTest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -29,6 +31,14 @@ STATES = [
     (4, "Backup & Restore", "backup-restore.png"),
     (5, "Operation History", "operation-history.png"),
 ]
+
+
+def as_quick_window(window: object) -> QQuickWindow:
+    pointer = shiboken6.getCppPointer(window)[0]
+    quick_window = shiboken6.wrapInstance(pointer, QQuickWindow)
+    if quick_window is None:
+        raise SystemExit("Could not wrap the QML ApplicationWindow as QQuickWindow")
+    return quick_window
 
 
 def main() -> int:
@@ -51,10 +61,7 @@ def main() -> int:
     window.setProperty("visible", True)
     QCoreApplication.processEvents()
     QTest.qWait(700)
-
-    screen = window.screen() or QGuiApplication.primaryScreen()
-    if screen is None:
-        raise SystemExit("No Qt screen is available for visual capture")
+    quick_window = as_quick_window(window)
 
     captures: list[dict[str, object]] = []
     warning_cursor = len(warnings)
@@ -63,8 +70,7 @@ def main() -> int:
         window.setProperty("pageIndex", index)
         QCoreApplication.processEvents()
         QTest.qWait(700)
-        pixmap = screen.grabWindow(int(window.winId()))
-        image = pixmap.toImage()
+        image = quick_window.grabWindow()
         if image.isNull():
             raise SystemExit(f"Failed to capture {title}")
         target = output / filename
@@ -87,7 +93,7 @@ def main() -> int:
         "schema": "techguytool-huawei.final-ui-capture.v1",
         "source_revision": os.environ.get("GITHUB_SHA", "local"),
         "expected_size": [1586, 992],
-        "renderer": "software",
+        "renderer": "qt-quick-software-scenegraph",
         "captures": captures,
     }
     (output / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
