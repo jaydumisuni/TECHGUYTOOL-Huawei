@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import subprocess
@@ -12,12 +13,24 @@ REPOSITORY = "jaydumisuni/TECHGUYTOOL-Huawei"
 EXPECTED_SCHEMA = "techguytool-huawei.phase6-leases-receipt.v1"
 EXPECTED_STATUS = "PHASE6_LEASES_FROZEN"
 EXPECTED_WORKFLOW = "Phase 6 Mode and Execution Leases"
+INVENTORY_PATH = "manifests/source_inventory.json"
+RECEIPT_PATH = "manifests/phase6_leases.receipt.json"
 
 
 def git(*args: str) -> str:
     return subprocess.run(
         ["git", *args], cwd=ROOT, check=True, capture_output=True, text=True
     ).stdout.strip()
+
+
+def git_bytes(*args: str) -> bytes:
+    return subprocess.run(
+        ["git", *args], cwd=ROOT, check=True, capture_output=True
+    ).stdout
+
+
+def sha256_bytes(value: bytes) -> str:
+    return hashlib.sha256(value).hexdigest()
 
 
 def is_ancestor(older: str, newer: str) -> bool:
@@ -68,6 +81,8 @@ def main() -> int:
     source = receipt.get("source_inventory")
     if not isinstance(source, dict):
         raise SystemExit("historical Phase 6 source inventory record missing")
+    if source.get("path") != INVENTORY_PATH:
+        raise SystemExit("historical Phase 6 source inventory path mismatch")
     source_hash = str(source.get("sha256", ""))
     if len(source_hash) != 64 or any(char not in "0123456789abcdef" for char in source_hash):
         raise SystemExit("historical Phase 6 source inventory hash is malformed")
@@ -96,6 +111,22 @@ def main() -> int:
         raise SystemExit("historical Phase 6 authority commit does not descend from tested source")
     if not is_ancestor(authority, head):
         raise SystemExit("current source does not descend from frozen Phase 6 authority")
+
+    authority_inventory_bytes = git_bytes("show", f"{authority}:{INVENTORY_PATH}")
+    if sha256_bytes(authority_inventory_bytes) != source_hash:
+        raise SystemExit("historical Phase 6 frozen inventory hash does not match authority commit")
+    authority_inventory = json.loads(authority_inventory_bytes.decode("utf-8"))
+    if source.get("file_count") != authority_inventory.get("file_count"):
+        raise SystemExit("historical Phase 6 frozen inventory file count mismatch")
+
+    changed = {
+        line
+        for line in git("diff", "--name-only", f"{tested}..{authority}").splitlines()
+        if line
+    }
+    unexpected = sorted(changed - {RECEIPT_PATH})
+    if unexpected:
+        raise SystemExit(f"historical Phase 6 source drift before authority freeze: {unexpected}")
 
     verify_hosted_run(hosted)
     print(
