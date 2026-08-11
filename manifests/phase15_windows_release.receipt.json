@@ -43,7 +43,7 @@
     "source_freeze_verifier": "PASS",
     "srg_20_for_2": "40/40 PASS"
   },
-  "proof_trigger": "request-final-closeout-provenance-freeze",
+  "proof_trigger": "frozen-final-closeout-evidence-run",
   "release_filename": "TECHGUYTOOL_Huawei.exe",
   "schema": "techguytool-huawei.phase15-receipt.v1",
   "software_proof_run_id": 31465297386,
