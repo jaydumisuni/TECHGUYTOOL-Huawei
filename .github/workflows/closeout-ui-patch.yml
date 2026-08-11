@@ -1,0 +1,83 @@
+name: One-shot Huawei UI closeout patch
+
+on:
+  push:
+    branches: ["closeout/final-ui-completion"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: closeout-ui-patch
+  cancel-in-progress: false
+
+jobs:
+  patch:
+    if: ${{ !startsWith(github.event.head_commit.message, 'Apply final UI closeout routing') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+      - name: Replace placeholder routing with approved pages
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          main = Path('qml/Main.qml')
+          text = main.read_text(encoding='utf-8')
+          old_loader = 'sourceComponent: app.pageIndex === 0 ? serviceComponent : app.pageIndex === 2 ? firmwareComponent : placeholderComponent'
+          new_loader = '''sourceComponent: app.pageIndex === 0 ? serviceComponent
+                                   : app.pageIndex === 1 ? deviceInformationComponent
+                                   : app.pageIndex === 2 ? firmwareComponent
+                                   : app.pageIndex === 3 ? partitionManagerComponent
+                                   : app.pageIndex === 4 ? backupRestoreComponent
+                                   : operationHistoryComponent'''
+          if old_loader not in text:
+              raise SystemExit('Expected placeholder loader expression not found')
+          text = text.replace(old_loader, new_loader, 1)
+
+          old_components = '''    Component { id: serviceComponent; ServiceCenterPage {} }
+    Component { id: firmwareComponent; FirmwareFlashPage {} }
+    Component { id: placeholderComponent; PlaceholderPage { title: app.pageTitle.toUpperCase(); message: "The interface is present and wired to the shared evidence and action-health core. Device-specific write engines remain guarded until their proof contracts are implemented." } }
+'''
+          new_components = '''    Component { id: serviceComponent; ServiceCenterPage {} }
+    Component { id: deviceInformationComponent; DeviceInformationPage {} }
+    Component { id: firmwareComponent; FirmwareFlashPage {} }
+    Component { id: partitionManagerComponent; PartitionManagerPage {} }
+    Component { id: backupRestoreComponent; BackupRestorePage {} }
+    Component { id: operationHistoryComponent; OperationHistoryPage {} }
+'''
+          if old_components not in text:
+              raise SystemExit('Expected placeholder component block not found')
+          main.write_text(text.replace(old_components, new_components, 1), encoding='utf-8', newline='\n')
+
+          qrc = Path('resources.qrc')
+          qtext = qrc.read_text(encoding='utf-8')
+          old = '    <file alias="qml/pages/PlaceholderPage.qml">qml/pages/PlaceholderPage.qml</file>\n'
+          new = (
+              '    <file alias="qml/pages/DeviceInformationPage.qml">qml/pages/DeviceInformationPage.qml</file>\n'
+              '    <file alias="qml/pages/PartitionManagerPage.qml">qml/pages/PartitionManagerPage.qml</file>\n'
+              '    <file alias="qml/pages/BackupRestorePage.qml">qml/pages/BackupRestorePage.qml</file>\n'
+              '    <file alias="qml/pages/OperationHistoryPage.qml">qml/pages/OperationHistoryPage.qml</file>\n'
+          )
+          if old not in qtext:
+              raise SystemExit('Expected PlaceholderPage QRC entry not found')
+          qrc.write_text(qtext.replace(old, new, 1), encoding='utf-8', newline='\n')
+          PY
+          git rm qml/pages/PlaceholderPage.qml
+          git rm .github/workflows/closeout-ui-patch.yml
+          git diff --check
+      - name: Commit exact closeout routing
+        shell: bash
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          git config user.name "jaydumisuni"
+          git config user.email "65334711+jaydumisuni@users.noreply.github.com"
+          git add qml/Main.qml resources.qrc qml/pages .github/workflows/closeout-ui-patch.yml
+          git commit -m "Apply final UI closeout routing"
+          git push origin "HEAD:${BRANCH}"
