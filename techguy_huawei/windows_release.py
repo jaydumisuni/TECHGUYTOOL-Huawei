@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import shutil
 import subprocess
 from datetime import datetime
 from pathlib import Path
@@ -269,9 +270,32 @@ def receipt_matches_active_source(receipt: Mapping[str, Any]) -> bool:
         return False
     allowed_authority_paths = {path.replace("\\", "/") for path in excluded}
 
+    git_executable = shutil.which("git")
+    if not git_executable:
+        return False
     try:
+        ancestry = subprocess.run(
+            [git_executable, "merge-base", "--is-ancestor", tested_revision, "HEAD"],
+            cwd=ROOT,
+            check=False,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=10,
+        )
+        if ancestry.returncode != 0:
+            return False
+        tracked_clean = subprocess.run(
+            [git_executable, "diff", "--quiet", "HEAD", "--"],
+            cwd=ROOT,
+            check=False,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=10,
+        )
+        if tracked_clean.returncode != 0:
+            return False
         completed = subprocess.run(
-            ["git", "diff", "--name-only", f"{tested_revision}..HEAD"],
+            [git_executable, "diff", "--name-only", f"{tested_revision}..HEAD"],
             cwd=ROOT,
             check=False,
             capture_output=True,
