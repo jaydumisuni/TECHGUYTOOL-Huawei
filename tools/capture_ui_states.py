@@ -49,6 +49,10 @@ def main() -> int:
     QCoreApplication.processEvents()
     QTest.qWait(500)
 
+    screen = window.screen() or QGuiApplication.primaryScreen()
+    if screen is None:
+        raise SystemExit("No Qt screen is available for visual capture")
+
     captures: list[dict[str, object]] = []
     warning_cursor = len(warnings)
     for index, title, filename in STATES:
@@ -56,7 +60,8 @@ def main() -> int:
         window.setProperty("pageIndex", index)
         QCoreApplication.processEvents()
         QTest.qWait(500)
-        image = window.grabWindow()
+        pixmap = screen.grabWindow(int(window.winId()))
+        image = pixmap.toImage()
         if image.isNull():
             raise SystemExit(f"Failed to capture {title}")
         target = output / filename
