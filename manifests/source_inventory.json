@@ -964,8 +964,8 @@
     {
       "origin": "phase15_windows_release",
       "path": "techguy_huawei/windows_release.py",
-      "sha256": "91a8b066c29f8053e3f5f056c2967d904f7ac3dca7eac353e7bd49544570dbb0",
-      "size_bytes": 18147
+      "sha256": "7aff64b1dc67117d4e5b878cf4cc3d961c185a1bfeef0e849bd2133be5975720",
+      "size_bytes": 18930
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -1072,8 +1072,8 @@
     {
       "origin": "phase15_windows_release",
       "path": "tests/test_windows_release.py",
-      "sha256": "bb8d244718e47622b459c440f6c37a7ab77419175012d96fc9dc43e3fdb87cfa",
-      "size_bytes": 7760
+      "sha256": "ae71129a7cfea886fe4493253014ab815e76c34bd25dda9b187d33cd97b61e02",
+      "size_bytes": 9409
     },
     {
       "origin": "phase7_bounded_executor_framework",
@@ -1252,8 +1252,8 @@
     {
       "origin": "phase7_bounded_executor_framework",
       "path": "tools/verify_software_phase_receipt.py",
-      "sha256": "0427565b27e4c06bd891a3fc3a2795a83e77de1fc825a06a3beb91e5610a8765",
-      "size_bytes": 11418
+      "sha256": "d80de10b4a3458fa1788aa10f6d4396b8f4622289ca5eae2d6dd135e24bb96d3",
+      "size_bytes": 11587
     },
     {
       "origin": "phase3_device_gateway",
