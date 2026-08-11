@@ -1252,8 +1252,8 @@
     {
       "origin": "phase7_bounded_executor_framework",
       "path": "tools/verify_software_phase_receipt.py",
-      "sha256": "d80de10b4a3458fa1788aa10f6d4396b8f4622289ca5eae2d6dd135e24bb96d3",
-      "size_bytes": 11587
+      "sha256": "22cfe00976314b28dd246cc77d44eff85115c46214f47f76d4becf4bc138f9f0",
+      "size_bytes": 11628
     },
     {
       "origin": "phase3_device_gateway",
