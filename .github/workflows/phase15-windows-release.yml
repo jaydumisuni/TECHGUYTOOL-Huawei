@@ -104,6 +104,28 @@ jobs:
             $rsa.Dispose()
           }
 
+      - name: Prove source-mode QML startup before packaging
+        shell: pwsh
+        env:
+          QT_QPA_PLATFORM: offscreen
+          TECHGUY_STARTUP_PROBE: "1"
+        run: |
+          $ErrorActionPreference = "Stop"
+          $diag = Join-Path $env:RUNNER_TEMP "phase15-source-startup.json"
+          $env:TECHGUY_STARTUP_DIAGNOSTIC_PATH = $diag
+          python main.py
+          if ($LASTEXITCODE -ne 0) {
+            if (Test-Path $diag) { Get-Content $diag -Raw | Write-Host }
+            throw "Source-mode startup probe failed with exit code $LASTEXITCODE."
+          }
+          if (-not (Test-Path $diag)) { throw "Source-mode startup diagnostic was not created." }
+          $state = Get-Content $diag -Raw | ConvertFrom-Json
+          if ($state.stage -ne "qml_root_ready") {
+            Get-Content $diag -Raw | Write-Host
+            throw "Source-mode startup did not reach qml_root_ready."
+          }
+          Write-Host "Source-mode QML startup reached qml_root_ready."
+
       - name: Build and CI-sign canonical one-file executable
         shell: pwsh
         run: |
@@ -135,7 +157,7 @@ jobs:
           if ($prov.production_signature -ne $false) { throw "CI artifact may not claim production signature." }
           Write-Host "CI-signed one-file SHA256=$actual"
 
-      - name: Prove one-file extraction and restart after forced close
+      - name: Prove packaged QML startup and restart after forced close
         shell: pwsh
         env:
           QT_QPA_PLATFORM: offscreen
@@ -143,10 +165,30 @@ jobs:
           $ErrorActionPreference = "Stop"
           $exe = Get-ChildItem -Path dist -Filter "TECHGUYTOOL_Huawei.exe" -Recurse | Select-Object -First 1
           if (-not $exe) { throw "Release executable missing." }
+
+          $diag = Join-Path $env:RUNNER_TEMP "phase15-packaged-startup.json"
+          $env:TECHGUY_STARTUP_DIAGNOSTIC_PATH = $diag
+          $env:TECHGUY_STARTUP_PROBE = "1"
+          & $exe.FullName
+          $probeExit = $LASTEXITCODE
+          Remove-Item Env:TECHGUY_STARTUP_PROBE -ErrorAction SilentlyContinue
+          if ($probeExit -ne 0) {
+            if (Test-Path $diag) { Get-Content $diag -Raw | Write-Host }
+            throw "Packaged startup probe failed with exit code $probeExit."
+          }
+          if (-not (Test-Path $diag)) { throw "Packaged startup diagnostic was not created." }
+          $state = Get-Content $diag -Raw | ConvertFrom-Json
+          if ($state.stage -ne "qml_root_ready") {
+            Get-Content $diag -Raw | Write-Host
+            throw "Packaged startup did not reach qml_root_ready."
+          }
+          Write-Host "Packaged QML startup reached qml_root_ready."
+
           function Test-Launch([string]$label) {
             $process = Start-Process -FilePath $exe.FullName -PassThru
             Start-Sleep -Seconds 8
             if ($process.HasExited) {
+              if (Test-Path $diag) { Get-Content $diag -Raw | Write-Host }
               throw "$label launch exited early with code $($process.ExitCode)."
             }
             Stop-Process -Id $process.Id -Force
