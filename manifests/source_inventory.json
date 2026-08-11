@@ -94,8 +94,8 @@
     {
       "origin": "phase7_bounded_executor_framework",
       "path": ".github/workflows/software-phase-authority.yml",
-      "sha256": "00b7c2b05ff401578daf44e7cf26924a2873c95e14a2d8a09ae12fa89bb11af9",
-      "size_bytes": 3953
+      "sha256": "196ef316ff2048d6f5dcd1b97d0b428c40f23d413d3a06435ae45969b2fc1879",
+      "size_bytes": 4281
     },
     {
       "origin": "phase7_bounded_executor_framework",
