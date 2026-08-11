@@ -9,5 +9,13 @@
   "physical_proof_matrix": "INCOMPLETE",
   "production_release_status": "EXTERNAL_CERTIFICATION_PENDING",
   "production_enabled": false,
-  "proof_trigger": "final-frozen-phase15-proof-after-phase6-history-fix"
+  "authority_request": {
+    "proof_run_id": 31463769585,
+    "tested_revision": "6d5e0d6f4c3932da483c1e0b3b1f0e4cc5017485",
+    "windows_run_id": 31463769565,
+    "executable_sha256": "f9fe29cb0b19abd31a19c1ab4cd70ad8d7bb393285bbf22ea7de33412157621b",
+    "artifact_id": 9091006300,
+    "artifact_name": "TECHGUYTOOL-Huawei-phase15-windows-candidate"
+  },
+  "proof_trigger": "confirm-phase15-windows-ci-authority"
 }
