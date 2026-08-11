@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import copy
+from types import SimpleNamespace
 
 import pytest
 
+import techguy_huawei.windows_release as windows_release
 from techguy_huawei.windows_release import (
     WindowsReleaseError,
     find_prohibited_external_data_sources,
@@ -18,6 +20,26 @@ from techguy_huawei.windows_release import (
     validate_release_receipt,
     validate_windows_release_sources,
 )
+
+
+def _synthetic_frozen_receipt(*, inventory_sha256: str = "a" * 64, tested_revision: str = "1" * 40) -> dict[str, object]:
+    receipt = copy.deepcopy(load_release_receipt())
+    receipt.update(
+        {
+            "status": "FROZEN",
+            "windows_ci": "PASS",
+            "ci_test_signing": "PASS",
+            "tested_revision": tested_revision,
+            "source_inventory_sha256": inventory_sha256,
+            "executable_sha256": "3" * 64,
+            "windows_run_id": 123,
+            "software_proof_run_id": 456,
+            "artifact_id": 789,
+            "artifact_name": "TECHGUYTOOL-Huawei-phase15-windows-candidate",
+        }
+    )
+    validate_release_receipt(receipt)
+    return receipt
 
 
 def test_phase15_readiness_matches_receipt_authority_state() -> None:
@@ -71,42 +93,58 @@ def test_frozen_receipt_requires_bound_ci_evidence() -> None:
 
 
 def test_evidence_bound_frozen_receipt_is_valid() -> None:
-    receipt = copy.deepcopy(load_release_receipt())
-    receipt.update(
-        {
-            "status": "FROZEN",
-            "windows_ci": "PASS",
-            "ci_test_signing": "PASS",
-            "tested_revision": "1" * 40,
-            "source_inventory_sha256": "2" * 64,
-            "executable_sha256": "3" * 64,
-            "windows_run_id": 123,
-            "software_proof_run_id": 456,
-            "artifact_id": 789,
-            "artifact_name": "TECHGUYTOOL-Huawei-phase15-windows-candidate",
-        }
-    )
-    validate_release_receipt(receipt)
+    _synthetic_frozen_receipt(inventory_sha256="2" * 64)
 
 
 def test_stale_but_well_formed_frozen_receipt_is_not_active_authority() -> None:
-    receipt = copy.deepcopy(load_release_receipt())
-    receipt.update(
-        {
-            "status": "FROZEN",
-            "windows_ci": "PASS",
-            "ci_test_signing": "PASS",
-            "tested_revision": "0" * 40,
-            "source_inventory_sha256": source_inventory_sha256(),
-            "executable_sha256": "3" * 64,
-            "windows_run_id": 123,
-            "software_proof_run_id": 456,
-            "artifact_id": 789,
-            "artifact_name": "TECHGUYTOOL-Huawei-phase15-windows-candidate",
-        }
+    receipt = _synthetic_frozen_receipt(
+        inventory_sha256=source_inventory_sha256(),
+        tested_revision="0" * 40,
     )
-    validate_release_receipt(receipt)
     assert receipt_matches_active_source(receipt) is False
+
+
+def test_non_ancestor_frozen_receipt_is_not_active_authority(monkeypatch: pytest.MonkeyPatch) -> None:
+    receipt = _synthetic_frozen_receipt()
+    monkeypatch.setattr(windows_release, "source_inventory_sha256", lambda: "a" * 64)
+    monkeypatch.setattr(
+        windows_release,
+        "_load_json",
+        lambda _path: {"excluded_from_recursive_hashing": ["manifests/phase15_windows_release.receipt.json"]},
+    )
+    monkeypatch.setattr(windows_release.shutil, "which", lambda _name: "/usr/bin/git")
+
+    def fake_run(args, **_kwargs):
+        assert args[1:3] == ["merge-base", "--is-ancestor"]
+        return SimpleNamespace(returncode=1, stdout="")
+
+    monkeypatch.setattr(windows_release.subprocess, "run", fake_run)
+    assert receipt_matches_active_source(receipt) is False
+
+
+def test_dirty_tracked_source_rejects_frozen_authority(monkeypatch: pytest.MonkeyPatch) -> None:
+    receipt = _synthetic_frozen_receipt()
+    monkeypatch.setattr(windows_release, "source_inventory_sha256", lambda: "a" * 64)
+    monkeypatch.setattr(
+        windows_release,
+        "_load_json",
+        lambda _path: {"excluded_from_recursive_hashing": ["manifests/phase15_windows_release.receipt.json"]},
+    )
+    monkeypatch.setattr(windows_release.shutil, "which", lambda _name: "/usr/bin/git")
+    calls = 0
+
+    def fake_run(args, **_kwargs):
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            assert args[1:3] == ["merge-base", "--is-ancestor"]
+            return SimpleNamespace(returncode=0, stdout="")
+        assert args[1:3] == ["diff", "--quiet"]
+        return SimpleNamespace(returncode=1, stdout="")
+
+    monkeypatch.setattr(windows_release.subprocess, "run", fake_run)
+    assert receipt_matches_active_source(receipt) is False
+    assert calls == 2
 
 
 def test_receipt_physical_matrix_claim_must_match_manifest() -> None:
