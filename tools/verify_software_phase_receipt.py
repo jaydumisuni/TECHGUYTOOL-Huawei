@@ -6,6 +6,7 @@ import io
 import json
 import os
 import subprocess
+import sys
 import urllib.parse
 import urllib.request
 import zipfile
@@ -13,6 +14,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 CONFIG_PATH = ROOT / "manifests" / "active_software_phase.json"
 INVENTORY = ROOT / "manifests" / "source_inventory.json"
 REPOSITORY = "jaydumisuni/TECHGUYTOOL-Huawei"
