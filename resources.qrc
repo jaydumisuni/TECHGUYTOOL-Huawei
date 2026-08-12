@@ -23,5 +23,6 @@
     <file alias="qml/qmldir">qml/qmldir</file>
     <file alias="assets/brand/techguy_logo.svg">assets/brand/techguy_logo.svg</file>
     <file alias="assets/brand/techguy_mascot.svg">assets/brand/techguy_mascot.svg</file>
+    <file alias="assets/brand/techguy_mascot.webp">assets/brand/techguy_mascot.webp</file>
   </qresource>
 </RCC>
