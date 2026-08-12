@@ -7,15 +7,19 @@ import ".."
 Window {
     id: root
     objectName: "terminalDialog"
-    width: 520
-    height: 300
+    width: 370
+    height: 180
+    minimumWidth: 370
+    minimumHeight: 180
+    maximumWidth: 370
+    maximumHeight: 180
     title: "TECHGUY Fastboot Terminal"
     color: "#050505"
     flags: Qt.Dialog
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 12
-        spacing: 8
+        anchors.margins: 8
+        spacing: 4
         TextArea {
             id: output
             Layout.fillWidth: true
@@ -24,20 +28,21 @@ Window {
             color: "#e5e5e5"
             selectionColor: "#315a88"
             font.family: "Consolas"
-            font.pixelSize: 13
+            font.pixelSize: 11
             background: Rectangle { color: "#050505" }
-            text: "TECHGUY TOOL Huawei Fastboot Console\nFastboot access uses the bundled safe command interface.\nType a read-only command below.\n\nC:\\TECHGUY\\Huawei> fastboot devices\n< waiting for device >\n"
+            text: "TECHGUY TOOL Huawei Fastboot Console\nFastboot access granted.\nType fastboot commands directly.\n\nC:\\TECHGUY\\Huawei> fastboot devices\n< waiting for device >\n"
         }
         RowLayout {
             Layout.fillWidth: true
-            Text { text: "C:\\TECHGUY\\Huawei>"; color: "#e5e5e5"; font.family: "Consolas"; font.pixelSize: 13 }
+            spacing: 4
+            Text { text: "C:\\TECHGUY\\Huawei>"; color: "#e5e5e5"; font.family: "Consolas"; font.pixelSize: 11 }
             TextField {
                 Layout.fillWidth: true
                 color: "#e5e5e5"
                 font.family: "Consolas"
-                font.pixelSize: 13
+                font.pixelSize: 11
                 background: Rectangle { color: "#050505"; border.width: 0 }
-                placeholderText: "read-only command"
+                placeholderText: ""
                 onAccepted: {
                     output.text += "\nC:\\TECHGUY\\Huawei> " + text + "\nCommand routed through the safe terminal adapter.\n"
                     text = ""
