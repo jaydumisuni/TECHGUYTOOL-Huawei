@@ -118,7 +118,7 @@ ApplicationWindow {
                     anchors.rightMargin: 18
                     spacing: 12
                     Image {
-                        source: "../assets/brand/techguy_logo.svg"
+                        source: "../assets/brand/techguy_logo.png"
                         fillMode: Image.PreserveAspectFit
                         Layout.preferredWidth: 105
                         Layout.preferredHeight: 86
@@ -188,7 +188,7 @@ ApplicationWindow {
                         NavItem { Layout.fillWidth: true; text: "Operation History"; glyph: "◴"; selected: app.pageIndex === 5; onSelectedClicked: { app.pageIndex = 5; app.pageTitle = text } }
                         Item { Layout.fillHeight: true }
                         Image {
-                            source: "../assets/brand/techguy_mascot.webp"
+                            source: "../assets/brand/techguy_mascot.png"
                             fillMode: Image.PreserveAspectFit
                             Layout.fillWidth: true
                             Layout.preferredHeight: 360

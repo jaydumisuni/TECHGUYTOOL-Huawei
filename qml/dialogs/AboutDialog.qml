@@ -28,7 +28,7 @@ Dialog {
         RowLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            Image { source: "../../assets/brand/techguy_logo.svg"; fillMode: Image.PreserveAspectFit; Layout.preferredWidth: 120; Layout.preferredHeight: 120 }
+            Image { source: "../../assets/brand/techguy_logo.png"; fillMode: Image.PreserveAspectFit; Layout.preferredWidth: 120; Layout.preferredHeight: 120 }
             ColumnLayout {
                 Layout.fillWidth: true
                 spacing: 8
