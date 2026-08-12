@@ -1,0 +1,46 @@
+name: Wire approved Huawei PNG assets safely
+
+on:
+  push:
+    branches: ["phase15/final-ui-closeout"]
+    paths:
+      - ".github/workflows/ui-wire-approved-png-safe.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  wire:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: phase15/final-ui-closeout
+          fetch-depth: 0
+      - name: Replace visible artwork references
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          for qml in Path('qml').rglob('*.qml'):
+              text = qml.read_text(encoding='utf-8')
+              text = text.replace('techguy_logo.svg', 'techguy_logo.png')
+              text = text.replace('techguy_mascot.webp', 'techguy_mascot.png')
+              text = text.replace('techguy_mascot.svg', 'techguy_mascot.png')
+              qml.write_text(text, encoding='utf-8')
+          qrc = Path('resources.qrc')
+          text = qrc.read_text(encoding='utf-8')
+          text = text.replace('<file alias="assets/brand/techguy_logo.svg">assets/brand/techguy_logo.svg</file>', '<file alias="assets/brand/techguy_logo.png">assets/brand/techguy_logo.png</file>')
+          text = text.replace('<file alias="assets/brand/techguy_mascot.svg">assets/brand/techguy_mascot.svg</file>', '<file alias="assets/brand/techguy_mascot.png">assets/brand/techguy_mascot.png</file>')
+          text = '\n'.join(line for line in text.splitlines() if 'assets/brand/techguy_mascot.webp' not in line) + '\n'
+          qrc.write_text(text, encoding='utf-8')
+          PY
+          git diff --check
+      - name: Commit visible approved artwork wiring
+        shell: bash
+        run: |
+          git config user.name "THE TECH GUY"
+          git config user.email "65334711+jaydumisuni@users.noreply.github.com"
+          git add qml resources.qrc
+          git commit -m "Wire approved Huawei PNG artwork"
+          git push origin HEAD:phase15/final-ui-closeout
