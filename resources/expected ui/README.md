@@ -45,6 +45,10 @@ The current six-state capture from workflow run `31680661359`, artifact `9173343
 
 All six states exceed the closeout gross-drift floor of 0.70 for both coarse and edge similarity. This is visual-comparison evidence, not a claim that the recovered copies are byte-identical to the locked originals.
 
+## Integration closeout
+
+The final UI branch was synchronized with the current `main` repository policy by carrying `AGENTS.md` unchanged from `main`. The source inventory must include that policy file before the Windows PR-merge candidate is treated as frozen authority.
+
 ## Contract
 
 - Capture the application at 1586 × 992.
