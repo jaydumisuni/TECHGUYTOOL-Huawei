@@ -23,7 +23,7 @@
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 216,
+  "file_count": 217,
   "files": [
     {
       "origin": "phase15_windows_release",
@@ -162,6 +162,12 @@
       "path": "assets/brand/techguy_mascot.svg",
       "sha256": "219e9470430e60a5f4748651679f2eca0bd1ae8b108333ff97f4b41167008344",
       "size_bytes": 153
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "assets/brand/techguy_mascot_masked.svg",
+      "sha256": "a059e9bcdc23b0acc3d05e22b0a44e4580732c4487d87df377d21aadc4c47ebb",
+      "size_bytes": 7270
     },
     {
       "origin": "phase15_windows_release",
@@ -454,8 +460,8 @@
     {
       "origin": "phase15_windows_release",
       "path": "qml/components/GlassPanel.qml",
-      "sha256": "65060b27e50cc1ea15a681c156e50a86833490ba55b7235ac50132b36ad71227",
-      "size_bytes": 2732
+      "sha256": "653917cba0ba7f19ae6d6d73a7f6f1072193480e069a60a8f9c73ac70fb95666",
+      "size_bytes": 3365
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -604,8 +610,8 @@
     {
       "origin": "phase15_windows_release",
       "path": "resources.qrc",
-      "sha256": "8bb6268b0d1102e0d8305b294080e764e771b9cd17b876113e2b23b71eb0d9d0",
-      "size_bytes": 2039
+      "sha256": "a28a1aa3021d8e1909651344d23f1a9cfc7f702f975d3244fbb3500f8aea26b2",
+      "size_bytes": 2142
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -1108,8 +1114,8 @@
     {
       "origin": "phase15_windows_release",
       "path": "tests/test_ui_closeout.py",
-      "sha256": "26815c90d9c5dd96b8df8916dc79877808e9dea3764183c8c9a83f437664ff0c",
-      "size_bytes": 1498
+      "sha256": "7cbcd06e47cc990a36de2897397b513b2a93e70683f21d3d8556d3140e27a9f8",
+      "size_bytes": 2133
     },
     {
       "origin": "phase9_vog_l29_c185_recipe",
