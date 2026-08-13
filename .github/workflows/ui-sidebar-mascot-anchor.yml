@@ -1,0 +1,80 @@
+name: Fix Huawei sidebar mascot anchor
+
+on:
+  push:
+    branches: ["phase15/final-ui-closeout"]
+    paths: [".github/workflows/ui-sidebar-mascot-anchor.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact UI branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: phase15/final-ui-closeout
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Anchor approved mascot inside sidebar
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('qml/Main.qml')
+          s = p.read_text(encoding='utf-8')
+          old = '''                        Item { Layout.fillHeight: true }
+                        Image {
+                            source: "../assets/brand/techguy_mascot.png"
+                            fillMode: Image.PreserveAspectFit
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 410
+                        }
+                    }
+                }
+'''
+          new = '''                        Item { Layout.fillHeight: true }
+                    }
+                    Image {
+                        id: sidebarMascot
+                        source: "../assets/brand/techguy_mascot.png"
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        anchors.leftMargin: 10
+                        anchors.rightMargin: 10
+                        anchors.bottomMargin: 10
+                        height: 320
+                        fillMode: Image.PreserveAspectFit
+                        smooth: true
+                        mipmap: true
+                        cache: true
+                        z: 2
+                    }
+                }
+'''
+          if old not in s:
+              raise SystemExit('expected sidebar mascot layout block not found')
+          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+          PY
+          rm -f .github/workflows/ui-sidebar-mascot-anchor.yml
+          git diff --check
+
+      - name: Commit mascot layout correction
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name "THETECHGUY UI Closeout"
+          git config user.email "actions@users.noreply.github.com"
+          git add qml/Main.qml
+          git rm --cached -f .github/workflows/ui-sidebar-mascot-anchor.yml >/dev/null 2>&1 || true
+          rm -f .github/workflows/ui-sidebar-mascot-anchor.yml
+          git add -A
+          git commit -m "Anchor approved Huawei mascot in sidebar"
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:phase15/final-ui-closeout
