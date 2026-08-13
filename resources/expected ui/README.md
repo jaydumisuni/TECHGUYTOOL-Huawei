@@ -35,6 +35,7 @@ The recovered copies may be used to review layout, spacing, mascot placement, gl
 - Do not substitute navigation pages for the dialog/popup states above.
 - No placeholder route or placeholder copy is permitted.
 - Typography must render with real glyphs; tofu/missing-glyph captures are invalid evidence.
+- The clean neon ghost-with-glasses mark is the approved top-left header identity; the full hooded TechGuy mascot is a separate sidebar asset and the two must not be substituted for each other.
 - The full approved hooded TechGuy mascot must render in the sidebar; simplified or missing artwork is a failure.
 - Recovered comparison copies never replace the six locked original SHA-256 authorities.
 - Visual QA is separate from engine authority and physical-device certification.
