@@ -28,7 +28,6 @@ Rectangle {
         opacity: 0.24
     }
 
-    // Soft inner edge used throughout the approved mockups.
     Rectangle {
         anchors.fill: parent
         anchors.margins: 1
@@ -39,7 +38,6 @@ Rectangle {
         opacity: 0.64
     }
 
-    // Purple left/top bloom.
     Rectangle {
         anchors.left: parent.left
         anchors.top: parent.top
@@ -53,7 +51,6 @@ Rectangle {
         opacity: 0.055
     }
 
-    // Cyan edge bloom on the right, matching the approved blue glass rim.
     Rectangle {
         anchors.right: parent.right
         anchors.top: parent.top
@@ -67,7 +64,6 @@ Rectangle {
         opacity: 0.07
     }
 
-    // Hairline highlight across the upper glass edge.
     Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
@@ -82,5 +78,22 @@ Rectangle {
             GradientStop { position: 1.00; color: "#2ed0ff" }
         }
         opacity: 0.42
+    }
+
+    Image {
+        visible: root.width >= 290 && root.width <= 330 && root.height > 600
+        source: "../../assets/brand/techguy_mascot.png"
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.leftMargin: 10
+        anchors.rightMargin: 10
+        anchors.bottomMargin: 10
+        height: 370
+        fillMode: Image.PreserveAspectFit
+        smooth: true
+        mipmap: true
+        cache: true
+        z: 20
     }
 }
