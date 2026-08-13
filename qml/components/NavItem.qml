@@ -86,4 +86,18 @@ Button {
             anchors.verticalCenter: parent.verticalCenter
         }
     }
+
+    Image {
+        visible: root.text === "Operation History"
+        source: "../../assets/brand/techguy_mascot.png"
+        anchors.top: parent.bottom
+        anchors.topMargin: 16
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: parent.width
+        height: 330
+        fillMode: Image.PreserveAspectFit
+        smooth: true
+        mipmap: true
+        cache: true
+    }
 }
