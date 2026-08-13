@@ -13,10 +13,26 @@ Button {
     hoverEnabled: true
 
     background: Rectangle {
+        id: tileBackground
         radius: 9
         color: root.down ? "#15243a" : (root.hovered ? "#11243a" : "#0b1828")
         border.width: root.active ? 2 : 1
-        border.color: root.active ? Theme.purple : (root.hovered ? Theme.cyan : "#36526d")
+        border.color: root.active ? "#c05dff" : (root.hovered ? "#50c8ff" : "#3e6482")
+
+        Rectangle {
+            anchors.fill: parent
+            anchors.margins: 1
+            radius: Math.max(0, parent.radius - 1)
+            color: "transparent"
+            gradient: Gradient {
+                orientation: Gradient.Horizontal
+                GradientStop { position: 0.00; color: root.active ? "#59206b" : "#18243b" }
+                GradientStop { position: 0.50; color: "#071321" }
+                GradientStop { position: 1.00; color: root.active ? "#102a4a" : "#0b2435" }
+            }
+            opacity: root.active ? 0.31 : 0.17
+        }
+
         Rectangle {
             visible: root.active
             width: 6
@@ -25,9 +41,25 @@ Button {
             anchors.bottom: parent.bottom
             radius: 3
             gradient: Gradient {
-                GradientStop { position: 0.0; color: Theme.purple }
+                GradientStop { position: 0.0; color: "#c861ff" }
+                GradientStop { position: 0.48; color: Theme.purple }
                 GradientStop { position: 1.0; color: Theme.cyan }
             }
+        }
+
+        Rectangle {
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.leftMargin: 8
+            anchors.rightMargin: 8
+            height: 1
+            gradient: Gradient {
+                orientation: Gradient.Horizontal
+                GradientStop { position: 0.00; color: root.active ? "#b86dff" : "#537cab" }
+                GradientStop { position: 1.00; color: root.active ? "#4ecbff" : "#2e7194" }
+            }
+            opacity: root.active ? 0.68 : 0.32
         }
     }
 
@@ -41,7 +73,7 @@ Button {
             Text {
                 width: 48
                 text: root.glyph
-                color: root.active ? "#d27cff" : "#6d9cff"
+                color: root.active ? "#d885ff" : "#74a5ff"
                 font.family: "Segoe UI Symbol"
                 font.pixelSize: 39
                 horizontalAlignment: Text.AlignHCenter
@@ -81,7 +113,7 @@ Button {
             Text {
                 width: parent.width
                 text: root.glyph
-                color: root.active ? "#d27cff" : "#6d9cff"
+                color: root.active ? "#d885ff" : "#74a5ff"
                 font.family: "Segoe UI Symbol"
                 font.pixelSize: 34
                 horizontalAlignment: Text.AlignHCenter
