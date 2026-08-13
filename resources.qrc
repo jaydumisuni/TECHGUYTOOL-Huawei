@@ -24,5 +24,6 @@
     <file alias="assets/brand/techguy_logo.svg">assets/brand/techguy_logo.svg</file>
     <file alias="assets/brand/techguy_mascot.svg">assets/brand/techguy_mascot.svg</file>
     <file alias="assets/brand/techguy_mascot.png">assets/brand/techguy_mascot.png</file>
+    <file alias="assets/brand/techguy_mascot_masked.svg">assets/brand/techguy_mascot_masked.svg</file>
   </qresource>
 </RCC>
