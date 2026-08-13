@@ -20,13 +20,30 @@ The following visually approved copies were recovered from the project image lib
 | Order | Recovered comparison source | Recovered SHA-256 |
 |---|---|---|
 | 01 | `Premium firmware flash dashboard.png` | `69f972177a92ae1b8340fa186285dc910e71a5b7e362abd7184e566df4e53414` |
-| 02 | `TECHGUY Tool with settings popover.png` | `797ef618f677eb1bc8da4a8f1fa40496506569d5979707aab8a84368bc427ba2` |
-| 03 | `Glass Huawei service tool about modal.png` | `184842a1a3761fc32103a9ee9afef5eb5ec0f77d4890ed96eb9d623b8aa2eeda` |
-| 04 | `Huawei tool driver repair modal.png` | `82771a58961931199a5635011413b3f133b093d518b943671141110bf4d1f5d8` |
-| 05 | `TECHGUY TOOL device registration modal.png` | `904deca0945dabf4f1024b33bcb1a70f9dd512e622c072eb84acf7d93b92c884` |
-| 06 | `Huawei service center with fastboot terminal popup.png` | `06515c36d36aa871c3bc00f53e84a5a9cde9ac8b6f6416fcab072c6a1d7cb7ce` |
+| 02 | `TECHGUY Tool with settings popover.png` | `797ef6189f0f9174a025fa908d7438d376a38a491d4aff305c1614776f52f397` |
+| 03 | `Glass Huawei service tool about modal.png` | `184842a198f830958f6338329597386a24066ea8474c39ed58cd2831a2b8164a` |
+| 04 | `Huawei tool driver repair modal.png` | `82771a58d3d2478fd3355cd7b61dce67fa41b26ef27149f3e07598a1aa2a22e0` |
+| 05 | `TECHGUY TOOL device registration modal.png` | `904deca0183ab85d8e56481b9a3e18f2122686881fe7dff05d0a8c18e40b773d` |
+| 06 | `Huawei service center with fastboot terminal popup.png` | `06515c366fc888f7aba39c3442cbf4fae7f08d3debf48aa54f69d3347373d47d` |
 
 The recovered copies may be used to review layout, spacing, mascot placement, glass treatment, dialog placement, typography and overall visual drift. A future exact-byte recovery may place the original PNGs beside this README only if their SHA-256 values match the locked table above.
+
+An exhaustive reachable-Git-history recovery was attempted by workflow run `31716641474` and proved that none of the six locked original PNG byte hashes exist in reachable repository history. That result must not be converted into a fabricated exact recovery. The full-resolution project-library copies above remain the comparison evidence used for the final visual closeout.
+
+## Final closeout comparison
+
+The current six-state capture from workflow run `31680661359`, artifact `9173343306`, was compared directly with the six full-resolution recovered copies above. The captured UI source revision was `e2f2f0cf65c2d2115d7adf80263058a1f09aed6c`. The next branch commit changed only the one-shot reference-recovery workflow, so no QML or artwork changed between that capture and the comparison-proven UI source.
+
+| State | Pixel similarity | Coarse similarity | Edge similarity |
+|---|---:|---:|---:|
+| Firmware Flash | 0.8975 | 0.9204 | 0.8610 |
+| Settings | 0.9008 | 0.9234 | 0.8499 |
+| About | 0.9037 | 0.9185 | 0.8982 |
+| Fix Drivers | 0.9012 | 0.9171 | 0.8880 |
+| Register Device | 0.9084 | 0.9233 | 0.8926 |
+| Terminal | 0.9024 | 0.9240 | 0.8497 |
+
+All six states exceed the closeout gross-drift floor of 0.70 for both coarse and edge similarity. This is visual-comparison evidence, not a claim that the recovered copies are byte-identical to the locked originals.
 
 ## Contract
 
