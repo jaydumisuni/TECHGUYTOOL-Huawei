@@ -1,0 +1,9 @@
+{
+  "schema": "techguytool-huawei.phase15-ui-closeout-receipt.v1",
+  "phase": 15,
+  "status": "PENDING",
+  "frozen_source_revision": "a5109f643b90ae14b8c9d407622f7039c36edad0",
+  "visual_qa_run_id": 31743527935,
+  "visual_qa_status": "PASS",
+  "proof_trigger": "final-approved-ui-proof-20260813-a5109f64"
+}
