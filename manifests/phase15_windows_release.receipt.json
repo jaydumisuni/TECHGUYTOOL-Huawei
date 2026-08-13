@@ -1,60 +1,55 @@
 {
-  "artifact_id": 9190181420,
-  "artifact_name": "TECHGUYTOOL-Huawei-phase15-windows-candidate",
-  "authority_request": {
-    "artifact_id": 9190181420,
-    "artifact_name": "TECHGUYTOOL-Huawei-phase15-windows-candidate",
-    "executable_sha256": "2bc7fdf18e5ccf9797daba7284d812ec64cd0a053ad34b8fa50010e09ff70cf0",
-    "proof_run_id": 31722069288,
-    "tested_revision": "a2ddd311cd702ce86f52c6e171b44f735ae76bba",
-    "windows_run_id": 31722069119
-  },
-  "ci_test_signing": "PASS",
-  "executable_sha256": "2bc7fdf18e5ccf9797daba7284d812ec64cd0a053ad34b8fa50010e09ff70cf0",
-  "generated_at": "2026-08-13T17:00:33Z",
-  "hosted_proof": {
-    "repository": "jaydumisuni/TECHGUYTOOL-Huawei",
-    "run_id": 31722069288,
-    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/31722069288",
-    "tested_revision": "a2ddd311cd702ce86f52c6e171b44f735ae76bba",
-    "workflow": "Software Phase Proof"
-  },
-  "owner_verification": {
-    "authority_commit": "ab094d61f66b48934566d69a2bd146d3ef85fd82",
-    "source_proof_run_id": 31722069288,
-    "source_revision": "a2ddd311cd702ce86f52c6e171b44f735ae76bba",
-    "status": "CONFIRMED"
-  },
+  "schema": "techguytool-huawei.phase15-receipt.v1",
   "phase": 15,
   "phase_name": "Phase 15 Windows Packaging and Certification",
+  "status": "UNFROZEN",
+  "release_filename": "TECHGUYTOOL_Huawei.exe",
+  "windows_ci": "PENDING",
+  "ci_test_signing": "PENDING",
   "physical_proof_matrix": "INCOMPLETE",
-  "predecessor_merge": "127c80b54e9891626c94d7787777913ca85464f9",
   "production_enabled": false,
   "production_release_status": "EXTERNAL_CERTIFICATION_PENDING",
   "production_signing": "EXTERNAL_CERTIFICATE_REQUIRED",
+  "predecessor_merge": "127c80b54e9891626c94d7787777913ca85464f9",
+  "authority_request": {
+    "request_id": "phase15-final-approved-ui-freeze-20260813",
+    "reason": "Freeze and re-prove the final approved Huawei UI source after visual closeout.",
+    "source_revision": "163b1711f32cac4cd6875dd022e65ea675e39213",
+    "visual_authority": {
+      "states": [
+        "firmware_flash",
+        "settings",
+        "about",
+        "fix_drivers",
+        "register_device",
+        "terminal"
+      ],
+      "windows_visual_qa_run_id": 31743527935,
+      "status": "PASS"
+    }
+  },
+  "prior_frozen_authority": {
+    "status": "FROZEN",
+    "tested_revision": "a2ddd311cd702ce86f52c6e171b44f735ae76bba",
+    "source_inventory_sha256": "b1fa64f0f37f7bd90f212b10743091a9136010af0748025d8a8cf914ed4b870c",
+    "software_proof_run_id": 31722069288,
+    "windows_run_id": 31722069119,
+    "artifact_id": 9190181420,
+    "artifact_name": "TECHGUYTOOL-Huawei-phase15-windows-candidate",
+    "executable_sha256": "2bc7fdf18e5ccf9797daba7284d812ec64cd0a053ad34b8fa50010e09ff70cf0",
+    "ci_test_signing": "PASS"
+  },
   "proof": {
-    "active_phase_proof": "PASS",
-    "complete_python_regression": "PASS",
-    "contract_core_regression": "PASS",
-    "device_gateway_regression": "PASS",
-    "rust_clippy": "PASS",
-    "rust_format": "PASS",
-    "rust_tests": "PASS",
-    "source_freeze_verifier": "PASS",
-    "srg_20_for_2": "40/40 PASS"
+    "active_phase_proof": "PENDING",
+    "complete_python_regression": "PENDING",
+    "contract_core_regression": "PENDING",
+    "device_gateway_regression": "PENDING",
+    "rust_clippy": "PENDING",
+    "rust_format": "PENDING",
+    "rust_tests": "PENDING",
+    "source_freeze_verifier": "PENDING",
+    "srg_20_for_2": "PENDING"
   },
-  "proof_trigger": "final-phase15-authority",
-  "release_filename": "TECHGUYTOOL_Huawei.exe",
-  "schema": "techguytool-huawei.phase15-receipt.v1",
-  "software_proof_run_id": 31722069288,
-  "source_inventory": {
-    "path": "manifests/source_inventory.json",
-    "sha256": "b1fa64f0f37f7bd90f212b10743091a9136010af0748025d8a8cf914ed4b870c"
-  },
-  "source_inventory_sha256": "b1fa64f0f37f7bd90f212b10743091a9136010af0748025d8a8cf914ed4b870c",
-  "status": "FROZEN",
-  "tested_revision": "a2ddd311cd702ce86f52c6e171b44f735ae76bba",
-  "truth_boundary": "This receipt proves only the software authority described by the active phase. Physical-device certification, external proprietary artifacts, Windows production signing and hardware-specific destructive operations remain outside software-only proof unless the phase plan explicitly records independent physical evidence.",
-  "windows_ci": "PASS",
-  "windows_run_id": 31722069119
+  "proof_trigger": "phase15-final-approved-ui-freeze-request-20260813",
+  "truth_boundary": "This receipt proves only the software authority described by the active phase. Physical-device certification, external proprietary artifacts, Windows production signing and hardware-specific destructive operations remain outside software-only proof unless the phase plan explicitly records independent physical evidence."
 }
