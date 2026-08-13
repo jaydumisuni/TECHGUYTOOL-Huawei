@@ -23,7 +23,7 @@
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 214,
+  "file_count": 215,
   "files": [
     {
       "origin": "phase15_windows_release",
@@ -150,6 +150,12 @@
       "path": "assets/brand/techguy_mascot.png",
       "sha256": "d3f0cf6e3c1b645f6659a9dd0d14a6a00469acfbae89496f16aedbde906fe955",
       "size_bytes": 2035220
+    },
+    {
+      "origin": "phase15_windows_release",
+      "path": "assets/brand/techguy_mascot.svg",
+      "sha256": "219e9470430e60a5f4748651679f2eca0bd1ae8b108333ff97f4b41167008344",
+      "size_bytes": 153
     },
     {
       "origin": "phase15_windows_release",
@@ -484,7 +490,7 @@
     {
       "origin": "phase15_windows_release",
       "path": "qml/dialogs/AboutDialog.qml",
-      "sha256": "cc68ccfca49d5da5ee9f0698dfcab37de6fed439efbf21394ad248c9f2f1cd36",
+      "sha256": "db174baf116a370b623795ce2817149db8fac0dce57f9936bd6e4bd08594ec74",
       "size_bytes": 2341
     },
     {
@@ -592,8 +598,8 @@
     {
       "origin": "phase15_windows_release",
       "path": "resources.qrc",
-      "sha256": "0665550b3494907efdff76a57f17653fe7b8de5a50f59c87af605b9ba6c302c0",
-      "size_bytes": 1950
+      "sha256": "8bb6268b0d1102e0d8305b294080e764e771b9cd17b876113e2b23b71eb0d9d0",
+      "size_bytes": 2039
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
