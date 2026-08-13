@@ -53,6 +53,6 @@ jobs:
           set -euo pipefail
           git config user.name 'THE TECH GUY'
           git config user.email '65334711+jaydumisuni@users.noreply.github.com'
-          git add qml/Main.qml resources.qrc assets/brand/techguy_logo.svg assets/brand/techguy_logo.png .github/workflows/ui-header-logo-restore.yml
+          git add -A
           git commit -m 'Restore approved Huawei header ghost routing'
           git push origin HEAD:phase15/final-ui-closeout
