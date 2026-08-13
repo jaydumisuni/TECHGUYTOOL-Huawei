@@ -33,7 +33,10 @@ jobs:
           root = Path('.')
           authority = root / 'resources' / 'expected ui' / 'README.md'
           text = authority.read_text(encoding='utf-8')
-          hashes = re.findall(r'\b[a-fA-F0-9]{64}\b', text)
+          # Only the locked-original authority table defines recoverable source blobs.
+          # Recovered comparison-copy hashes below this heading are evidence only.
+          original_section = text.split('## Recovered comparison copies', 1)[0]
+          hashes = re.findall(r'\b[a-fA-F0-9]{64}\b', original_section)
           names = [
               '01-firmware-flash.png',
               '02-settings.png',
@@ -43,7 +46,7 @@ jobs:
               '06-terminal.png',
           ]
           if len(hashes) != 6 or len(set(h.lower() for h in hashes)) != 6:
-              raise SystemExit(f'Expected exactly six unique visual-authority SHA-256 values, found {len(hashes)}')
+              raise SystemExit(f'Expected exactly six unique locked visual-authority SHA-256 values, found {len(hashes)}')
           wanted = {h.lower(): name for h, name in zip(hashes, names)}
           found = {}
 
