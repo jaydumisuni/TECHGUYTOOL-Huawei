@@ -6,6 +6,7 @@ import "../components"
 
 Dialog {
     id: root
+    objectName: "driverDialog"
     width: 520
     height: 440
     modal: true

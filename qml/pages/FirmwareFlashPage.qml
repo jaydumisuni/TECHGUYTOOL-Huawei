@@ -17,7 +17,7 @@ GlassPanel {
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 18
-        spacing: 11
+        spacing: 8
         RowLayout {
             Layout.fillWidth: true
             Text {
@@ -137,6 +137,8 @@ GlassPanel {
         RowLayout {
             Layout.fillWidth: true
             Layout.preferredHeight: 61
+            Layout.minimumHeight: 61
+            Layout.maximumHeight: 61
             spacing: 0
             Repeater {
                 model: ["MODEL", "BUILD", "VENDOR / COUNTRY", "ANDROID VERSION"]
@@ -171,6 +173,8 @@ GlassPanel {
         RowLayout {
             Layout.fillWidth: true
             Layout.preferredHeight: 150
+            Layout.minimumHeight: 150
+            Layout.maximumHeight: 150
             spacing: 10
             Repeater {
                 model: [
@@ -183,6 +187,7 @@ GlassPanel {
                 OperationTile {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    vertical: true
                     text: modelData.title
                     glyph: modelData.glyph
                     subtitle: modelData.sub
@@ -192,7 +197,9 @@ GlassPanel {
         }
         RowLayout {
             Layout.fillWidth: true
-            Layout.fillHeight: true
+            Layout.preferredHeight: 178
+            Layout.minimumHeight: 178
+            Layout.maximumHeight: 178
             spacing: 14
             GlassPanel {
                 Layout.fillWidth: true
@@ -230,6 +237,8 @@ GlassPanel {
         GlowButton {
             Layout.fillWidth: true
             Layout.preferredHeight: 52
+            Layout.minimumHeight: 52
+            Layout.maximumHeight: 52
             text: "LOAD FIRMWARE PACKAGE"
             onClicked: backend.runAction("flash_firmware")
         }

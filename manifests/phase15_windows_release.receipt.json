@@ -1,28 +1,28 @@
 {
-  "artifact_id": 9091601187,
+  "artifact_id": 9190181420,
   "artifact_name": "TECHGUYTOOL-Huawei-phase15-windows-candidate",
   "authority_request": {
-    "artifact_id": 9091601187,
+    "artifact_id": 9190181420,
     "artifact_name": "TECHGUYTOOL-Huawei-phase15-windows-candidate",
-    "executable_sha256": "c1d52ce181d44d8cbfa193ad4f7bf4aaa6bc0534e487551d821dddbdb19e550e",
-    "proof_run_id": 31465297386,
-    "tested_revision": "9c3ac899c1c1afbf5e6d1c9d272727111a5f0874",
-    "windows_run_id": 31465297419
+    "executable_sha256": "2bc7fdf18e5ccf9797daba7284d812ec64cd0a053ad34b8fa50010e09ff70cf0",
+    "proof_run_id": 31722069288,
+    "tested_revision": "a2ddd311cd702ce86f52c6e171b44f735ae76bba",
+    "windows_run_id": 31722069119
   },
   "ci_test_signing": "PASS",
-  "executable_sha256": "c1d52ce181d44d8cbfa193ad4f7bf4aaa6bc0534e487551d821dddbdb19e550e",
-  "generated_at": "2026-08-11T06:47:34Z",
+  "executable_sha256": "2bc7fdf18e5ccf9797daba7284d812ec64cd0a053ad34b8fa50010e09ff70cf0",
+  "generated_at": "2026-08-13T17:00:33Z",
   "hosted_proof": {
     "repository": "jaydumisuni/TECHGUYTOOL-Huawei",
-    "run_id": 31465297386,
-    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/31465297386",
-    "tested_revision": "9c3ac899c1c1afbf5e6d1c9d272727111a5f0874",
+    "run_id": 31722069288,
+    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/31722069288",
+    "tested_revision": "a2ddd311cd702ce86f52c6e171b44f735ae76bba",
     "workflow": "Software Phase Proof"
   },
   "owner_verification": {
-    "authority_commit": "d6ebdbbc3a96aef36508b5f14200fa3eaa6f34f3",
-    "source_proof_run_id": 31465297386,
-    "source_revision": "9c3ac899c1c1afbf5e6d1c9d272727111a5f0874",
+    "authority_commit": "ab094d61f66b48934566d69a2bd146d3ef85fd82",
+    "source_proof_run_id": 31722069288,
+    "source_revision": "a2ddd311cd702ce86f52c6e171b44f735ae76bba",
     "status": "CONFIRMED"
   },
   "phase": 15,
@@ -46,15 +46,15 @@
   "proof_trigger": "final-phase15-authority",
   "release_filename": "TECHGUYTOOL_Huawei.exe",
   "schema": "techguytool-huawei.phase15-receipt.v1",
-  "software_proof_run_id": 31465297386,
+  "software_proof_run_id": 31722069288,
   "source_inventory": {
     "path": "manifests/source_inventory.json",
-    "sha256": "4bfc24d6bc3b422f91c8d4511aaf7d75f8f3081e63d80e2d1469544b82d490e6"
+    "sha256": "b1fa64f0f37f7bd90f212b10743091a9136010af0748025d8a8cf914ed4b870c"
   },
-  "source_inventory_sha256": "4bfc24d6bc3b422f91c8d4511aaf7d75f8f3081e63d80e2d1469544b82d490e6",
+  "source_inventory_sha256": "b1fa64f0f37f7bd90f212b10743091a9136010af0748025d8a8cf914ed4b870c",
   "status": "FROZEN",
-  "tested_revision": "9c3ac899c1c1afbf5e6d1c9d272727111a5f0874",
+  "tested_revision": "a2ddd311cd702ce86f52c6e171b44f735ae76bba",
   "truth_boundary": "This receipt proves only the software authority described by the active phase. Physical-device certification, external proprietary artifacts, Windows production signing and hardware-specific destructive operations remain outside software-only proof unless the phase plan explicitly records independent physical evidence.",
   "windows_ci": "PASS",
-  "windows_run_id": 31465297419
+  "windows_run_id": 31722069119
 }

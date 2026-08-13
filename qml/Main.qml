@@ -60,21 +60,40 @@ ApplicationWindow {
 
         Canvas {
             anchors.fill: parent
-            opacity: 0.48
+            opacity: 0.84
             onPaint: {
                 var ctx = getContext("2d")
                 ctx.clearRect(0, 0, width, height)
                 var g1 = ctx.createRadialGradient(width * 0.55, height * 0.06, 20, width * 0.55, height * 0.06, width * 0.38)
-                g1.addColorStop(0, "rgba(160,65,255,0.28)")
+                g1.addColorStop(0, "rgba(172,58,255,0.58)")
                 g1.addColorStop(1, "rgba(0,0,0,0)")
                 ctx.fillStyle = g1; ctx.fillRect(0, 0, width, height)
                 var g2 = ctx.createRadialGradient(width * 0.98, height * 0.35, 5, width * 0.98, height * 0.35, width * 0.31)
-                g2.addColorStop(0, "rgba(0,164,255,0.28)")
+                g2.addColorStop(0, "rgba(0,177,255,0.50)")
                 g2.addColorStop(1, "rgba(0,0,0,0)")
                 ctx.fillStyle = g2; ctx.fillRect(0, 0, width, height)
-                ctx.strokeStyle = "rgba(126,62,255,0.16)"
-                ctx.lineWidth = 18
+                ctx.strokeStyle = "rgba(165,70,255,0.43)"
+                ctx.lineWidth = 28
                 ctx.beginPath(); ctx.moveTo(width * 0.67, -40); ctx.bezierCurveTo(width * 0.77, height * 0.20, width * 0.69, height * 0.55, width * 0.83, height + 30); ctx.stroke()
+            }
+        }
+
+        Canvas {
+            anchors.fill: parent
+            opacity: 0.82
+            onPaint: {
+                var ctx = getContext("2d")
+                ctx.clearRect(0, 0, width, height)
+                var bottomGlow = ctx.createRadialGradient(width * 0.58, height * 0.94, 10, width * 0.58, height * 0.94, width * 0.34)
+                bottomGlow.addColorStop(0, "rgba(0,139,255,0.31)")
+                bottomGlow.addColorStop(1, "rgba(0,0,0,0)")
+                ctx.fillStyle = bottomGlow; ctx.fillRect(0, 0, width, height)
+                ctx.strokeStyle = "rgba(202,62,255,0.32)"
+                ctx.lineWidth = 7
+                ctx.beginPath(); ctx.moveTo(width * 0.74, -70); ctx.bezierCurveTo(width * 0.80, height * 0.24, width * 0.73, height * 0.56, width * 0.87, height + 70); ctx.stroke()
+                ctx.strokeStyle = "rgba(75,168,255,0.23)"
+                ctx.lineWidth = 10
+                ctx.beginPath(); ctx.moveTo(width * 0.50, height + 40); ctx.bezierCurveTo(width * 0.58, height * 0.72, width * 0.61, height * 0.42, width * 0.66, -50); ctx.stroke()
             }
         }
 
@@ -169,10 +188,10 @@ ApplicationWindow {
                         NavItem { Layout.fillWidth: true; text: "Operation History"; glyph: "◴"; selected: app.pageIndex === 5; onSelectedClicked: { app.pageIndex = 5; app.pageTitle = text } }
                         Item { Layout.fillHeight: true }
                         Image {
-                            source: "../assets/brand/techguy_mascot.svg"
+                            source: "../assets/brand/techguy_mascot.png"
                             fillMode: Image.PreserveAspectFit
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 360
+                            Layout.preferredHeight: 410
                         }
                     }
                 }
@@ -181,7 +200,7 @@ ApplicationWindow {
                     id: pageLoader
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    sourceComponent: app.pageIndex === 0 ? serviceComponent : app.pageIndex === 2 ? firmwareComponent : placeholderComponent
+                    sourceComponent: app.pageIndex === 0 ? serviceComponent : app.pageIndex === 1 ? deviceInformationComponent : app.pageIndex === 2 ? firmwareComponent : app.pageIndex === 3 ? partitionManagerComponent : app.pageIndex === 4 ? backupRestoreComponent : operationHistoryComponent
                 }
 
                 GlassPanel {
@@ -250,7 +269,7 @@ ApplicationWindow {
                     Text { text: Qt.formatTime(new Date(), "hh:mm:ss AP"); color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
                     Rectangle { width: 1; height: 25; color: "#435469" }
                     Text { text: "▣"; color: Theme.text; font.pixelSize: 18 }
-                    Text { text: "Windows / macOS / Linux source"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
+                    Text { text: "Windows 11 Pro 23H2 (64-bit)"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
                     Rectangle { width: 1; height: 25; color: "#435469" }
                     Text { text: "♢"; color: Theme.text; font.pixelSize: 20 }
                     Text { text: backend.registered ? "Registered" : "Administrator"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
@@ -260,8 +279,11 @@ ApplicationWindow {
     }
 
     Component { id: serviceComponent; ServiceCenterPage {} }
+    Component { id: deviceInformationComponent; DeviceInformationPage {} }
     Component { id: firmwareComponent; FirmwareFlashPage {} }
-    Component { id: placeholderComponent; PlaceholderPage { title: app.pageTitle.toUpperCase(); message: "The interface is present and wired to the shared evidence and action-health core. Device-specific write engines remain guarded until their proof contracts are implemented." } }
+    Component { id: partitionManagerComponent; PartitionManagerPage {} }
+    Component { id: backupRestoreComponent; BackupRestorePage {} }
+    Component { id: operationHistoryComponent; OperationHistoryPage {} }
 
     SettingsMenu {
         id: settingsMenu

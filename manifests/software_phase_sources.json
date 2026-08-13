@@ -73,7 +73,10 @@
   ],
   "phase15_windows_release": [
     ".gitattributes",
+    ".github/workflows/final-ui-visual-qa.yml",
     ".github/workflows/phase15-windows-release.yml",
+    "assets/brand/techguy_logo.svg",
+    "assets/brand/techguy_mascot.svg",
     "build_windows.ps1",
     "docs/PHASE_15_WINDOWS_PACKAGING_CERTIFICATION.md",
     "manifests/active_software_phase.json",
@@ -81,8 +84,22 @@
     "manifests/phase15_windows_release.receipt.json",
     "manifests/phase15_windows_release_policy.json",
     "manifests/software_phase_sources.json",
+    "qml/Main.qml",
+    "qml/components/GlassPanel.qml",
+    "qml/dialogs/AboutDialog.qml",
+    "qml/dialogs/DriverDialog.qml",
+    "qml/dialogs/RegisterDialog.qml",
+    "qml/dialogs/SettingsMenu.qml",
+    "qml/dialogs/TerminalDialog.qml",
+    "qml/pages/BackupRestorePage.qml",
+    "qml/pages/DeviceInformationPage.qml",
+    "qml/pages/OperationHistoryPage.qml",
+    "qml/pages/PartitionManagerPage.qml",
+    "resources.qrc",
     "techguy_huawei/windows_release.py",
+    "tests/test_ui_closeout.py",
     "tests/test_windows_release.py",
+    "tools/capture_ui_states.py",
     "tools/prove_phase15_windows_release.py"
   ]
 }
