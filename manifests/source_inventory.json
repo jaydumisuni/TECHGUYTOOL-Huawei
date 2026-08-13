@@ -23,7 +23,7 @@
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 215,
+  "file_count": 216,
   "files": [
     {
       "origin": "phase15_windows_release",
@@ -126,6 +126,12 @@
       "path": ".gitignore",
       "sha256": "af4713adc70dc7a63afa21886be10b9fa8f6677104af90b80c27c93d7033e227",
       "size_bytes": 605
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "AGENTS.md",
+      "sha256": "803e5af29091ec9ad890a53a9ec3bfc2b68ceeafd362d03616920a4bce1f7586",
+      "size_bytes": 1395
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -604,8 +610,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "resources/expected ui/README.md",
-      "sha256": "e4aad387dc9344fe9b650859cc933681fe45fc80ebe05ee26401a43e306ad7c9",
-      "size_bytes": 4715
+      "sha256": "6bc1c3237d28a948fa094c8a8b6d47da182256bbf207caf48c79c9b5b641a49c",
+      "size_bytes": 4988
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
