@@ -118,7 +118,7 @@ ApplicationWindow {
                     anchors.rightMargin: 18
                     spacing: 12
                     Image {
-                        source: "../assets/brand/techguy_logo.png"
+                        source: "../assets/brand/techguy_logo.svg"
                         fillMode: Image.PreserveAspectFit
                         Layout.preferredWidth: 105
                         Layout.preferredHeight: 86

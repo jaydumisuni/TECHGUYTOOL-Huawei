@@ -21,7 +21,7 @@
     <file alias="qml/pages/BackupRestorePage.qml">qml/pages/BackupRestorePage.qml</file>
     <file alias="qml/pages/OperationHistoryPage.qml">qml/pages/OperationHistoryPage.qml</file>
     <file alias="qml/qmldir">qml/qmldir</file>
-    <file alias="assets/brand/techguy_logo.png">assets/brand/techguy_logo.png</file>
+    <file alias="assets/brand/techguy_logo.svg">assets/brand/techguy_logo.svg</file>
     <file alias="assets/brand/techguy_mascot.png">assets/brand/techguy_mascot.png</file>
   </qresource>
 </RCC>
