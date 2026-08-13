@@ -6,6 +6,7 @@ Rectangle {
     property color panelColor: Theme.panel
     property color borderColor: Theme.borderSoft
     property real panelOpacity: 0.70
+    property bool approvedMascotPanel: root.width >= 290 && root.width <= 330 && root.height > 600
     radius: 12
     color: Qt.rgba(panelColor.r, panelColor.g, panelColor.b, panelOpacity)
     border.width: 1
@@ -82,5 +83,22 @@ Rectangle {
             GradientStop { position: 1.00; color: "#2ed0ff" }
         }
         opacity: 0.42
+    }
+
+    // The full approved hooded mascot belongs only to the tall 310 px navigation panel.
+    Image {
+        visible: root.approvedMascotPanel
+        source: "../../assets/brand/techguy_mascot_masked.svg"
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.leftMargin: 12
+        anchors.rightMargin: 12
+        anchors.bottomMargin: 10
+        height: 330
+        fillMode: Image.PreserveAspectFit
+        smooth: true
+        cache: true
+        z: 20
     }
 }
