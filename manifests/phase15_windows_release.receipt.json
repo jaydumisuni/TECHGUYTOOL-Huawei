@@ -11,7 +11,7 @@
   },
   "ci_test_signing": "PASS",
   "executable_sha256": "2bc7fdf18e5ccf9797daba7284d812ec64cd0a053ad34b8fa50010e09ff70cf0",
-  "generated_at": "2026-08-13T16:57:07Z",
+  "generated_at": "2026-08-13T17:00:33Z",
   "hosted_proof": {
     "repository": "jaydumisuni/TECHGUYTOOL-Huawei",
     "run_id": 31722069288,
@@ -20,10 +20,10 @@
     "workflow": "Software Phase Proof"
   },
   "owner_verification": {
-    "authority_commit": "PENDING",
+    "authority_commit": "ab094d61f66b48934566d69a2bd146d3ef85fd82",
     "source_proof_run_id": 31722069288,
     "source_revision": "a2ddd311cd702ce86f52c6e171b44f735ae76bba",
-    "status": "PENDING"
+    "status": "CONFIRMED"
   },
   "phase": 15,
   "phase_name": "Phase 15 Windows Packaging and Certification",
@@ -49,10 +49,10 @@
   "software_proof_run_id": 31722069288,
   "source_inventory": {
     "path": "manifests/source_inventory.json",
-    "sha256": "PENDING_AUTHORITY_FREEZER"
+    "sha256": "b1fa64f0f37f7bd90f212b10743091a9136010af0748025d8a8cf914ed4b870c"
   },
-  "source_inventory_sha256": "PENDING_AUTHORITY_FREEZER",
-  "status": "PROVEN_PENDING_OWNER",
+  "source_inventory_sha256": "b1fa64f0f37f7bd90f212b10743091a9136010af0748025d8a8cf914ed4b870c",
+  "status": "FROZEN",
   "tested_revision": "a2ddd311cd702ce86f52c6e171b44f735ae76bba",
   "truth_boundary": "This receipt proves only the software authority described by the active phase. Physical-device certification, external proprietary artifacts, Windows production signing and hardware-specific destructive operations remain outside software-only proof unless the phase plan explicitly records independent physical evidence.",
   "windows_ci": "PASS",
