@@ -46,3 +46,18 @@ def test_main_navigation_routes_all_six_pages_directly() -> None:
         "OperationHistoryPage",
     ):
         assert component in main
+
+
+def test_approved_sidebar_mascot_is_text_safe_and_packaged() -> None:
+    mascot = ROOT / "assets" / "brand" / "techguy_mascot_masked.svg"
+    qrc = (ROOT / "resources.qrc").read_text(encoding="utf-8")
+    glass = (ROOT / "qml" / "components" / "GlassPanel.qml").read_text(encoding="utf-8")
+
+    assert mascot.is_file()
+    source = mascot.read_text(encoding="utf-8")
+    assert source.startswith("<svg")
+    assert "clipPath" in source
+    assert "data:image/jpeg;base64," in source
+    assert "assets/brand/techguy_mascot_masked.svg" in qrc
+    assert "techguy_mascot_masked.svg" in glass
+    assert "approvedMascotPanel" in glass
