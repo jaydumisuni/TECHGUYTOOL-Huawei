@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="104" viewBox="0 0 120 104">
+  <defs>
+    <linearGradient id="neon" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d13cff"/>
+      <stop offset="0.52" stop-color="#695dff"/>
+      <stop offset="1" stop-color="#24c9ff"/>
+    </linearGradient>
+    <radialGradient id="fill" cx="55%" cy="38%" r="70%">
+      <stop offset="0" stop-color="#11162b"/>
+      <stop offset="1" stop-color="#030711"/>
+    </radialGradient>
+  </defs>
+  <path d="M26 89 C15 94 9 86 14 76 C8 68 13 57 21 54 C15 37 25 14 46 8 C71 1 95 18 95 45 L95 83 C95 94 84 99 76 91 C69 101 58 99 53 91 C44 101 33 99 30 90 Z"
+        fill="url(#fill)" stroke="url(#neon)" stroke-width="3.4" stroke-linejoin="round"/>
+  <path d="M46 9 C31 15 26 29 27 46" fill="none" stroke="#f04dff" stroke-width="2.2" opacity="0.9"/>
+  <path d="M75 13 C88 21 94 33 94 48" fill="none" stroke="#36c9ff" stroke-width="2.2" opacity="0.9"/>
+  <g fill="none" stroke="#dcecff" stroke-width="2.3">
+    <rect x="39" y="38" width="24" height="16" rx="6"/>
+    <rect x="68" y="38" width="24" height="16" rx="6"/>
+    <path d="M63 44 H68 M35 42 L40 44 M92 43 L98 40"/>
+  </g>
+  <path d="M43 84 C48 89 54 89 59 83 C64 91 71 91 76 84" fill="none" stroke="#4dcaff" stroke-width="1.5" opacity="0.75"/>
+</svg>
