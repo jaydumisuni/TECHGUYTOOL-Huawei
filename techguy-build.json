@@ -17,7 +17,11 @@
       "script": "build_windows.ps1",
       "workingDirectory": ".",
       "args": [],
-      "artifact": "dist/TECHGUYTOOL_Huawei.exe"
+      "artifact": "dist/TECHGUYTOOL_Huawei.exe",
+      "toolchains": {
+        "python": "3.11",
+        "rust": "1.75.0"
+      }
     }
   },
   "runtimeSmoke": {
