@@ -1,0 +1,36 @@
+name: One-shot Huawei Roadmap Source Freezer
+
+on:
+  push:
+    branches:
+      - docs/current-execution-roadmap
+
+permissions:
+  contents: write
+
+jobs:
+  freeze:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: docs/current-execution-roadmap
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Remove one-shot workflow and regenerate inventory
+        shell: bash
+        run: |
+          rm -f .github/workflows/roadmap-source-freezer.yml
+          python tools/build_source_inventory.py
+      - name: Commit final authority
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Refreeze Huawei roadmap source inventory"
+          git push origin HEAD:docs/current-execution-roadmap
