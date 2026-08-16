@@ -13,6 +13,8 @@
   "targetAdapters": {
     "windows-exe": {
       "kind": "project-script",
+      "rootKind": "python-qt",
+      "rootPath": ".",
       "runner": "powershell",
       "script": "build_windows.ps1",
       "workingDirectory": ".",
