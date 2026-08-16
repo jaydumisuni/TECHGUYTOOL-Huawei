@@ -4,106 +4,146 @@ Huawei service and recovery engineering project for **THETECHGUY DIGITAL SOLUTIO
 
 ## Start here
 
-Read **[FULL_PLAN.md](FULL_PLAN.md)** before changing architecture, routes, Xray boundaries, repair recipes, executors, packaging, or proof requirements.
+Read these in order before changing the project:
 
-The repository contains the frozen Qt/QML host checkpoint, public/private artifact authority, deterministic shared Python/Rust contracts, and the persistent device-inert TTG Device Gateway. The historical Huawei Revive archive remains private recovery evidence because it contains device identifiers, operation logs, firmware-derived binaries, loaders, recovery images, and mixed read/write authority that must be decomposed before production use.
+1. **[ROADMAP.md](ROADMAP.md)** — current state, next milestone, ATHENA/Builder/Oracle execution route and new-chat pickup rules.
+2. **[FULL_PLAN.md](FULL_PLAN.md)** — frozen architecture, invariants, authority boundaries, donor lineage, repair theorem and Phase 1–15 design.
+3. **[AGENTS.md](AGENTS.md)** — workspace containment/shared-tools rules.
+4. **[manifests/phase15_ui_closeout.receipt.json](manifests/phase15_ui_closeout.receipt.json)** — final software/UI proof authority.
+5. **[resources/expected ui/README.md](resources/expected%20ui/README.md)** — approved visual contract.
 
-## Completed phases
+Chat history is context only. Repository evidence governs implementation.
 
-### Phase 1 — Source freeze and external-artifact authority
+## Current status
 
-- exact source and GitHub Actions provenance;
-- private Revive archive identity and SHA-256;
-- manifests for intentionally external firmware, board software, SUPER, loaders, backups, logs, and evidence;
-- fail-closed rejection of transfer debris and runtime binaries from public source.
+**Phases 1–15 software scope are complete.**
 
-### Phase 2 — Shared Python/Rust contracts
+Do not restart Phase 4, Phase 15, or invent a Phase 16 merely because physical certification remains open.
 
-- 17 versioned contract types;
-- deterministic canonical UTF-8 JSON and SHA-256 identity;
-- identical Python and Rust validation behavior;
-- fail-closed authority, session, expiry, single-use, recipe, artifact, and validation-context checks;
-- automatic promotion forbidden for write targets, offsets, destructive recipes, and expanded authority;
-- 17 valid fixtures, 34 invalid mutations, 3 review-edge cases, one malformed-JSON case, and two context cases;
-- exact 57-case Python/Rust proof;
-- Rust 1.75 formatting, Clippy with warnings denied, compilation, and tests.
+The final approved software/UI closeout is frozen and records:
 
-Phase 2 receipt: [`manifests/source_inventory.receipt.json`](manifests/source_inventory.receipt.json)
+- source freeze: PASS;
+- software proof: PASS;
+- Windows candidate: PASS;
+- visual QA: PASS;
+- source QML startup: PASS;
+- packaged QML startup: PASS;
+- forced-close/restart: PASS;
+- CI test signing: PASS;
+- final candidate: `TECHGUYTOOL_Huawei.exe`;
+- final recorded candidate SHA-256: `b0709e2d46c793609456877f55fdecc6620382ea55777684cc4b9c5199f14080`.
 
-### Phase 3 — TTG Device Gateway
+Production remains disabled until applicable physical certification and production signing are complete.
 
-- persistent physical-device and operation sessions;
-- SQLite schema version 1;
-- typed event bus and append-only hash-chained journal;
-- provider manifests and contract-authority checks;
-- ordered operation-stage policy;
-- Phase 2 contract validation at Gateway ingress;
-- fail-closed capability allowlists;
-- worker heartbeat and watchdog state;
-- crash recovery and explicit operation resume;
-- loopback-only UTF-8 JSON-lines protocol;
-- reconnect-safe Python UI client;
-- `doctor`, snapshots, and journal verification;
-- no device-write, loader, flash, partition, OEMINFO, or reboot surface.
+## Architecture boundary
 
-Phase 3 authority: [`docs/PHASE_3_DEVICE_GATEWAY.md`](docs/PHASE_3_DEVICE_GATEWAY.md)  
-Phase 3 receipt: [`manifests/phase3_gateway.receipt.json`](manifests/phase3_gateway.receipt.json)
+The frozen system is:
 
-## Next authorized phase
+```text
+Technician intent
+    ↓
+TTG Device Gateway
+    ↓
+Specialist Xray (read-only)
+    ↓
+Repair Decision Corps
+    ↓
+Repair Governor
+    ↓
+Bounded Executor
+    ↓
+Specialist Xray verification
+    ↓
+Inquiry Governor
+    ↓
+Xray Knowledge Workshop
+    ↓
+Mature read-only capability promotion
+```
 
-**Phase 4 — Harden Kirin Xray**
+Xray remains read-only. Executors are lease-bounded and never choose their own target. A successful command is not automatically a successful repair. Model/variant/artifact/firmware support is evidence-backed and fail-closed.
 
-The next implementation must build the complete read-only Huawei evidence lane and replay the P10/P30 evidence without adding write authority.
+Service-entry families include:
+
+```text
+Kirin      → HUAWEI USB COM 1.0 → exact signed loader → Factory/Board-Service Fastboot
+Qualcomm   → QDLoader 9008      → exact Firehose programmer → verified service session
+MediaTek   → BROM/Preloader     → exact DA → verified service session
+```
+
+See `FULL_PLAN.md` for the complete contract.
+
+## Current next milestone
+
+The next practical milestone is **owner-machine Windows proof on ATHENA**, not more architecture work and not recovery of the retired P30 handset.
+
+Use:
+
+```text
+MCP → Oracle Live → workstation RPC → ATHENA terminal
+```
+
+The unfinished Oracle plugin is not required. GitHub queue/relay transport is fallback/recovery only and must not be represented as local terminal proof.
+
+The shared Builder on ATHENA is currently located at:
+
+```text
+D:\projects\THETECHGUY Software Builder - Installer Test
+```
+
+The Builder is a shared build/provisioning layer; it is **not** the Huawei project root. Before local work, discover and declare the contained Huawei checkout/worktree, inventory the live Builder/tool state, then build and prove the current candidate through the Builder lane.
+
+See `ROADMAP.md` for the exact execution gates.
+
+## Historical P10/P30 evidence
+
+P10Revive and the historical P30/VOG work are donor/proof lineage used to improve Kirin Xray, repair sequencing, version/OEMINFO understanding, service-mode preservation and verification logic.
+
+The old P30 handset is **not** a current project dependency or required certification target.
+
+Future certification uses whichever exact supported Huawei devices are actually available and records proof per model/operation pair.
+
+## Current certification tracks
+
+After ATHENA local proof, continue evidence-driven certification without reopening the software phases:
+
+- direct MTP/ADB/Fastboot/Recovery/Upgrade routing;
+- Kirin service-entry and bounded-recipe proof;
+- Qualcomm 9008/Firehose read-only proof before model-specific writes;
+- MediaTek BROM/Preloader/DA read-only proof before model-specific writes;
+- Windows driver/device servicing;
+- interrupted-operation/restart/recovery behavior;
+- progressive model/variant coverage;
+- production Authenticode signing and final release evidence.
+
+Unknown models remain unsupported. Similar-looking models never inherit support.
 
 ## Authorities and evidence
 
+- [`ROADMAP.md`](ROADMAP.md)
 - [`FULL_PLAN.md`](FULL_PLAN.md)
-- [`docs/PHASE_1_SOURCE_FREEZE.md`](docs/PHASE_1_SOURCE_FREEZE.md)
-- [`docs/LEGACY_AUTHORITY_REVIEW.md`](docs/LEGACY_AUTHORITY_REVIEW.md)
-- [`docs/PHASE_2_SHARED_CONTRACTS.md`](docs/PHASE_2_SHARED_CONTRACTS.md)
-- [`docs/PHASE_3_DEVICE_GATEWAY.md`](docs/PHASE_3_DEVICE_GATEWAY.md)
-- [`contracts/registry.json`](contracts/registry.json)
+- [`AGENTS.md`](AGENTS.md)
+- [`manifests/phase15_ui_closeout.receipt.json`](manifests/phase15_ui_closeout.receipt.json)
+- [`manifests/phase15_windows_release.receipt.json`](manifests/phase15_windows_release.receipt.json)
 - [`manifests/source_inventory.json`](manifests/source_inventory.json)
-- [`manifests/private_source_archive.json`](manifests/private_source_archive.json)
 - [`manifests/external_artifacts.json`](manifests/external_artifacts.json)
+- [`resources/expected ui/README.md`](resources/expected%20ui/README.md)
 
-## Active safety boundary
+## Windows release target
 
-Xray remains strictly read-only. The Gateway has `device_authority = none`. The active source may inspect, identify, correlate, diagnose, recommend, predict, coordinate, journal, and verify. It may not flash, erase, unlock, relock, reboot, upload a destructive service loader, write OEMINFO, or modify a device partition.
+The application target remains:
 
-`execution_lease` remains a validated contract only. No production executor consumes it yet.
-
-Historical code or evidence that can modify a device remains private recovery input until it is decomposed into a reviewed bounded executor governed by a versioned lease.
-
-## Phase 3 proof
-
-```powershell
-cargo generate-lockfile --manifest-path rust\device_gateway\Cargo.toml
-cargo fmt --manifest-path rust\device_gateway\Cargo.toml -- --check
-cargo clippy --locked --manifest-path rust\device_gateway\Cargo.toml --all-targets -- -D warnings
-cargo test --locked --manifest-path rust\device_gateway\Cargo.toml --all-targets
-cargo build --locked --manifest-path rust\device_gateway\Cargo.toml --bin ttg-device-gateway
-python -m pytest tests\test_gateway_client.py -q
-python tools\prove_gateway_reconnect.py --gateway-bin rust\device_gateway\target\debug\ttg-device-gateway.exe
-python tools\build_source_inventory.py
-python -m pytest -q
-python tools\verify_source_freeze.py --json
-python tools\build_phase2_receipt.py --verify
-python tools\build_phase3_receipt.py --verify
+```text
+TECHGUYTOOL_Huawei.exe
 ```
 
-## Windows one-file target
-
-```powershell
-.\build_windows.ps1
-```
-
-The intended release filename is `TECHGUYTOOL_Huawei.exe`. Firmware, loaders, recovery images, backups, logs, registration data, runtime Gateway databases, and downloaded artifacts remain outside the executable and outside normal Git source control.
+Firmware, SUPER images, loaders/programmers/DAs where externally governed, customer backups, operation journals, registration data and downloaded artifacts remain outside normal Git source control and are governed by manifests/provenance.
 
 ## Recovery authority
 
-- GitHub plan: `FULL_PLAN.md`
-- Google Drive plan mirror: https://docs.google.com/document/d/1q2_Ym9CqzVPAsPcI-0w4JLIQzEWRbWhjjY8CK-5nxGw/edit
-- Huawei private source archive: Google Drive file `1qH4K0m1lX_3o0XLvCkJMXsDajOkfu2cs`
+- Current GitHub execution roadmap: `ROADMAP.md`
+- Frozen GitHub architecture: `FULL_PLAN.md`
+- Google Drive plan/recovery mirror: https://docs.google.com/document/d/1q2_Ym9CqzVPAsPcI-0w4JLIQzEWRbWhjjY8CK-5nxGw/edit
+- Huawei private source/evidence archive: Google Drive file `1qH4K0m1lX_3o0XLvCkJMXsDajOkfu2cs`
 
-Chat history is context only. Repository evidence and the frozen plan govern implementation.
+If a future session is unsure where to continue, it must recover live `main`, read `ROADMAP.md`, then classify the requested work before proposing changes.
