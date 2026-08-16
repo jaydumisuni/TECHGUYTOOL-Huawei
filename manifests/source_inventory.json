@@ -23,7 +23,7 @@
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 218,
+  "file_count": 220,
   "files": [
     {
       "origin": "phase15_windows_release",
@@ -126,6 +126,12 @@
       "path": ".gitignore",
       "sha256": "af4713adc70dc7a63afa21886be10b9fa8f6677104af90b80c27c93d7033e227",
       "size_bytes": 605
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": ".ttg/project-policy.yaml",
+      "sha256": "7b85072f1f797b97f245c7e4a24bff52b19e8a33095303c63e7877f1e83a449c",
+      "size_bytes": 273
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -882,6 +888,12 @@
       "path": "rust/health_core/src/main.rs",
       "sha256": "56004531da3b963fd21d27d75dc34eea7b61d4861d96e7730921cfcfa32bf641",
       "size_bytes": 2723
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "techguy-build.json",
+      "sha256": "4d511ea3bcc84ace98ee2b879e2a4bbab7b1486269822814d050c8168c2b3532",
+      "size_bytes": 753
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
