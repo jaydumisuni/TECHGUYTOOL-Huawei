@@ -334,8 +334,8 @@
     {
       "origin": "phase15_windows_release",
       "path": "manifests/active_software_phase.json",
-      "sha256": "d48dc9c419e5452adbd2808be6e976400b75e03f0083d056a3d9f1b1ff5639d2",
-      "size_bytes": 362
+      "sha256": "d5be512e361c4cceaf474e6d42ed3428a6d25d70d0aa490b63e62703226169c3",
+      "size_bytes": 384
     },
     {
       "origin": "phase1_recovery_and_freeze",
