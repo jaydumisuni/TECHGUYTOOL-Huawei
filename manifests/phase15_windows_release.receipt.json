@@ -9,7 +9,7 @@
     "tested_revision": "a2ddd311cd702ce86f52c6e171b44f735ae76bba",
     "windows_run_id": 31722069119
   },
-  "ci_test_signing": "PASS",
+  "ci_test_signing": "PENDING",
   "executable_sha256": "2bc7fdf18e5ccf9797daba7284d812ec64cd0a053ad34b8fa50010e09ff70cf0",
   "generated_at": "2026-08-13T17:00:33Z",
   "hosted_proof": {
@@ -55,6 +55,6 @@
   "status": "UNFROZEN",
   "tested_revision": "a2ddd311cd702ce86f52c6e171b44f735ae76bba",
   "truth_boundary": "This receipt proves only the software authority described by the active phase. Physical-device certification, external proprietary artifacts, Windows production signing and hardware-specific destructive operations remain outside software-only proof unless the phase plan explicitly records independent physical evidence.",
-  "windows_ci": "PASS",
+  "windows_ci": "PENDING",
   "windows_run_id": 31722069119
 }
