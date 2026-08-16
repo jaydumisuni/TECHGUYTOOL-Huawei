@@ -1,30 +1,6 @@
 {
-  "artifact_id": 9264029849,
-  "artifact_name": "TECHGUYTOOL-Huawei-phase15-windows-candidate",
-  "authority_request": {
-    "artifact_id": 9264029849,
-    "artifact_name": "TECHGUYTOOL-Huawei-phase15-windows-candidate",
-    "executable_sha256": "12de6e9198d27d199660280f3b8effc6f37bf41cbc6d690eca5aac48fca888aa",
-    "proof_run_id": 31948147123,
-    "tested_revision": "3c4c13421aefe716ea9d403ee286c5dd8f510db1",
-    "windows_run_id": 31948147091
-  },
-  "ci_test_signing": "PASS",
-  "executable_sha256": "12de6e9198d27d199660280f3b8effc6f37bf41cbc6d690eca5aac48fca888aa",
-  "generated_at": "2026-08-16T13:05:16Z",
-  "hosted_proof": {
-    "repository": "jaydumisuni/TECHGUYTOOL-Huawei",
-    "run_id": 31948147123,
-    "run_url": "https://github.com/jaydumisuni/TECHGUYTOOL-Huawei/actions/runs/31948147123",
-    "tested_revision": "3c4c13421aefe716ea9d403ee286c5dd8f510db1",
-    "workflow": "Software Phase Proof"
-  },
-  "owner_verification": {
-    "authority_commit": "b549ec413c313cbec2be0bf9d81fc0f133494335",
-    "source_proof_run_id": 31948147123,
-    "source_revision": "3c4c13421aefe716ea9d403ee286c5dd8f510db1",
-    "status": "CONFIRMED"
-  },
+  "ci_test_signing": "PENDING",
+  "generated_at": "2026-08-16T20:50:00Z",
   "phase": 15,
   "phase_name": "Phase 15 Windows Packaging and Certification",
   "physical_proof_matrix": "INCOMPLETE",
@@ -32,29 +8,10 @@
   "production_enabled": false,
   "production_release_status": "EXTERNAL_CERTIFICATION_PENDING",
   "production_signing": "EXTERNAL_CERTIFICATE_REQUIRED",
-  "proof": {
-    "active_phase_proof": "PASS",
-    "complete_python_regression": "PASS",
-    "contract_core_regression": "PASS",
-    "device_gateway_regression": "PASS",
-    "rust_clippy": "PASS",
-    "rust_format": "PASS",
-    "rust_tests": "PASS",
-    "source_freeze_verifier": "PASS",
-    "srg_20_for_2": "40/40 PASS"
-  },
-  "proof_trigger": "final-phase15-authority",
   "release_filename": "TECHGUYTOOL_Huawei.exe",
   "schema": "techguytool-huawei.phase15-receipt.v1",
-  "software_proof_run_id": 31948147123,
-  "source_inventory": {
-    "path": "manifests/source_inventory.json",
-    "sha256": "43e2ff7d76fe7a80796b41ce060451cb0e8fe49882f2753f6cd59ac0efd56fdd"
-  },
-  "source_inventory_sha256": "43e2ff7d76fe7a80796b41ce060451cb0e8fe49882f2753f6cd59ac0efd56fdd",
-  "status": "FROZEN",
-  "tested_revision": "3c4c13421aefe716ea9d403ee286c5dd8f510db1",
+  "status": "UNFROZEN",
   "truth_boundary": "This receipt proves only the software authority described by the active phase. Physical-device certification, external proprietary artifacts, Windows production signing and hardware-specific destructive operations remain outside software-only proof unless the phase plan explicitly records independent physical evidence.",
-  "windows_ci": "PASS",
-  "windows_run_id": 31948147091
+  "unfreeze_reason": "Re-prove the existing Phase 15 Windows packaging authority with the shared Builder owner-machine target binding; this is not a new software phase.",
+  "windows_ci": "PENDING"
 }
