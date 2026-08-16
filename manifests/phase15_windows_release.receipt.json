@@ -2,12 +2,12 @@
   "artifact_id": 9190181420,
   "artifact_name": "TECHGUYTOOL-Huawei-phase15-windows-candidate",
   "authority_request": {
-    "artifact_id": 9190181420,
+    "artifact_id": 9264029849,
     "artifact_name": "TECHGUYTOOL-Huawei-phase15-windows-candidate",
-    "executable_sha256": "2bc7fdf18e5ccf9797daba7284d812ec64cd0a053ad34b8fa50010e09ff70cf0",
-    "proof_run_id": 31722069288,
-    "tested_revision": "a2ddd311cd702ce86f52c6e171b44f735ae76bba",
-    "windows_run_id": 31722069119
+    "executable_sha256": "12de6e9198d27d199660280f3b8effc6f37bf41cbc6d690eca5aac48fca888aa",
+    "proof_run_id": 31948147123,
+    "tested_revision": "3c4c13421aefe716ea9d403ee286c5dd8f510db1",
+    "windows_run_id": 31948147091
   },
   "ci_test_signing": "PENDING",
   "executable_sha256": "2bc7fdf18e5ccf9797daba7284d812ec64cd0a053ad34b8fa50010e09ff70cf0",
