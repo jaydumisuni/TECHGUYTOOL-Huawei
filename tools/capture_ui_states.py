@@ -29,7 +29,8 @@ APPROVED_STATES = [
     ("About", "03-about.png"),
     ("Fix Drivers", "04-fix-drivers.png"),
     ("Register Device", "05-register-device.png"),
-    ("Terminal", "06-terminal.png"),
+    ("Testpoint / Pinout Library", "06-testpoint-pinout-library.png"),
+    ("Terminal", "07-terminal.png"),
 ]
 
 
@@ -59,7 +60,7 @@ def load_visual_qa_fonts(app: QGuiApplication) -> dict[str, object]:
     raw = QRawFont.fromFont(QFont("Segoe UI", 12))
     if not raw.isValid():
         raise SystemExit("Segoe UI did not resolve to a valid raw font")
-    required = "TECHGUY TOOL HUAWEI Service Center Firmware Flash 0123456789"
+    required = "TECHGUY TOOL HUAWEI Service Center Firmware Flash Testpoint Pinout 0123456789"
     missing = sorted({char for char in required if not char.isspace() and not raw.supportsCharacter(char)})
     if missing:
         raise SystemExit(f"Segoe UI is missing required Latin glyphs: {missing!r}")
@@ -114,7 +115,6 @@ def capture_terminal(main_window: QQuickWindow, terminal: QObject, path: Path) -
     if main_image.isNull() or terminal_image.isNull():
         raise SystemExit("Failed to capture terminal composition")
 
-    # Match the approved terminal placement without depending on a desktop compositor.
     x = 160
     y = 640
     painter = QPainter(main_image)
@@ -157,6 +157,7 @@ def main() -> int:
     about = find_named(root, "aboutDialog")
     drivers = find_named(root, "driverDialog")
     register = find_named(root, "registerDialog")
+    testpoint = find_named(root, "testpointDialog")
     terminal = find_named(root, "terminalDialog")
 
     captures: list[dict[str, object]] = []
@@ -176,14 +177,12 @@ def main() -> int:
             }
         )
 
-    # 01: approved Firmware Flash state.
     root.setProperty("pageTitle", "Firmware Flash")
     root.setProperty("pageIndex", 2)
     QCoreApplication.processEvents()
     QTest.qWait(500)
     record("Firmware Flash", APPROVED_STATES[0][1], capture_main(main_window, output / APPROVED_STATES[0][1]))
 
-    # Remaining approved states share the Service Center background.
     root.setProperty("pageTitle", "Service Center")
     root.setProperty("pageIndex", 0)
     QCoreApplication.processEvents()
@@ -205,10 +204,14 @@ def main() -> int:
     record("Register Device", APPROVED_STATES[4][1], capture_main(main_window, output / APPROVED_STATES[4][1]))
     invoke(register, "close")
 
-    record("Terminal", APPROVED_STATES[5][1], capture_terminal(main_window, terminal, output / APPROVED_STATES[5][1]))
+    invoke(testpoint, "open")
+    record("Testpoint / Pinout Library", APPROVED_STATES[5][1], capture_main(main_window, output / APPROVED_STATES[5][1]))
+    invoke(testpoint, "close")
+
+    record("Terminal", APPROVED_STATES[6][1], capture_terminal(main_window, terminal, output / APPROVED_STATES[6][1]))
 
     manifest = {
-        "schema": "techguytool-huawei.final-ui-capture.v3",
+        "schema": "techguytool-huawei.final-ui-capture.v4",
         "source_revision": os.environ.get("GITHUB_SHA", "local"),
         "expected_size": [1586, 992],
         "renderer": "qt-quick-software-scenegraph",
