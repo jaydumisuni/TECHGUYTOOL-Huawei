@@ -8,7 +8,7 @@ SCHEMA = "techguytool-huawei.testpoint-catalog.v1"
 
 
 class TestpointCatalogError(ValueError):
-    pass
+    __test__ = False
 
 
 def load_device_profiles(app_root: Path) -> dict[str, Any]:
