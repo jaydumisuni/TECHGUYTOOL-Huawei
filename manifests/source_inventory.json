@@ -23,7 +23,7 @@
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 220,
+  "file_count": 224,
   "files": [
     {
       "origin": "phase15_windows_release",
@@ -34,8 +34,8 @@
     {
       "origin": "phase15_windows_release",
       "path": ".github/workflows/final-ui-visual-qa.yml",
-      "sha256": "32a6bfecd9f392bd4319bfa625aab22717f6491423b912b5c2e804a68c29f41e",
-      "size_bytes": 1511
+      "sha256": "ac699b62fb6bc38936a55de6f9d395c05c164fc6c727971fac96683f9a817abf",
+      "size_bytes": 1564
     },
     {
       "origin": "phase15_windows_release",
@@ -234,6 +234,12 @@
       "path": "data/device_profiles.json",
       "sha256": "eff288b941f2e7f2d159d4f6c27b4ef0d9b9985d37f1ec5fe0068f0acadc6904",
       "size_bytes": 959
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "data/testpoint_catalog.json",
+      "sha256": "d960541b3b001e80bac4623e03f4e7fca7b5165fea06c4f158002fbf6d61b471",
+      "size_bytes": 184
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -454,14 +460,14 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "pysidedeploy.spec",
-      "sha256": "0a399f2684afb194c6947e605c47be1a3a9f759ca32ba0a2993871c6e7953566",
-      "size_bytes": 1315
+      "sha256": "37f817d98d2a4e5f0e1578eddb7f5914bf172321d29c7d40fe43f4b703095f7e",
+      "size_bytes": 1347
     },
     {
       "origin": "phase15_windows_release",
       "path": "qml/Main.qml",
-      "sha256": "a7d34989727f294a4cb4e791e18a2f54e7c57950a531e3e82773bdd5a596943a",
-      "size_bytes": 16361
+      "sha256": "3dd210d13d6baac17ee0c8f7b99bfcee4c6310ce3bba1b4d04e41b01f3b2f27b",
+      "size_bytes": 16488
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -532,14 +538,20 @@
     {
       "origin": "phase15_windows_release",
       "path": "qml/dialogs/SettingsMenu.qml",
-      "sha256": "189854658ea662e82b80d3e1e546744b64372e5bd79ece26d8fb799120fa9139",
-      "size_bytes": 3050
+      "sha256": "4210681cc0d906991974c62b51751da3e04bb8188e17b29590c50000a2bcaa55",
+      "size_bytes": 3319
     },
     {
       "origin": "phase15_windows_release",
       "path": "qml/dialogs/TerminalDialog.qml",
       "sha256": "a1491363b131d323c4f80ee231058efae6d59ebd3f1b5977a5c44ed1f6cb2661",
       "size_bytes": 1701
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "qml/dialogs/TestpointDialog.qml",
+      "sha256": "b2b045e589f9bc28f895e10bdf5b478f35518789dea1d884e1e1ea08b16274f1",
+      "size_bytes": 11777
     },
     {
       "origin": "phase15_windows_release",
@@ -574,8 +586,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "qml/pages/ServiceCenterPage.qml",
-      "sha256": "52b51206544c3f856d49b902b8e7d24af6f1f2a2a1ca14eb919c2baaf9e0d8c9",
-      "size_bytes": 10306
+      "sha256": "a9855703c1fef4ad31264bcb782e6081ffd6cdc851369e401c97f4bfcaa314a6",
+      "size_bytes": 10347
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -622,14 +634,14 @@
     {
       "origin": "phase15_windows_release",
       "path": "resources.qrc",
-      "sha256": "a28a1aa3021d8e1909651344d23f1a9cfc7f702f975d3244fbb3500f8aea26b2",
-      "size_bytes": 2142
+      "sha256": "228b02e353fe4f021cb4875040658ae4f1a83c33cf04b17a335e6330e2d767e4",
+      "size_bytes": 2231
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "resources/expected ui/README.md",
-      "sha256": "6bc1c3237d28a948fa094c8a8b6d47da182256bbf207caf48c79c9b5b641a49c",
-      "size_bytes": 4988
+      "sha256": "9ed948af57dbde09641b17d6e048a5050cf21dde92402cd81e8a2aa7512c701b",
+      "size_bytes": 6515
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -910,8 +922,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "techguy_huawei/backend.py",
-      "sha256": "2cc96556e851fe08c030d4f76d6e9141ca852771e9b93d427d6a15ebde2f87db",
-      "size_bytes": 8225
+      "sha256": "be0a27873823f0c6ddb2e7d69309025313d87b108b06140634646b4644c47ff8",
+      "size_bytes": 10092
     },
     {
       "origin": "phase12_kirin_capability_packs",
@@ -1014,6 +1026,12 @@
       "path": "techguy_huawei/storage.py",
       "sha256": "45d35a8381b79307399dc884b9755b15111c4730957c6a5738bb32c69f0b6caa",
       "size_bytes": 1260
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "techguy_huawei/testpoint_catalog.py",
+      "sha256": "24764f975bc70bb289f150439261a84ca50089d4fa191752e8bdf18fa6e99d51",
+      "size_bytes": 3310
     },
     {
       "origin": "phase13_ttg_xray_promotion",
@@ -1124,6 +1142,12 @@
       "size_bytes": 1137
     },
     {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "tests/test_testpoint_catalog.py",
+      "sha256": "00f8ce144821e81ef22e96dbb95137fe5e5f1eba17210477652dbf3d7a5bc24b",
+      "size_bytes": 2162
+    },
+    {
       "origin": "phase13_ttg_xray_promotion",
       "path": "tests/test_ttg_xray_promotion.py",
       "sha256": "7e6f1afe1bbd24a3f7dd4f08dd64c03e2081682765d944cefd78eec28a16a054",
@@ -1132,8 +1156,8 @@
     {
       "origin": "phase15_windows_release",
       "path": "tests/test_ui_closeout.py",
-      "sha256": "7cbcd06e47cc990a36de2897397b513b2a93e70683f21d3d8556d3140e27a9f8",
-      "size_bytes": 2133
+      "sha256": "804408fb2708d5b410885ddc16b52b44d76dc01e1c249964186eb57f41c5812e",
+      "size_bytes": 3547
     },
     {
       "origin": "phase9_vog_l29_c185_recipe",
@@ -1192,8 +1216,8 @@
     {
       "origin": "phase15_windows_release",
       "path": "tools/capture_ui_states.py",
-      "sha256": "2d19b42b6a8073e0fa64176f8f076f30585b7855293d8c249f834602e2b09adc",
-      "size_bytes": 8750
+      "sha256": "c7e081f74daac52ce18b588aff7aae0396ef46a26a4cc6beca7eb1e6b74049a4",
+      "size_bytes": 8878
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
