@@ -51,48 +51,48 @@ ApplicationWindow {
             anchors.fill: parent
             gradient: Gradient {
                 orientation: Gradient.Horizontal
-                GradientStop { position: 0.00; color: "#07101c" }
-                GradientStop { position: 0.33; color: "#090c1b" }
-                GradientStop { position: 0.70; color: "#071427" }
-                GradientStop { position: 1.00; color: "#06111d" }
+                GradientStop { position: 0.00; color: "#030914" }
+                GradientStop { position: 0.33; color: "#050a16" }
+                GradientStop { position: 0.70; color: "#04101f" }
+                GradientStop { position: 1.00; color: "#03101c" }
             }
         }
 
         Canvas {
             anchors.fill: parent
-            opacity: 0.84
+            opacity: 0.52
             onPaint: {
                 var ctx = getContext("2d")
                 ctx.clearRect(0, 0, width, height)
                 var g1 = ctx.createRadialGradient(width * 0.55, height * 0.06, 20, width * 0.55, height * 0.06, width * 0.38)
-                g1.addColorStop(0, "rgba(172,58,255,0.58)")
+                g1.addColorStop(0, "rgba(172,58,255,0.14)")
                 g1.addColorStop(1, "rgba(0,0,0,0)")
                 ctx.fillStyle = g1; ctx.fillRect(0, 0, width, height)
                 var g2 = ctx.createRadialGradient(width * 0.98, height * 0.35, 5, width * 0.98, height * 0.35, width * 0.31)
-                g2.addColorStop(0, "rgba(0,177,255,0.50)")
+                g2.addColorStop(0, "rgba(0,177,255,0.16)")
                 g2.addColorStop(1, "rgba(0,0,0,0)")
                 ctx.fillStyle = g2; ctx.fillRect(0, 0, width, height)
-                ctx.strokeStyle = "rgba(165,70,255,0.43)"
-                ctx.lineWidth = 28
+                ctx.strokeStyle = "rgba(165,70,255,0.22)"
+                ctx.lineWidth = 11
                 ctx.beginPath(); ctx.moveTo(width * 0.67, -40); ctx.bezierCurveTo(width * 0.77, height * 0.20, width * 0.69, height * 0.55, width * 0.83, height + 30); ctx.stroke()
             }
         }
 
         Canvas {
             anchors.fill: parent
-            opacity: 0.82
+            opacity: 0.58
             onPaint: {
                 var ctx = getContext("2d")
                 ctx.clearRect(0, 0, width, height)
                 var bottomGlow = ctx.createRadialGradient(width * 0.58, height * 0.94, 10, width * 0.58, height * 0.94, width * 0.34)
-                bottomGlow.addColorStop(0, "rgba(0,139,255,0.31)")
+                bottomGlow.addColorStop(0, "rgba(0,139,255,0.14)")
                 bottomGlow.addColorStop(1, "rgba(0,0,0,0)")
                 ctx.fillStyle = bottomGlow; ctx.fillRect(0, 0, width, height)
-                ctx.strokeStyle = "rgba(202,62,255,0.32)"
-                ctx.lineWidth = 7
+                ctx.strokeStyle = "rgba(202,62,255,0.20)"
+                ctx.lineWidth = 5
                 ctx.beginPath(); ctx.moveTo(width * 0.74, -70); ctx.bezierCurveTo(width * 0.80, height * 0.24, width * 0.73, height * 0.56, width * 0.87, height + 70); ctx.stroke()
-                ctx.strokeStyle = "rgba(75,168,255,0.23)"
-                ctx.lineWidth = 10
+                ctx.strokeStyle = "rgba(75,168,255,0.16)"
+                ctx.lineWidth = 6
                 ctx.beginPath(); ctx.moveTo(width * 0.50, height + 40); ctx.bezierCurveTo(width * 0.58, height * 0.72, width * 0.61, height * 0.42, width * 0.66, -50); ctx.stroke()
             }
         }
@@ -175,7 +175,7 @@ ApplicationWindow {
                     id: sidebar
                     Layout.preferredWidth: 310
                     Layout.fillHeight: true
-                    panelOpacity: 0.78
+                    panelOpacity: 0.90
                     ColumnLayout {
                         anchors.fill: parent
                         anchors.margins: 12
@@ -207,7 +207,7 @@ ApplicationWindow {
                     id: livePanel
                     Layout.preferredWidth: 450
                     Layout.fillHeight: true
-                    panelOpacity: 0.78
+                    panelOpacity: 0.90
                     ColumnLayout {
                         anchors.fill: parent
                         anchors.margins: 13
@@ -256,7 +256,7 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 61
                 radius: 8
-                panelOpacity: 0.72
+                panelOpacity: 0.84
                 RowLayout {
                     anchors.fill: parent
                     anchors.leftMargin: 25
