@@ -4,14 +4,15 @@ import ".."
 Rectangle {
     id: root
     property color panelColor: Theme.panel
-    property color borderColor: Theme.border
-    property real panelOpacity: 0.86
+    property color borderColor: Theme.borderSoft
+    property real panelOpacity: 0.70
     radius: 12
     color: Qt.rgba(panelColor.r, panelColor.g, panelColor.b, panelOpacity)
     border.width: 1
     border.color: borderColor
     clip: true
 
+    // Approved glass body: dark translucent centre with a faint purple-to-cyan tint.
     Rectangle {
         anchors.fill: parent
         anchors.margins: 1
@@ -19,50 +20,54 @@ Rectangle {
         color: "transparent"
         gradient: Gradient {
             orientation: Gradient.Horizontal
-            GradientStop { position: 0.00; color: "#301443" }
-            GradientStop { position: 0.18; color: "#10182b" }
-            GradientStop { position: 0.66; color: "#06131f" }
-            GradientStop { position: 1.00; color: "#082a40" }
+            GradientStop { position: 0.00; color: "#251337" }
+            GradientStop { position: 0.20; color: "#10172a" }
+            GradientStop { position: 0.68; color: "#071421" }
+            GradientStop { position: 1.00; color: "#08253a" }
         }
-        opacity: 0.30
+        opacity: 0.24
     }
 
+    // Soft inner edge used throughout the approved mockups.
     Rectangle {
         anchors.fill: parent
-        anchors.margins: 2
-        radius: Math.max(0, parent.radius - 2)
+        anchors.margins: 1
+        radius: Math.max(0, parent.radius - 1)
         color: "transparent"
         border.width: 1
-        border.color: "#58a6d0"
-        opacity: 0.44
+        border.color: "#3f7eaa"
+        opacity: 0.64
     }
 
+    // Purple left/top bloom.
     Rectangle {
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.bottom: parent.bottom
-        width: Math.min(parent.width * 0.17, 78)
+        width: Math.min(parent.width * 0.20, 92)
         gradient: Gradient {
             orientation: Gradient.Horizontal
-            GradientStop { position: 0.00; color: "#8d35ff" }
+            GradientStop { position: 0.00; color: "#7b2cff" }
             GradientStop { position: 1.00; color: "transparent" }
         }
-        opacity: 0.085
+        opacity: 0.055
     }
 
+    // Cyan edge bloom on the right, matching the approved blue glass rim.
     Rectangle {
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.bottom: parent.bottom
-        width: Math.min(parent.width * 0.16, 72)
+        width: Math.min(parent.width * 0.18, 86)
         gradient: Gradient {
             orientation: Gradient.Horizontal
             GradientStop { position: 0.00; color: "transparent" }
-            GradientStop { position: 1.00; color: "#16b9ff" }
+            GradientStop { position: 1.00; color: "#16a8ff" }
         }
-        opacity: 0.095
+        opacity: 0.07
     }
 
+    // Hairline highlight across the upper glass edge.
     Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
@@ -72,26 +77,10 @@ Rectangle {
         height: 1
         gradient: Gradient {
             orientation: Gradient.Horizontal
-            GradientStop { position: 0.00; color: "#ad5aff" }
-            GradientStop { position: 0.50; color: "#8fc9ff" }
-            GradientStop { position: 1.00; color: "#38d6ff" }
+            GradientStop { position: 0.00; color: "#995cff" }
+            GradientStop { position: 0.48; color: "#8bbdff" }
+            GradientStop { position: 1.00; color: "#2ed0ff" }
         }
-        opacity: 0.70
-    }
-
-    Rectangle {
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        anchors.leftMargin: root.radius
-        anchors.rightMargin: root.radius
-        height: 1
-        gradient: Gradient {
-            orientation: Gradient.Horizontal
-            GradientStop { position: 0.00; color: "#6b32b7" }
-            GradientStop { position: 0.52; color: "#326b9d" }
-            GradientStop { position: 1.00; color: "#19a7d8" }
-        }
-        opacity: 0.34
+        opacity: 0.42
     }
 }
