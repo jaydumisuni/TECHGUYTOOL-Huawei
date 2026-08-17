@@ -1162,8 +1162,8 @@
     {
       "origin": "phase15_windows_release",
       "path": "tests/test_ui_closeout.py",
-      "sha256": "804408fb2708d5b410885ddc16b52b44d76dc01e1c249964186eb57f41c5812e",
-      "size_bytes": 3547
+      "sha256": "6362ab4f69a6308f3875ab501299f4c12f0480e75248199aabe94206f90a1029",
+      "size_bytes": 3708
     },
     {
       "origin": "phase9_vog_l29_c185_recipe",
