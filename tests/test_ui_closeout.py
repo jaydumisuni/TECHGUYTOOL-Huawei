@@ -79,18 +79,14 @@ def test_upgrade_mode_is_separate_from_rescue_everywhere() -> None:
     assert '"Fastboot", "Upgrade Mode", "Rescue"' in service
 
 
-def test_approved_sidebar_mascot_is_text_safe_packaged_and_single_owned() -> None:
-    mascot = ROOT / "assets" / "brand" / "techguy_mascot_masked.svg"
+def test_approved_sidebar_mascot_is_packaged_and_single_owned() -> None:
+    mascot = ROOT / "assets" / "brand" / "techguy_mascot.png"
     qrc = (ROOT / "resources.qrc").read_text(encoding="utf-8")
     main = (ROOT / "qml" / "Main.qml").read_text(encoding="utf-8")
     glass = (ROOT / "qml" / "components" / "GlassPanel.qml").read_text(encoding="utf-8")
 
     assert mascot.is_file()
-    source = mascot.read_text(encoding="utf-8")
-    assert source.startswith("<svg")
-    assert "clipPath" in source
-    assert "data:image/jpeg;base64," in source
-    assert "assets/brand/techguy_mascot_masked.svg" in qrc
-    assert 'source: "../assets/brand/techguy_mascot_masked.svg"' in main
-    assert "techguy_mascot_masked.svg" not in glass
+    assert "assets/brand/techguy_mascot.png" in qrc
+    assert 'source: "../assets/brand/techguy_mascot.png"' in main
+    assert "techguy_mascot.png" not in glass
     assert "approvedMascotPanel" not in glass
