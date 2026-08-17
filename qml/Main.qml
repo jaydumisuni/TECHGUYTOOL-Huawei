@@ -138,7 +138,7 @@ ApplicationWindow {
                     ComboBox {
                         Layout.preferredWidth: 250
                         Layout.preferredHeight: 42
-                        model: ["Auto Detect", "ADB", "Fastboot", "Upgrade / Rescue"]
+                        model: ["Auto Detect", "ADB", "Fastboot", "Upgrade Mode", "Rescue"]
                     }
                     Button {
                         id: settingsButton
@@ -292,10 +292,12 @@ ApplicationWindow {
         y: 70
         onFixDriversRequested: driverDialog.open()
         onRegisterRequested: registerDialog.open()
+        onTestpointRequested: testpointDialog.open()
         onAboutRequested: aboutDialog.open()
     }
     RegisterDialog { id: registerDialog; parent: Overlay.overlay }
     DriverDialog { id: driverDialog; parent: Overlay.overlay }
     AboutDialog { id: aboutDialog; parent: Overlay.overlay }
+    TestpointDialog { id: testpointDialog; parent: Overlay.overlay }
     TerminalDialog { id: terminalDialog }
 }
