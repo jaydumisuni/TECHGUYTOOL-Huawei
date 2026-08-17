@@ -60,38 +60,38 @@ ApplicationWindow {
 
         Canvas {
             anchors.fill: parent
-            opacity: 0.52
+            opacity: 0.64
             onPaint: {
                 var ctx = getContext("2d")
                 ctx.clearRect(0, 0, width, height)
                 var g1 = ctx.createRadialGradient(width * 0.55, height * 0.06, 20, width * 0.55, height * 0.06, width * 0.38)
-                g1.addColorStop(0, "rgba(172,58,255,0.14)")
+                g1.addColorStop(0, "rgba(172,58,255,0.24)")
                 g1.addColorStop(1, "rgba(0,0,0,0)")
                 ctx.fillStyle = g1; ctx.fillRect(0, 0, width, height)
                 var g2 = ctx.createRadialGradient(width * 0.98, height * 0.35, 5, width * 0.98, height * 0.35, width * 0.31)
-                g2.addColorStop(0, "rgba(0,177,255,0.16)")
+                g2.addColorStop(0, "rgba(0,177,255,0.23)")
                 g2.addColorStop(1, "rgba(0,0,0,0)")
                 ctx.fillStyle = g2; ctx.fillRect(0, 0, width, height)
-                ctx.strokeStyle = "rgba(165,70,255,0.22)"
-                ctx.lineWidth = 11
+                ctx.strokeStyle = "rgba(165,70,255,0.28)"
+                ctx.lineWidth = 12
                 ctx.beginPath(); ctx.moveTo(width * 0.67, -40); ctx.bezierCurveTo(width * 0.77, height * 0.20, width * 0.69, height * 0.55, width * 0.83, height + 30); ctx.stroke()
             }
         }
 
         Canvas {
             anchors.fill: parent
-            opacity: 0.58
+            opacity: 0.64
             onPaint: {
                 var ctx = getContext("2d")
                 ctx.clearRect(0, 0, width, height)
                 var bottomGlow = ctx.createRadialGradient(width * 0.58, height * 0.94, 10, width * 0.58, height * 0.94, width * 0.34)
-                bottomGlow.addColorStop(0, "rgba(0,139,255,0.14)")
+                bottomGlow.addColorStop(0, "rgba(0,139,255,0.19)")
                 bottomGlow.addColorStop(1, "rgba(0,0,0,0)")
                 ctx.fillStyle = bottomGlow; ctx.fillRect(0, 0, width, height)
-                ctx.strokeStyle = "rgba(202,62,255,0.20)"
+                ctx.strokeStyle = "rgba(202,62,255,0.24)"
                 ctx.lineWidth = 5
                 ctx.beginPath(); ctx.moveTo(width * 0.74, -70); ctx.bezierCurveTo(width * 0.80, height * 0.24, width * 0.73, height * 0.56, width * 0.87, height + 70); ctx.stroke()
-                ctx.strokeStyle = "rgba(75,168,255,0.16)"
+                ctx.strokeStyle = "rgba(75,168,255,0.20)"
                 ctx.lineWidth = 6
                 ctx.beginPath(); ctx.moveTo(width * 0.50, height + 40); ctx.bezierCurveTo(width * 0.58, height * 0.72, width * 0.61, height * 0.42, width * 0.66, -50); ctx.stroke()
             }
@@ -120,14 +120,14 @@ ApplicationWindow {
                     Image {
                         source: "../assets/brand/techguy_logo.svg"
                         fillMode: Image.PreserveAspectFit
-                        Layout.preferredWidth: 105
-                        Layout.preferredHeight: 86
+                        Layout.preferredWidth: 116
+                        Layout.preferredHeight: 92
                     }
                     ColumnLayout {
                         Layout.preferredWidth: 570
                         spacing: 4
-                        Text { text: "TECHGUY TOOL — HUAWEI"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 28; font.weight: Font.DemiBold; font.letterSpacing: 0.8 }
-                        Text { text: "SERVICE & RECOVERY EDITION"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 14; font.letterSpacing: 1.7 }
+                        Text { text: "TECHGUY TOOL — HUAWEI"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 30; font.weight: Font.DemiBold; font.letterSpacing: 0.8 }
+                        Text { text: "SERVICE & RECOVERY EDITION"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 15; font.letterSpacing: 1.7 }
                     }
                     Item { Layout.fillWidth: true }
                     RowLayout {
@@ -188,7 +188,7 @@ ApplicationWindow {
                         NavItem { Layout.fillWidth: true; text: "Operation History"; glyph: "◴"; selected: app.pageIndex === 5; onSelectedClicked: { app.pageIndex = 5; app.pageTitle = text } }
                         Item { Layout.fillHeight: true }
                         Image {
-                            source: "../assets/brand/techguy_mascot.png"
+                            source: "../assets/brand/techguy_mascot_masked.svg"
                             fillMode: Image.PreserveAspectFit
                             Layout.fillWidth: true
                             Layout.preferredHeight: 410
@@ -234,15 +234,8 @@ ApplicationWindow {
                             ScrollView {
                                 anchors.fill: parent
                                 anchors.margins: 4
-                                TextArea {
-                                    text: backend.logText
-                                    readOnly: true
-                                    wrapMode: TextEdit.Wrap
-                                    color: "#9fb4c8"
-                                    selectionColor: "#245782"
-                                    font.family: "Consolas"
-                                    font.pixelSize: 12
-                                    background: Rectangle { color: "transparent" }
+                                SemanticLog {
+                                    rawText: backend.logText
                                 }
                             }
                         }
