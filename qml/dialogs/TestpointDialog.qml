@@ -9,6 +9,8 @@ Popup {
     objectName: "testpointDialog"
     width: 760
     height: 650
+    x: parent ? Math.round((parent.width - width) / 2) : 0
+    y: parent ? Math.round((parent.height - height) / 2) : 0
     modal: true
     focus: true
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
@@ -132,7 +134,7 @@ Popup {
             GlassPanel {
                 Layout.preferredWidth: 310
                 Layout.fillHeight: true
-                panelOpacity: 0.70
+                panelOpacity: 0.82
                 ColumnLayout {
                     anchors.fill: parent
                     anchors.margins: 10
@@ -180,7 +182,7 @@ Popup {
             GlassPanel {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                panelOpacity: 0.70
+                panelOpacity: 0.82
                 ColumnLayout {
                     anchors.fill: parent
                     anchors.margins: 14
