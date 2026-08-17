@@ -472,8 +472,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "qml/Theme.qml",
-      "sha256": "267a2dead07033b14e9299b8717df6cb3ad479eff35ff7c418369e0e79e236c8",
-      "size_bytes": 790
+      "sha256": "7acd9ff353d6b84513a9c6623852b9a402943f1a0a6087b4dd61c91dd7889201",
+      "size_bytes": 696
     },
     {
       "origin": "phase15_windows_release",
