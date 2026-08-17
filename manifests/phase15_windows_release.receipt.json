@@ -1,6 +1,7 @@
 {
   "ci_test_signing": "PENDING",
   "generated_at": "2026-08-16T20:50:00Z",
+  "hosted_reproof": "PENDING_AFTER_SOURCE_FREEZE",
   "phase": 15,
   "phase_name": "Phase 15 Windows Packaging and Certification",
   "physical_proof_matrix": "INCOMPLETE",
@@ -10,6 +11,7 @@
   "production_signing": "EXTERNAL_CERTIFICATE_REQUIRED",
   "release_filename": "TECHGUYTOOL_Huawei.exe",
   "schema": "techguytool-huawei.phase15-receipt.v1",
+  "source_inventory_freeze_commit": "4c5b1217ac738b0616ec37d7e0828544790bb42d",
   "status": "UNFROZEN",
   "truth_boundary": "This receipt proves only the software authority described by the active phase. Physical-device certification, external proprietary artifacts, Windows production signing and hardware-specific destructive operations remain outside software-only proof unless the phase plan explicitly records independent physical evidence.",
   "unfreeze_reason": "Re-prove the existing Phase 15 Windows packaging authority with the shared Builder owner-machine target binding; this is not a new software phase.",
