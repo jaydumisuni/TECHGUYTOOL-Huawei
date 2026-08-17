@@ -15,9 +15,9 @@ Button {
     background: Rectangle {
         id: tileBackground
         radius: 9
-        color: root.down ? "#13263c" : (root.hovered ? "#0e2237" : "#071522")
+        color: root.down ? "#15243a" : (root.hovered ? "#11243a" : "#0b1828")
         border.width: root.active ? 2 : 1
-        border.color: root.active ? "#c85fff" : (root.hovered ? "#5bd4ff" : "#497899")
+        border.color: root.active ? "#c05dff" : (root.hovered ? "#50c8ff" : "#3e6482")
 
         Rectangle {
             anchors.fill: parent
@@ -26,21 +26,11 @@ Button {
             color: "transparent"
             gradient: Gradient {
                 orientation: Gradient.Horizontal
-                GradientStop { position: 0.00; color: root.active ? "#692379" : "#1a2440" }
-                GradientStop { position: 0.48; color: "#06121f" }
-                GradientStop { position: 1.00; color: root.active ? "#123653" : "#0a2a3e" }
+                GradientStop { position: 0.00; color: root.active ? "#59206b" : "#18243b" }
+                GradientStop { position: 0.50; color: "#071321" }
+                GradientStop { position: 1.00; color: root.active ? "#102a4a" : "#0b2435" }
             }
-            opacity: root.active ? 0.42 : 0.28
-        }
-
-        Rectangle {
-            anchors.fill: parent
-            anchors.margins: 2
-            radius: Math.max(0, parent.radius - 2)
-            color: "transparent"
-            border.width: 1
-            border.color: root.active ? "#8154ad" : "#356988"
-            opacity: root.active ? 0.58 : 0.40
+            opacity: root.active ? 0.31 : 0.17
         }
 
         Rectangle {
@@ -51,7 +41,7 @@ Button {
             anchors.bottom: parent.bottom
             radius: 3
             gradient: Gradient {
-                GradientStop { position: 0.0; color: "#d275ff" }
+                GradientStop { position: 0.0; color: "#c861ff" }
                 GradientStop { position: 0.48; color: Theme.purple }
                 GradientStop { position: 1.0; color: Theme.cyan }
             }
@@ -66,10 +56,10 @@ Button {
             height: 1
             gradient: Gradient {
                 orientation: Gradient.Horizontal
-                GradientStop { position: 0.00; color: root.active ? "#c27cff" : "#688dcc" }
-                GradientStop { position: 1.00; color: root.active ? "#64dcff" : "#3aa7cc" }
+                GradientStop { position: 0.00; color: root.active ? "#b86dff" : "#537cab" }
+                GradientStop { position: 1.00; color: root.active ? "#4ecbff" : "#2e7194" }
             }
-            opacity: root.active ? 0.90 : 0.60
+            opacity: root.active ? 0.68 : 0.32
         }
     }
 
@@ -83,9 +73,9 @@ Button {
             Text {
                 width: 48
                 text: root.glyph
-                color: root.active ? "#e29aff" : "#85bcff"
+                color: root.active ? "#d885ff" : "#74a5ff"
                 font.family: "Segoe UI Symbol"
-                font.pixelSize: 40
+                font.pixelSize: 39
                 horizontalAlignment: Text.AlignHCenter
                 anchors.verticalCenter: parent.verticalCenter
             }
@@ -123,9 +113,9 @@ Button {
             Text {
                 width: parent.width
                 text: root.glyph
-                color: root.active ? "#e29aff" : "#85bcff"
+                color: root.active ? "#d885ff" : "#74a5ff"
                 font.family: "Segoe UI Symbol"
-                font.pixelSize: 35
+                font.pixelSize: 34
                 horizontalAlignment: Text.AlignHCenter
             }
             Text {
