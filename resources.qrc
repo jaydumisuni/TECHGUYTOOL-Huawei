@@ -7,6 +7,7 @@
     <file alias="qml/components/NavItem.qml">qml/components/NavItem.qml</file>
     <file alias="qml/components/OperationTile.qml">qml/components/OperationTile.qml</file>
     <file alias="qml/components/SectionLabel.qml">qml/components/SectionLabel.qml</file>
+    <file alias="qml/components/SemanticLog.qml">qml/components/SemanticLog.qml</file>
     <file alias="qml/components/StatusCard.qml">qml/components/StatusCard.qml</file>
     <file alias="qml/components/ToggleRow.qml">qml/components/ToggleRow.qml</file>
     <file alias="qml/dialogs/AboutDialog.qml">qml/dialogs/AboutDialog.qml</file>
