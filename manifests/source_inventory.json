@@ -538,8 +538,8 @@
     {
       "origin": "phase15_windows_release",
       "path": "qml/dialogs/RegisterDialog.qml",
-      "sha256": "461207d463a96a52dcf8fb27a1316ea7efa015f4331206cb14dd18d84103f949",
-      "size_bytes": 2835
+      "sha256": "7f75705d92dd0a4b1a39d8afd5d6817daaafdc0cfb379f502dc085df57acdb22",
+      "size_bytes": 3060
     },
     {
       "origin": "phase15_windows_release",
@@ -1162,8 +1162,8 @@
     {
       "origin": "phase15_windows_release",
       "path": "tests/test_ui_closeout.py",
-      "sha256": "f7d126d045dbb2a45e71fae38ab6e718a9381c7de23ad4c39225e06054bbf095",
-      "size_bytes": 3506
+      "sha256": "3b25de5353af8c2ea519e4c611a4c425a544077e4d43ac7d130b54a402e9968c",
+      "size_bytes": 3921
     },
     {
       "origin": "phase9_vog_l29_c185_recipe",
