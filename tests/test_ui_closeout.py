@@ -90,3 +90,12 @@ def test_approved_sidebar_mascot_is_packaged_and_single_owned() -> None:
     assert 'source: "../assets/brand/techguy_mascot.png"' in main
     assert "techguy_mascot.png" not in glass
     assert "approvedMascotPanel" not in glass
+
+
+def test_register_dialog_reserves_full_action_row() -> None:
+    register = (DIALOGS / "RegisterDialog.qml").read_text(encoding="utf-8")
+    # The historical 390 px dialog clipped the 48 px action buttons in the
+    # deterministic visual renderer. Keep the corrected closeout geometry.
+    assert "height: 440" in register
+    assert 'text: "CANCEL"' in register
+    assert 'text: "REGISTER DEVICE"' in register
