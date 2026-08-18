@@ -12,6 +12,12 @@ from .action_health import ActionRegistry, ActionState
 from .device_engine import DeviceEngine, EngineResult
 from .evidence import EvidenceJournal
 from .storage import AppPaths
+from .testpoint_catalog import (
+    exact_testpoint_record,
+    expected_service_interface,
+    load_device_profiles,
+    load_testpoint_catalog,
+)
 
 
 class Backend(QObject):
@@ -21,6 +27,7 @@ class Backend(QObject):
     progressChanged = Signal()
     registrationChanged = Signal()
     firmwareChanged = Signal()
+    operationSelectionChanged = Signal()
 
     def __init__(self, app_root: Path) -> None:
         super().__init__()
@@ -33,6 +40,9 @@ class Backend(QObject):
         self._firmware_path = ""
         self._heartbeat_count = 0
         self._ui_actions: set[str] = set()
+        self._selected_operation_label = "No active operation"
+        self._device_profiles = load_device_profiles(app_root)
+        self._testpoint_catalog = load_testpoint_catalog(app_root)
         self._handlers = {
             "read_device": self.engine.probe,
             "open_terminal": self._open_terminal,
@@ -153,11 +163,45 @@ class Backend(QObject):
     def firmwarePath(self) -> str:
         return self._firmware_path
 
+    @Property(str, constant=True)
+    def deviceProfilesJson(self) -> str:
+        return json.dumps(self._device_profiles, sort_keys=True)
+
+    @Property(str, constant=True)
+    def testpointCatalogJson(self) -> str:
+        return json.dumps(self._testpoint_catalog, sort_keys=True)
+
+    @Property(str, notify=operationSelectionChanged)
+    def selectedOperationLabel(self) -> str:
+        return self._selected_operation_label
+
     @Slot(str)
     def setFirmwarePath(self, path: str) -> None:
         self._firmware_path = path.removeprefix("file:///") if sys.platform.startswith("win") else path.removeprefix("file://")
         self.firmwareChanged.emit()
         self._append(f"Firmware package selected: {self._firmware_path}")
+
+    @Slot(str, str)
+    def setSelectedOperation(self, action_id: str, label: str) -> None:
+        if action_id not in self.registry.expected_ids():
+            self._append(f"UI selected unknown operation: {action_id}", "ERROR")
+            return
+        normalized = label.strip() or action_id
+        if normalized != self._selected_operation_label:
+            self._selected_operation_label = normalized
+            self.operationSelectionChanged.emit()
+
+    @Slot(str, result=str)
+    def expectedServiceInterface(self, model_id: str) -> str:
+        for model in self._device_profiles.get("models", []):
+            if isinstance(model, dict) and str(model.get("model", "")) == model_id:
+                return expected_service_interface(str(model.get("platform", "")))
+        return "Unsupported / unknown service interface"
+
+    @Slot(str, result=str)
+    def testpointRecordJson(self, model_id: str) -> str:
+        record = exact_testpoint_record(self._testpoint_catalog, model_id)
+        return json.dumps(record or {}, sort_keys=True)
 
     @Slot(str)
     def registerUiAction(self, action_id: str) -> None:

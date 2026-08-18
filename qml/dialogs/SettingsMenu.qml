@@ -10,9 +10,10 @@ Popup {
     property var ownerWindow
     signal fixDriversRequested()
     signal registerRequested()
+    signal testpointRequested()
     signal aboutRequested()
     width: 380
-    height: 244
+    height: 312
     padding: 10
     modal: false
     focus: true
@@ -35,6 +36,7 @@ Popup {
             model: [
                 {label: "Fix Drivers", detail: "Repair Huawei USB and Fastboot drivers", glyph: "⚒", action: "drivers"},
                 {label: "Register Device", detail: "Register this computer or service device", glyph: "▣", action: "register"},
+                {label: "Testpoint / Pinout Library", detail: "Exact-model, owner-approved service references", glyph: "⌖", action: "testpoint"},
                 {label: "About", detail: "Version, licence and product information", glyph: "ⓘ", action: "about"}
             ]
             Button {
@@ -78,6 +80,7 @@ Popup {
                     root.close()
                     if (modelData.action === "drivers") root.fixDriversRequested()
                     else if (modelData.action === "register") root.registerRequested()
+                    else if (modelData.action === "testpoint") root.testpointRequested()
                     else root.aboutRequested()
                 }
             }

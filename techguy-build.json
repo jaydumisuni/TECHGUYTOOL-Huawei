@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "company": "THETECHGUY DIGITAL SOLUTIONS",
+  "domain": "thetechguyds.com",
+  "appName": "TECHGUYTOOL Huawei",
+  "appVersion": "0.1.0",
+  "projectType": "python-qt",
+  "entryFile": "main.py",
+  "description": "TECHGUY TOOL Huawei service and recovery interface",
+  "targets": [
+    "windows-exe"
+  ],
+  "targetAdapters": {
+    "windows-exe": {
+      "kind": "project-script",
+      "rootKind": "python-qt",
+      "rootPath": ".",
+      "runner": "powershell",
+      "script": "build_windows.ps1",
+      "workingDirectory": ".",
+      "args": [],
+      "artifact": "dist/TECHGUYTOOL_Huawei.exe",
+      "toolchains": {
+        "python": "3.11",
+        "rust": "1.75.0"
+      }
+    }
+  },
+  "runtimeSmoke": {
+    "args": []
+  }
+}
