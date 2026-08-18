@@ -8,7 +8,10 @@ Dialog {
     id: root
     objectName: "registerDialog"
     width: 520
-    height: 390
+    // 390 px clips the 48 px action buttons once the two text fields,
+    // status row and approved spacing are laid out by Qt Quick Controls.
+    // Keep the action row fully inside the dialog in both live and QA renders.
+    height: 440
     modal: true
     focus: true
     anchors.centerIn: parent
