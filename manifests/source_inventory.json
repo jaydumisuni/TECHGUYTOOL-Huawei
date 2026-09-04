@@ -640,7 +640,7 @@
     {
       "origin": "phase15_windows_release",
       "path": "resources.qrc",
-      "sha256": "64b18deb6b554f6fa5795326065226607b424b124b3b32a7f441101d4ca37664",
+      "sha256": "e4a9ac0c70879c482635bdf397816de1a8fb9c97ed2a476fcbc99ebde78d0e1c",
       "size_bytes": 2318
     },
     {
@@ -1138,8 +1138,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "tests/test_repository_contracts.py",
-      "sha256": "c9fdcbe4487c87fe921e6d4bf9c6f2aa98c439254ad296a30687caeaf8304f07",
-      "size_bytes": 4628
+      "sha256": "fd71f6a77d75487ddf0a40043b102380033aaa7a7b0712b27f77ba8e8825a4dc",
+      "size_bytes": 5041
     },
     {
       "origin": "phase14_qcom_mtk",
