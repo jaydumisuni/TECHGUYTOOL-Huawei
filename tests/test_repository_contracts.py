@@ -97,3 +97,9 @@ def test_source_freeze_uses_committed_git_blob_authority() -> None:
     assert head_blob in generator
     assert head_blob in verifier
     assert "tracked source modified outside committed authority" in verifier
+
+
+def test_ui_proof_workflow_quotes_yaml_colon_command() -> None:
+    workflow = (ROOT / ".github" / "workflows" / "proof.yml").read_text(encoding="utf-8")
+    assert "--only-binary=:all:" in workflow
+    assert not re.search(r"^\s*run:\s+[^\n]*--only-binary=:all:\s", workflow, re.MULTILINE)
