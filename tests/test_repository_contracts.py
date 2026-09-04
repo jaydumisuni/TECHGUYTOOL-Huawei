@@ -97,3 +97,29 @@ def test_source_freeze_uses_committed_git_blob_authority() -> None:
     assert head_blob in generator
     assert head_blob in verifier
     assert "tracked source modified outside committed authority" in verifier
+
+
+def test_ui_proof_workflow_quotes_yaml_colon_command() -> None:
+    workflow = (ROOT / ".github" / "workflows" / "proof.yml").read_text(encoding="utf-8")
+    assert "--only-binary=:all:" in workflow
+    assert not re.search(r"^\s*run:\s+[^\n]*--only-binary=:all:\s", workflow, re.MULTILINE)
+
+def test_resources_qrc_matches_deterministic_generator_order() -> None:
+    expected = [
+        relative
+        for folder in (ROOT / "qml", ROOT / "assets")
+        for relative in sorted(
+            path.relative_to(ROOT).as_posix()
+            for path in folder.rglob("*")
+            if path.is_file()
+        )
+    ]
+    qrc = (ROOT / "resources.qrc").read_text(encoding="utf-8")
+    actual = re.findall(r'<file alias="([^"]+)">', qrc)
+    assert actual == expected
+
+def test_smoke_qml_wraps_application_window_as_qquickwindow() -> None:
+    source = (ROOT / "tools" / "smoke_qml.py").read_text(encoding="utf-8")
+    assert "from PySide6.QtQuick import QQuickWindow" in source
+    assert "def as_quick_window" in source
+    assert "window = as_quick_window(engine.rootObjects()[0])" in source
