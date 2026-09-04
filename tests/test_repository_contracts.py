@@ -106,10 +106,13 @@ def test_ui_proof_workflow_quotes_yaml_colon_command() -> None:
 
 def test_resources_qrc_matches_deterministic_generator_order() -> None:
     expected = [
-        path.relative_to(ROOT).as_posix()
+        relative
         for folder in (ROOT / "qml", ROOT / "assets")
-        for path in sorted(folder.rglob("*"))
-        if path.is_file()
+        for relative in sorted(
+            path.relative_to(ROOT).as_posix()
+            for path in folder.rglob("*")
+            if path.is_file()
+        )
     ]
     qrc = (ROOT / "resources.qrc").read_text(encoding="utf-8")
     actual = re.findall(r'<file alias="([^"]+)">', qrc)
