@@ -9,6 +9,7 @@ from typing import Any, Mapping, Sequence
 from .windows_release import REQUIRED_MATRIX_IDS, SHA256_RE, WindowsReleaseError, _validate_physical_evidence
 
 PACKET_SCHEMA = "techguytool-huawei.physical-evidence-packet.v1"
+FILE_HASH_CHUNK_BYTES = 1024 * 1024
 
 
 class PhysicalEvidenceError(ValueError):
@@ -31,6 +32,16 @@ def _canonical_bytes(value: Any) -> bytes:
 def _sha256_bytes(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 
+
+
+def _sha256_file(path: Path) -> tuple[str, int]:
+    digest = hashlib.sha256()
+    size = 0
+    with path.open("rb") as handle:
+        while chunk := handle.read(FILE_HASH_CHUNK_BYTES):
+            digest.update(chunk)
+            size += len(chunk)
+    return digest.hexdigest(), size
 
 def _normalize_verified_at(value: str | None) -> str:
     if value is None:
@@ -86,12 +97,12 @@ def build_physical_evidence_packet(
         if path.name in names:
             raise PhysicalEvidenceError(f"Duplicate evidence filename: {path.name}")
         names.add(path.name)
-        data = path.read_bytes()
+        digest, size = _sha256_file(path)
         file_records.append(
             {
                 "name": path.name,
-                "sha256": _sha256_bytes(data),
-                "size": len(data),
+                "sha256": digest,
+                "size": size,
             }
         )
     if not file_records:
@@ -170,6 +181,9 @@ def validate_physical_evidence_packet(packet: Mapping[str, Any]) -> None:
     expected_material_hash = _sha256_bytes(_canonical_bytes(dict(material)))
     if evidence.get("evidence_sha256") != expected_material_hash:
         raise PhysicalEvidenceError("Physical evidence material hash mismatch")
+    expected_evidence_id = f"{entry_id}-{expected_material_hash[:16]}"
+    if evidence.get("evidence_id") != expected_evidence_id:
+        raise PhysicalEvidenceError("Physical evidence id mismatch")
     if evidence.get("subject_identity_hash") != subject_hash:
         raise PhysicalEvidenceError("Physical evidence subject hash mismatch")
     if evidence.get("evidence_refs") != refs:

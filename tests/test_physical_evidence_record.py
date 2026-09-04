@@ -236,3 +236,43 @@ def test_cli_accepts_utf8_bom_subject_json(evidence_sandbox: Path) -> None:
 
     assert completed.returncode == 0, completed.stderr or completed.stdout
     validate_physical_evidence_packet(json.loads(output.read_text(encoding="utf-8")))
+
+def test_packet_validator_rejects_tampered_evidence_id(evidence_sandbox: Path) -> None:
+    log = evidence_sandbox / "device.txt"
+    log.write_text("evidence\n", encoding="utf-8")
+    packet = build_physical_evidence_packet(
+        entry_id="mtp_direct_route",
+        subject={"model": "VTR-L29"},
+        evidence_files=[log],
+        evidence_refs=["artifact://athena/mtp/device.txt"],
+        verifier="THETECHGUY physical certification",
+        verified_at=_fixed_time(),
+    )
+    tampered = copy.deepcopy(packet)
+    tampered["evidence"]["evidence_id"] = "mtp_direct_route-deadbeefdeadbeef"
+    with pytest.raises(PhysicalEvidenceError, match="evidence id mismatch"):
+        validate_physical_evidence_packet(tampered)
+
+
+def test_evidence_file_hashing_does_not_use_read_bytes(
+    evidence_sandbox: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    log = evidence_sandbox / "large-capture.bin"
+    log.write_bytes((b"0123456789abcdef" * 131072) + b"tail")
+    original_read_bytes = Path.read_bytes
+
+    def reject_read_bytes(path: Path) -> bytes:
+        if path == log:
+            raise AssertionError("evidence files must be streamed, not read wholesale")
+        return original_read_bytes(path)
+
+    monkeypatch.setattr(Path, "read_bytes", reject_read_bytes)
+    packet = build_physical_evidence_packet(
+        entry_id="mtp_direct_route",
+        subject={"model": "VTR-L29"},
+        evidence_files=[log],
+        evidence_refs=["artifact://athena/mtp/large-capture.bin"],
+        verifier="THETECHGUY physical certification",
+        verified_at=_fixed_time(),
+    )
+    assert packet["material"]["files"][0]["size"] == log.stat().st_size
