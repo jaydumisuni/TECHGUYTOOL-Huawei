@@ -454,8 +454,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "pyproject.toml",
-      "sha256": "6a9e88f46e12a0a7a81725449a457585e03c50920e25c145908b8ba28758beec",
-      "size_bytes": 593
+      "sha256": "629b8f8bac90d593ec74b4ef19e96b97116516ba324a21b20c4beb78f9c7a426",
+      "size_bytes": 619
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -634,8 +634,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "requirements.txt",
-      "sha256": "b2c05cff96b4a84d25ca81b466a73745906053b3b50168df50b28884560e2ecb",
-      "size_bytes": 16
+      "sha256": "1c947526666aa58efa4620dc11ac48208644101eed9a898bfc4bdd8d09f47770",
+      "size_bytes": 17
     },
     {
       "origin": "phase15_windows_release",
@@ -1126,8 +1126,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "tests/test_repository_contracts.py",
-      "sha256": "6a8136f9c33f720341387d803b7122888178e9b5f4a395ad6ef58c9927a00361",
-      "size_bytes": 3336
+      "sha256": "ff3c6ef8edee0de6a1a7abc4664b0935cb4b6723d1faab08f3d9eea72d97ad67",
+      "size_bytes": 3755
     },
     {
       "origin": "phase14_qcom_mtk",
@@ -1216,8 +1216,8 @@
     {
       "origin": "phase7_bounded_executor_framework",
       "path": "tools/build_source_inventory.py",
-      "sha256": "6b6360e9eb0b8fb26194e09cbaab3dec71d068984ac7def99d166cdc3ce80fcc",
-      "size_bytes": 8504
+      "sha256": "1f25c28ffc36f73dd1a7b2753195b469e85188db5e3603660e64882510735c3e",
+      "size_bytes": 8741
     },
     {
       "origin": "phase15_windows_release",
@@ -1228,8 +1228,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "tools/compare_final_ui_states.py",
-      "sha256": "4d85dcec0960f49ecebf11c288b38e7577a03c9c3ae928df3f65329c90ff701e",
-      "size_bytes": 4778
+      "sha256": "cc6bd5862a57da6112c4e96390dee40ff9311b1ccbc9a983ad8b08bd7d2a3920",
+      "size_bytes": 5139
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",

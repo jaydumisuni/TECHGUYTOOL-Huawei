@@ -8,16 +8,15 @@ import json
 import re
 from pathlib import Path
 
-from PIL import Image, ImageChops, ImageDraw, ImageFilter
-import numpy as np
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageStat
 
 STATES = (
-    "01-firmware-flash.png",
-    "02-settings.png",
-    "03-about.png",
-    "04-fix-drivers.png",
-    "05-register-device.png",
-    "06-terminal.png",
+    ("01-firmware-flash.png", "01-firmware-flash.png"),
+    ("02-settings.png", "02-settings.png"),
+    ("03-about.png", "03-about.png"),
+    ("04-fix-drivers.png", "04-fix-drivers.png"),
+    ("05-register-device.png", "05-register-device.png"),
+    ("06-terminal.png", "07-terminal.png"),
 )
 CURRENT_SIZE = (1586, 992)
 
@@ -26,23 +25,26 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _mean_channel_difference(image: Image.Image) -> float:
+    means = ImageStat.Stat(image).mean
+    return sum(means) / len(means)
+
+
 def similarity(a: Image.Image, b: Image.Image) -> tuple[float, float, float]:
-    b = b.resize(a.size, Image.Resampling.LANCZOS)
-    aa = np.asarray(a.convert("RGB"), dtype=np.float32)
-    bb = np.asarray(b.convert("RGB"), dtype=np.float32)
-    pixel = 1.0 - float(np.abs(aa - bb).mean()) / 255.0
+    a_rgb = a.convert("RGB")
+    b_rgb = b.resize(a.size, Image.Resampling.LANCZOS).convert("RGB")
+    pixel_diff = ImageChops.difference(a_rgb, b_rgb)
+    pixel = 1.0 - _mean_channel_difference(pixel_diff) / 255.0
 
-    ac = a.convert("RGB").resize((160, 100), Image.Resampling.LANCZOS)
-    bc = b.convert("RGB").resize((160, 100), Image.Resampling.LANCZOS)
-    aaa = np.asarray(ac, dtype=np.float32)
-    bbb = np.asarray(bc, dtype=np.float32)
-    coarse = 1.0 - float(np.abs(aaa - bbb).mean()) / 255.0
+    ac = a_rgb.resize((160, 100), Image.Resampling.LANCZOS)
+    bc = b_rgb.resize((160, 100), Image.Resampling.LANCZOS)
+    coarse_diff = ImageChops.difference(ac, bc)
+    coarse = 1.0 - _mean_channel_difference(coarse_diff) / 255.0
 
-    ae = a.convert("L").resize((320, 200), Image.Resampling.LANCZOS).filter(ImageFilter.FIND_EDGES)
-    be = b.convert("L").resize((320, 200), Image.Resampling.LANCZOS).filter(ImageFilter.FIND_EDGES)
-    aae = np.asarray(ae, dtype=np.float32)
-    bbe = np.asarray(be, dtype=np.float32)
-    edge = 1.0 - float(np.abs(aae - bbe).mean()) / 255.0
+    ae = a_rgb.convert("L").resize((320, 200), Image.Resampling.LANCZOS).filter(ImageFilter.FIND_EDGES)
+    be = b_rgb.convert("L").resize((320, 200), Image.Resampling.LANCZOS).filter(ImageFilter.FIND_EDGES)
+    edge_diff = ImageChops.difference(ae, be)
+    edge = 1.0 - _mean_channel_difference(edge_diff) / 255.0
     return pixel, coarse, edge
 
 
@@ -55,9 +57,10 @@ def main() -> int:
 
     authority = args.approved / "README.md"
     text = authority.read_text(encoding="utf-8")
-    hashes = [h.lower() for h in re.findall(r"\b[a-fA-F0-9]{64}\b", text)]
+    locked_section = text.split("## Required seventh Phase 15 state", 1)[0]
+    hashes = [h.lower() for h in re.findall(r"`([a-fA-F0-9]{64})`", locked_section)]
     if len(hashes) != len(STATES) or len(set(hashes)) != len(STATES):
-        raise SystemExit(f"visual authority must contain exactly {len(STATES)} unique SHA-256 values")
+        raise SystemExit(f"locked visual authority must contain exactly {len(STATES)} unique SHA-256 values")
 
     args.output.mkdir(parents=True, exist_ok=True)
     report: dict[str, object] = {
@@ -67,42 +70,42 @@ def main() -> int:
         "states": [],
     }
 
-    for name, expected_hash in zip(STATES, hashes):
-        ref_path = args.approved / name
-        cur_path = args.current / name
+    for (approved_name, current_name), expected_hash in zip(STATES, hashes):
+        ref_path = args.approved / approved_name
+        cur_path = args.current / current_name
         if not ref_path.is_file():
             raise SystemExit(f"approved reference missing: {ref_path}")
         if not cur_path.is_file():
             raise SystemExit(f"current render missing: {cur_path}")
         actual_hash = sha256(ref_path)
         if actual_hash != expected_hash:
-            raise SystemExit(f"approved reference hash mismatch for {name}: {actual_hash} != {expected_hash}")
+            raise SystemExit(f"approved reference hash mismatch for {approved_name}: {actual_hash} != {expected_hash}")
 
         ref = Image.open(ref_path).convert("RGB")
         cur = Image.open(cur_path).convert("RGB")
         if cur.size != CURRENT_SIZE:
-            raise SystemExit(f"current render size mismatch for {name}: {cur.size} != {CURRENT_SIZE}")
+            raise SystemExit(f"current render size mismatch for {current_name}: {cur.size} != {CURRENT_SIZE}")
 
         pixel, coarse, edge = similarity(ref, cur)
         if coarse < 0.70 or edge < 0.70:
-            raise SystemExit(f"gross visual drift for {name}: coarse={coarse:.4f}, edge={edge:.4f}")
+            raise SystemExit(f"gross visual drift for {current_name}: coarse={coarse:.4f}, edge={edge:.4f}")
 
         normalized = cur.resize(ref.size, Image.Resampling.LANCZOS)
         side = Image.new("RGB", (ref.width * 2, ref.height + 38), "#050810")
         side.paste(ref, (0, 38))
         side.paste(normalized, (ref.width, 38))
         draw = ImageDraw.Draw(side)
-        draw.text((12, 11), f"APPROVED — {name}", fill="white")
-        draw.text((ref.width + 12, 11), f"CURRENT — {name}", fill="white")
-        side.save(args.output / f"compare-{name}", optimize=True)
+        draw.text((12, 11), f"APPROVED - {approved_name}", fill="white")
+        draw.text((ref.width + 12, 11), f"CURRENT - {current_name}", fill="white")
+        side.save(args.output / f"compare-{current_name}", optimize=True)
 
         diff = ImageChops.difference(ref, normalized)
-        arr = np.asarray(diff, dtype=np.uint16)
-        amplified = Image.fromarray(np.clip(arr * 3, 0, 255).astype(np.uint8), "RGB")
-        amplified.save(args.output / f"diff-x3-{name}", optimize=True)
+        amplified = diff.point(lambda value: min(255, value * 3))
+        amplified.save(args.output / f"diff-x3-{current_name}", optimize=True)
 
         report["states"].append({
-            "name": name,
+            "approved_name": approved_name,
+            "current_name": current_name,
             "approved_sha256": expected_hash,
             "approved_size": list(ref.size),
             "current_size": list(cur.size),

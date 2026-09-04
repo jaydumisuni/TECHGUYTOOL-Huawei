@@ -78,3 +78,11 @@ def test_qt_release_dependency_is_frozen() -> None:
     assert exact in proof_workflow
     assert "PySide6>=6.8,<7" not in pyproject
     assert "PySide6>=6.8,<7" not in requirements
+
+
+def test_visual_comparator_tracks_seven_state_capture_contract() -> None:
+    source = (ROOT / "tools" / "compare_final_ui_states.py").read_text(encoding="utf-8")
+    assert '("06-terminal.png", "07-terminal.png")' in source
+    assert 'text.split("## Required seventh Phase 15 state", 1)[0]' in source
+    assert 're.findall(r"`([a-fA-F0-9]{64})`", locked_section)' in source
+    assert "import numpy" not in source
