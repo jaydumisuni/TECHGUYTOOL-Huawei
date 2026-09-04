@@ -12,7 +12,7 @@ python_path = python
 packages = nuitka==2.6.8,ordered_set,zstandard
 
 [qt]
-qml_files = qml/Main.qml,qml/Theme.qml,qml/components/GlassPanel.qml,qml/components/GlowButton.qml,qml/components/NavItem.qml,qml/components/OperationTile.qml,qml/components/SectionLabel.qml,qml/components/StatusCard.qml,qml/components/ToggleRow.qml,qml/pages/ServiceCenterPage.qml,qml/pages/FirmwareFlashPage.qml,qml/pages/DeviceInformationPage.qml,qml/pages/PartitionManagerPage.qml,qml/pages/BackupRestorePage.qml,qml/pages/OperationHistoryPage.qml,qml/dialogs/SettingsMenu.qml,qml/dialogs/RegisterDialog.qml,qml/dialogs/DriverDialog.qml,qml/dialogs/AboutDialog.qml,qml/dialogs/TerminalDialog.qml
+qml_files = qml/Main.qml,qml/Theme.qml,qml/components/GlassPanel.qml,qml/components/GlowButton.qml,qml/components/NavItem.qml,qml/components/OperationTile.qml,qml/components/SectionLabel.qml,qml/components/StatusCard.qml,qml/components/ToggleRow.qml,qml/pages/ServiceCenterPage.qml,qml/pages/FirmwareFlashPage.qml,qml/pages/DeviceInformationPage.qml,qml/pages/PartitionManagerPage.qml,qml/pages/BackupRestorePage.qml,qml/pages/OperationHistoryPage.qml,qml/dialogs/SettingsMenu.qml,qml/dialogs/RegisterDialog.qml,qml/dialogs/DriverDialog.qml,qml/dialogs/AboutDialog.qml,qml/dialogs/TerminalDialog.qml,qml/dialogs/TestpointDialog.qml
 excluded_qml_plugins = QtQuick3D,QtCharts,QtWebEngine,QtTest,QtSensors
 modules = Core,Gui,Qml,Quick,QuickControls2
 plugins = platforms,imageformats

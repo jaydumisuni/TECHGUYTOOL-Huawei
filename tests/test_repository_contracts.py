@@ -65,3 +65,35 @@ def test_onefile_deployment_contract() -> None:
     assert "New-Item -ItemType Directory -Force $TargetDirectory" in build
     assert "Move-Item" in build
     assert "Get-FileHash -Algorithm SHA256" in build
+
+
+def test_qt_release_dependency_is_frozen() -> None:
+    pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    requirements = (ROOT / "requirements.txt").read_text(encoding="utf-8")
+    proof_workflow = (ROOT / ".github" / "workflows" / "proof.yml").read_text(encoding="utf-8")
+
+    exact = "PySide6==6.11.1"
+    assert exact in pyproject
+    assert exact in requirements
+    assert exact in proof_workflow
+    assert "PySide6>=6.8,<7" not in pyproject
+    assert "PySide6>=6.8,<7" not in requirements
+
+
+def test_visual_comparator_tracks_seven_state_capture_contract() -> None:
+    source = (ROOT / "tools" / "compare_final_ui_states.py").read_text(encoding="utf-8")
+    assert '("06-terminal.png", "07-terminal.png")' in source
+    assert 'text.split("## Required seventh Phase 15 state", 1)[0]' in source
+    assert 're.findall(r"`([a-fA-F0-9]{64})`", locked_section)' in source
+    assert "import numpy" not in source
+
+def test_source_freeze_uses_committed_git_blob_authority() -> None:
+    generator = (ROOT / "tools" / "build_source_inventory.py").read_text(encoding="utf-8")
+    verifier = (ROOT / "tools" / "verify_source_freeze.py").read_text(encoding="utf-8")
+    head_tree = '["git", "ls-tree", "-r", "--name-only", "-z", "HEAD"]'
+    head_blob = '["git", "show", f"HEAD:{rel}"]'
+    assert head_tree in generator
+    assert head_tree in verifier
+    assert head_blob in generator
+    assert head_blob in verifier
+    assert "tracked source modified outside committed authority" in verifier

@@ -7,6 +7,7 @@
     <file alias="qml/components/NavItem.qml">qml/components/NavItem.qml</file>
     <file alias="qml/components/OperationTile.qml">qml/components/OperationTile.qml</file>
     <file alias="qml/components/SectionLabel.qml">qml/components/SectionLabel.qml</file>
+    <file alias="qml/components/SemanticLog.qml">qml/components/SemanticLog.qml</file>
     <file alias="qml/components/StatusCard.qml">qml/components/StatusCard.qml</file>
     <file alias="qml/components/ToggleRow.qml">qml/components/ToggleRow.qml</file>
     <file alias="qml/dialogs/AboutDialog.qml">qml/dialogs/AboutDialog.qml</file>
@@ -14,6 +15,7 @@
     <file alias="qml/dialogs/RegisterDialog.qml">qml/dialogs/RegisterDialog.qml</file>
     <file alias="qml/dialogs/SettingsMenu.qml">qml/dialogs/SettingsMenu.qml</file>
     <file alias="qml/dialogs/TerminalDialog.qml">qml/dialogs/TerminalDialog.qml</file>
+    <file alias="qml/dialogs/TestpointDialog.qml">qml/dialogs/TestpointDialog.qml</file>
     <file alias="qml/pages/ServiceCenterPage.qml">qml/pages/ServiceCenterPage.qml</file>
     <file alias="qml/pages/DeviceInformationPage.qml">qml/pages/DeviceInformationPage.qml</file>
     <file alias="qml/pages/FirmwareFlashPage.qml">qml/pages/FirmwareFlashPage.qml</file>

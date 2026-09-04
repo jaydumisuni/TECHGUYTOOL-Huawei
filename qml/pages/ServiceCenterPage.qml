@@ -10,6 +10,14 @@ Item {
     property string selectedLabel: "FRP REPAIR"
     signal terminalRequested()
 
+    function selectOperation(actionId, label) {
+        selectedAction = actionId
+        selectedLabel = label
+        backend.setSelectedOperation(actionId, label)
+    }
+
+    Component.onCompleted: backend.setSelectedOperation(selectedAction, selectedLabel)
+
     ColumnLayout {
         anchors.fill: parent
         spacing: 12
@@ -113,15 +121,15 @@ Item {
             columnSpacing: 10
             rowSpacing: 10
 
-            OperationTile { Layout.fillWidth: true; text: "FRP Repair"; subtitle: "Remove FRP lock from devices."; glyph: "♙"; active: root.selectedAction === "frp_repair"; onClicked: { root.selectedAction = "frp_repair"; root.selectedLabel = "FRP REPAIR" } }
-            OperationTile { Layout.fillWidth: true; text: "Bootloader"; subtitle: "Unlock or relock the bootloader."; glyph: "♙"; active: root.selectedAction === "bootloader"; onClicked: { root.selectedAction = "bootloader"; root.selectedLabel = "BOOTLOADER" } }
-            OperationTile { Layout.fillWidth: true; text: "Huawei ID"; subtitle: "Remove or manage Huawei ID."; glyph: "♙"; active: root.selectedAction === "huawei_id"; onClicked: { root.selectedAction = "huawei_id"; root.selectedLabel = "HUAWEI ID" } }
-            OperationTile { Layout.fillWidth: true; text: "Verlist"; subtitle: "Read and repair device verification status."; glyph: "◇"; active: root.selectedAction === "verlist"; onClicked: { root.selectedAction = "verlist"; root.selectedLabel = "VERLIST" } }
-            OperationTile { Layout.fillWidth: true; text: "Pair"; subtitle: "Repair and manage Bluetooth/Wi-Fi pairing."; glyph: "↗"; active: root.selectedAction === "pair"; onClicked: { root.selectedAction = "pair"; root.selectedLabel = "PAIR" } }
-            OperationTile { Layout.fillWidth: true; text: "Full OEMINFO"; subtitle: "Read full OEM information from device."; glyph: "▤"; active: root.selectedAction === "full_oeminfo"; onClicked: { root.selectedAction = "full_oeminfo"; root.selectedLabel = "FULL OEMINFO" } }
-            OperationTile { Layout.fillWidth: true; text: "Flash Firmware"; subtitle: "Flash stock or custom firmware."; glyph: "▣"; active: root.selectedAction === "flash_firmware"; onClicked: { root.selectedAction = "flash_firmware"; root.selectedLabel = "FLASH FIRMWARE" } }
-            OperationTile { Layout.fillWidth: true; text: "Board Repair"; subtitle: "Repair board functions and calibrations."; glyph: "⚒"; active: root.selectedAction === "board_repair"; onClicked: { root.selectedAction = "board_repair"; root.selectedLabel = "BOARD REPAIR" } }
-            OperationTile { Layout.fillWidth: true; text: "Backup / Restore"; subtitle: "Backup or restore device partitions."; glyph: "☁"; active: root.selectedAction === "backup_restore"; onClicked: { root.selectedAction = "backup_restore"; root.selectedLabel = "BACKUP / RESTORE" } }
+            OperationTile { Layout.fillWidth: true; text: "FRP Repair"; subtitle: "Remove FRP lock from devices."; glyph: "♙"; active: root.selectedAction === "frp_repair"; onClicked: root.selectOperation("frp_repair", "FRP REPAIR") }
+            OperationTile { Layout.fillWidth: true; text: "Bootloader"; subtitle: "Unlock or relock the bootloader."; glyph: "♙"; active: root.selectedAction === "bootloader"; onClicked: root.selectOperation("bootloader", "BOOTLOADER") }
+            OperationTile { Layout.fillWidth: true; text: "Huawei ID"; subtitle: "Remove or manage Huawei ID."; glyph: "♙"; active: root.selectedAction === "huawei_id"; onClicked: root.selectOperation("huawei_id", "HUAWEI ID") }
+            OperationTile { Layout.fillWidth: true; text: "Verlist"; subtitle: "Read and repair device verification status."; glyph: "◇"; active: root.selectedAction === "verlist"; onClicked: root.selectOperation("verlist", "VERLIST") }
+            OperationTile { Layout.fillWidth: true; text: "Pair"; subtitle: "Repair and manage Bluetooth/Wi-Fi pairing."; glyph: "↗"; active: root.selectedAction === "pair"; onClicked: root.selectOperation("pair", "PAIR") }
+            OperationTile { Layout.fillWidth: true; text: "Full OEMINFO"; subtitle: "Read full OEM information from device."; glyph: "▤"; active: root.selectedAction === "full_oeminfo"; onClicked: root.selectOperation("full_oeminfo", "FULL OEMINFO") }
+            OperationTile { Layout.fillWidth: true; text: "Flash Firmware"; subtitle: "Flash stock or custom firmware."; glyph: "▣"; active: root.selectedAction === "flash_firmware"; onClicked: root.selectOperation("flash_firmware", "FLASH FIRMWARE") }
+            OperationTile { Layout.fillWidth: true; text: "Board Repair"; subtitle: "Repair board functions and calibrations."; glyph: "⚒"; active: root.selectedAction === "board_repair"; onClicked: root.selectOperation("board_repair", "BOARD REPAIR") }
+            OperationTile { Layout.fillWidth: true; text: "Backup / Restore"; subtitle: "Backup or restore device partitions."; glyph: "☁"; active: root.selectedAction === "backup_restore"; onClicked: root.selectOperation("backup_restore", "BACKUP / RESTORE") }
         }
 
         GlassPanel {
@@ -151,7 +159,7 @@ Item {
                     ColumnLayout {
                         Layout.fillWidth: true
                         Text { text: "SERVICE MODE"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 11; font.letterSpacing: 0.8 }
-                        ComboBox { Layout.fillWidth: true; model: ["Auto (Recommended)", "ADB", "Fastboot", "Upgrade / Rescue"]; currentIndex: 0 }
+                        ComboBox { Layout.fillWidth: true; model: ["Auto (Recommended)", "ADB", "Fastboot", "Upgrade Mode", "Rescue"]; currentIndex: 0 }
                     }
                 }
                 GlowButton {

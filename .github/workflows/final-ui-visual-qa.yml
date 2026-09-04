@@ -31,13 +31,13 @@ jobs:
           $ErrorActionPreference = "Stop"
           python -m pip install --disable-pip-version-check -e ".[test]"
 
-      - name: Prove no-placeholder navigation contract
+      - name: Prove no-placeholder and Phase 15 UI authority contract
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          python -m pytest -q tests/test_ui_closeout.py
+          python -m pytest -q tests/test_ui_closeout.py tests/test_testpoint_catalog.py
 
-      - name: Capture all six main UI states at approved dimensions
+      - name: Capture all seven approved UI states at approved dimensions
         shell: pwsh
         env:
           QT_QPA_PLATFORM: offscreen
