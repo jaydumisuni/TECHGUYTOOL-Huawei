@@ -4,18 +4,31 @@ import os
 from pathlib import Path
 import sys
 
+import shiboken6
+
 os.environ.setdefault("QT_QUICK_BACKEND", "software")
 os.environ.setdefault("QT_QUICK_CONTROLS_STYLE", "Basic")
 
 from PySide6.QtCore import QTimer, QUrl
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtQml import QQmlApplicationEngine
+from PySide6.QtQuick import QQuickWindow
 
 from techguy_huawei.backend import Backend
 
 
 ROOT = Path(__file__).resolve().parents[1]
 PROOF = ROOT / "proof"
+
+
+def as_quick_window(window: object) -> QQuickWindow:
+    if isinstance(window, QQuickWindow):
+        return window
+    pointer = shiboken6.getCppPointer(window)[0]
+    quick_window = shiboken6.wrapInstance(pointer, QQuickWindow)
+    if quick_window is None:
+        raise RuntimeError("Could not wrap QML root window as QQuickWindow")
+    return quick_window
 
 
 def main() -> int:
@@ -27,7 +40,7 @@ def main() -> int:
     if not engine.rootObjects():
         print("QML root object was not created", file=sys.stderr)
         return 1
-    window = engine.rootObjects()[0]
+    window = as_quick_window(engine.rootObjects()[0])
     PROOF.mkdir(parents=True, exist_ok=True)
 
     def capture() -> None:

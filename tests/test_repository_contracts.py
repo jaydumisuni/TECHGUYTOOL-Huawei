@@ -114,3 +114,9 @@ def test_resources_qrc_matches_deterministic_generator_order() -> None:
     qrc = (ROOT / "resources.qrc").read_text(encoding="utf-8")
     actual = re.findall(r'<file alias="([^"]+)">', qrc)
     assert actual == expected
+
+def test_smoke_qml_wraps_application_window_as_qquickwindow() -> None:
+    source = (ROOT / "tools" / "smoke_qml.py").read_text(encoding="utf-8")
+    assert "from PySide6.QtQuick import QQuickWindow" in source
+    assert "def as_quick_window" in source
+    assert "window = as_quick_window(engine.rootObjects()[0])" in source
