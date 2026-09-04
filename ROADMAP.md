@@ -2,6 +2,7 @@
 
 **Status:** ACTIVE CURRENT-WORK AUTHORITY  
 **Effective:** 2026-08-16  
+**Last reconciled:** 2026-09-04
 **Repository:** `jaydumisuni/TECHGUYTOOL-Huawei`
 
 ## 0. Purpose
@@ -55,6 +56,25 @@ SHA-256                 b0709e2d46c793609456877f55fdecc6620382ea55777684cc4b9c51
 ```
 
 The approved UI is frozen. Do not redesign it while performing certification or coverage work.
+
+### 1.1A Current owner-machine source authority
+
+The historical Phase 15 UI closeout receipt above remains valid evidence for its recorded CI candidate, but it is no longer the newest source revision. ATHENA owner-machine review exposed and corrected dependency, source-freeze portability and visual-comparator defects without redesigning the approved UI.
+
+Current merged authorities are:
+
+```text
+Huawei main merge              ac3c460cf1aaf9165bd7eabbd0b3bd2b6c692eab
+proven source head             1010dbe22fe10a03142a375547f99e075a413551
+Builder main merge             440d9e59ac062a83ff82d230ed2754138e434ed3
+Builder reviewed head          dcba3263f4982071221dc66d61e69dcf2f059257
+owner pytest                   207/207 PASS
+owner strict review            40/40 PASS
+source QML construction        PASS
+source visual capture          7/7 at 1586x992, zero QML warnings
+```
+
+The current Phase 15 Windows packaging receipt deliberately remains `UNFROZEN` with `windows_ci=PENDING` and `ci_test_signing=PENDING`. Packaging/signing is a later release-artifact confirmation and must not be confused with source/UI correctness.
 
 ### 1.2 Production state
 
@@ -173,11 +193,18 @@ Builder must inventory/reuse existing shared capabilities before installing or d
 
 ---
 
-## 4. Immediate milestone — ATHENA local release proof
+## 4. ATHENA owner-machine proof — source/UI complete, packaging confirmation deferred
 
-This is the next practical milestone.
+The owner-machine source/UI milestone is now complete and merged. The A0-A5 procedure below is retained as the recovery/proof procedure for future release-candidate confirmation; it is **not** the current source-development frontier.
 
-The CI candidate is already proven. The next goal is to prove the same current product through the owner's real Windows build environment using the shared Builder and direct Oracle MCP/RPC terminal access.
+Current result:
+
+- direct Oracle Live -> ATHENA identity/readiness: PASS;
+- A0/A1 source/Builder recovery and clean isolated proof worktree: PASS;
+- A2 Builder `doctor -> plan -> targets`: PASS;
+- source/runtime/UI correctness: PASS and merged;
+- long one-file packaging build: intentionally deferred as release confirmation;
+- current packaging receipt: `UNFROZEN`, not falsely promoted.
 
 ### A0 — Recover live machine truth
 
@@ -484,6 +511,17 @@ Do not reopen Phases 1–15 simply because a new chat lacks context.
 
 Unless newer repository evidence supersedes this roadmap, the next action is:
 
-> **Use direct Oracle MCP/RPC access to ATHENA, recover the contained Huawei project root and live Builder state, then produce the first owner-machine Builder proof of the frozen/current Huawei Windows candidate without changing the approved architecture or UI.**
+> **Begin external Huawei certification with whatever representative Huawei hardware is physically available. Prefer the lowest-risk read-only/direct route first (MTP, authorised ADB, normal Fastboot, Recovery or Upgrade Mode as applicable), capture exact device/host evidence, and promote only the exact evidence-backed matrix row.**
 
-After that, continue the external certification tracks using whatever supported Huawei hardware is actually available. The old P30 is not required.
+Certification evidence procedure:
+
+1. keep raw device/host captures under the repository's ignored `proof/` tree or another approved contained project-proof location;
+2. hash the exact subject identity and captured evidence with `tools/record_physical_proof.py`;
+3. review the generated packet against the exact model/board/SoC/mode/operation being certified;
+4. only after review may the corresponding `manifests/phase15_physical_proof_matrix.json` entry become `PHYSICAL_PASS`;
+5. never infer support from a related model or from software/replay evidence;
+6. if no Huawei hardware is attached, leave the matrix pending rather than simulating success.
+
+The recorder creates evidence packets only. It does **not** mutate the physical matrix or enable production.
+
+Packaging, CI test signing and production Authenticode remain separate release-artifact/certificate work and may be performed later when an actual release artifact is required. The old P30 is not required.

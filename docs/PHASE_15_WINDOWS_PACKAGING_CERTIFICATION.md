@@ -57,6 +57,35 @@ Therefore:
 - `production_enabled` remains `false`;
 - VOG, Qualcomm and MediaTek physical certification remain pending.
 
+## Physical evidence recorder
+
+Physical certification evidence is recorded with `tools/record_physical_proof.py`. The recorder is deliberately read-only with respect to project authority:
+
+- it accepts one existing physical-matrix entry id;
+- it hashes a subject-identity JSON object but does **not** embed the raw subject values in the output packet;
+- it hashes every captured evidence file and records only filename, size and SHA-256;
+- `evidence_sha256` is the SHA-256 of canonical evidence material binding the matrix entry id, verifier, UTC verification time, subject hash, evidence references and captured-file hashes;
+- it requires at least one retained evidence reference and verifier identity;
+- it validates the generated six-field evidence record against the existing Phase 15 matrix contract;
+- output is restricted to the repository's ignored `proof/` tree;
+- it never edits `phase15_physical_proof_matrix.json` and never promotes an entry to `PHYSICAL_PASS`.
+
+Example:
+
+```powershell
+python tools/record_physical_proof.py `
+  --entry-id mtp_direct_route `
+  --subject-json proof/physical/vtr-l29/subject.json `
+  --evidence-file proof/physical/vtr-l29/pnp.txt `
+  --evidence-ref artifact://athena/vtr-l29/pnp.txt `
+  --verifier "THETECHGUY physical certification" `
+  --output proof/physical/vtr-l29/mtp-direct-route.packet.json
+```
+
+The subject JSON may contain exact serial/board identity required to bind the physical subject; those raw values remain outside the packet. The packet carries only `subject_identity_hash`. Raw captures remain external proof material and must not be committed as source.
+
+A matrix update is a separate reviewed action after the packet and referenced raw evidence have been checked.
+
 ## Final truth boundary
 
 A green Phase 15 software receipt means the source, packaging path, Windows CI build, restart behavior, checksum policy and signing mechanism are proven.
