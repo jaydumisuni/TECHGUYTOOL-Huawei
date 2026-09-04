@@ -1138,8 +1138,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "tests/test_repository_contracts.py",
-      "sha256": "46b754f233eccf5c4642de0eb03c4a237d157650a1fc950920bb0f2419b61cd6",
-      "size_bytes": 5368
+      "sha256": "622e45b195b12077024ce3ecc0c50479d0f41f1083b229b3ec6f4e850d54056a",
+      "size_bytes": 5431
     },
     {
       "origin": "phase14_qcom_mtk",
@@ -1252,8 +1252,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "tools/generate_qrc.py",
-      "sha256": "6434a2e2ce3d3ac323bd75a407cb3074555027511e5fe924be5e3658cce969cc",
-      "size_bytes": 560
+      "sha256": "214164ee9e74b4857e8966a6a7e8139916dcfc8ac5a648418c5bf1a2c6eface7",
+      "size_bytes": 611
     },
     {
       "origin": "phase7_bounded_executor_framework",
