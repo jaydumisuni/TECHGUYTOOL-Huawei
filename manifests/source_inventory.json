@@ -23,7 +23,7 @@
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 225,
+  "file_count": 228,
   "files": [
     {
       "origin": "phase15_windows_release",
@@ -154,8 +154,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "ROADMAP.md",
-      "sha256": "f4987769ab7dfb7bad89df2811cd43c1dc26700a14bb63cc4292a27431f39c1a",
-      "size_bytes": 16680
+      "sha256": "98b18fa44f6d60aedc9db1446bff53c6a45519fd2fc450cd42c00af95b5bf171",
+      "size_bytes": 19144
     },
     {
       "origin": "phase15_windows_release",
@@ -280,8 +280,8 @@
     {
       "origin": "phase15_windows_release",
       "path": "docs/PHASE_15_WINDOWS_PACKAGING_CERTIFICATION.md",
-      "sha256": "14cced33793c63d24781c6be78ccff307d141ea4196cce49695508882972519c",
-      "size_bytes": 3640
+      "sha256": "1b5d5973d1c95b2c620b2454639fbe27aa21433fab02dafb9a1e3b1a18ffba3d",
+      "size_bytes": 5371
     },
     {
       "origin": "phase1_recovery_and_freeze",
@@ -1022,6 +1022,12 @@
       "size_bytes": 10789
     },
     {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "techguy_huawei/physical_evidence.py",
+      "sha256": "69f96207d33571bf48c22fb3e7f00c10bc1659cb7f67af03256588cc22ceff3c",
+      "size_bytes": 8274
+    },
+    {
       "origin": "phase14_qcom_mtk",
       "path": "techguy_huawei/service_lanes.py",
       "sha256": "1fe32283160a568694ccf1f0ad38003bd21daa0c34706e798502603a6b82416e",
@@ -1122,6 +1128,12 @@
       "path": "tests/test_knowledge_workshop.py",
       "sha256": "a36bbeed9aa104913400aaca73326b408013f59f1a9a156d9657803934524cb6",
       "size_bytes": 6579
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "tests/test_physical_evidence_record.py",
+      "sha256": "e89f97c17a61e1bfe444c5d008176daa5228937b62c7a1953eb2c3bbfbd097e8",
+      "size_bytes": 11025
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -1338,6 +1350,12 @@
       "path": "tools/prove_phase9_vog_recipe.py",
       "sha256": "75ef90a5453c6a8f1976416ab001e524e6758879af61ec5883aaad7bd8949dd5",
       "size_bytes": 5379
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "tools/record_physical_proof.py",
+      "sha256": "b1a46b89c85f4abd2881a5675d1c503a19dc5843959e3c1f31cce74d32e22181",
+      "size_bytes": 2865
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
