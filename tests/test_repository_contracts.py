@@ -103,3 +103,14 @@ def test_ui_proof_workflow_quotes_yaml_colon_command() -> None:
     workflow = (ROOT / ".github" / "workflows" / "proof.yml").read_text(encoding="utf-8")
     assert "--only-binary=:all:" in workflow
     assert not re.search(r"^\s*run:\s+[^\n]*--only-binary=:all:\s", workflow, re.MULTILINE)
+
+def test_resources_qrc_matches_deterministic_generator_order() -> None:
+    expected = [
+        path.relative_to(ROOT).as_posix()
+        for folder in (ROOT / "qml", ROOT / "assets")
+        for path in sorted(folder.rglob("*"))
+        if path.is_file()
+    ]
+    qrc = (ROOT / "resources.qrc").read_text(encoding="utf-8")
+    actual = re.findall(r'<file alias="([^"]+)">', qrc)
+    assert actual == expected
