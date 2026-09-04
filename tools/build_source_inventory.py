@@ -96,12 +96,20 @@ PHASE6_PATHS = {
 }
 
 
-def sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        for block in iter(lambda: stream.read(1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
+def sha256_bytes(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def git_blob_bytes(rel: str) -> bytes:
+    result = subprocess.run(
+        ["git", "show", f"HEAD:{rel}"],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise SystemExit(f"git blob unavailable while building source inventory: {rel}")
+    return result.stdout
 
 
 def is_phase_receipt(rel: str) -> bool:
@@ -128,13 +136,13 @@ GENERATED_SOURCE_PATHS = {
 
 def source_files() -> list[Path]:
     result = subprocess.run(
-        ["git", "ls-files", "-z"],
+        ["git", "ls-tree", "-r", "--name-only", "-z", "HEAD"],
         cwd=ROOT,
         capture_output=True,
         check=False,
     )
     if result.returncode != 0:
-        raise SystemExit("git ls-files failed while building source inventory")
+        raise SystemExit("git ls-tree HEAD failed while building source inventory")
 
     files: list[Path] = []
     for raw in result.stdout.split(b"\0"):
@@ -148,6 +156,13 @@ def source_files() -> list[Path]:
         if path.is_file() and not is_ignored(path) and path not in files:
             files.append(path)
     return sorted(files, key=lambda item: item.relative_to(ROOT).as_posix())
+
+
+def source_bytes(path: Path) -> bytes:
+    rel = path.relative_to(ROOT).as_posix()
+    if rel in GENERATED_SOURCE_PATHS:
+        return path.read_bytes()
+    return git_blob_bytes(rel)
 
 
 def software_origin_map() -> dict[str, str]:
@@ -192,12 +207,13 @@ def build() -> dict[str, object]:
     records = []
     for path in source_files():
         rel = path.relative_to(ROOT).as_posix()
+        data = source_bytes(path)
         records.append(
             {
                 "origin": origin_for(rel, software_origins),
                 "path": rel,
-                "sha256": sha256(path),
-                "size_bytes": path.stat().st_size,
+                "sha256": sha256_bytes(data),
+                "size_bytes": len(data),
             }
         )
     return {

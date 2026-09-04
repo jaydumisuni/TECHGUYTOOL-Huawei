@@ -86,3 +86,14 @@ def test_visual_comparator_tracks_seven_state_capture_contract() -> None:
     assert 'text.split("## Required seventh Phase 15 state", 1)[0]' in source
     assert 're.findall(r"`([a-fA-F0-9]{64})`", locked_section)' in source
     assert "import numpy" not in source
+
+def test_source_freeze_uses_committed_git_blob_authority() -> None:
+    generator = (ROOT / "tools" / "build_source_inventory.py").read_text(encoding="utf-8")
+    verifier = (ROOT / "tools" / "verify_source_freeze.py").read_text(encoding="utf-8")
+    head_tree = '["git", "ls-tree", "-r", "--name-only", "-z", "HEAD"]'
+    head_blob = '["git", "show", f"HEAD:{rel}"]'
+    assert head_tree in generator
+    assert head_tree in verifier
+    assert head_blob in generator
+    assert head_blob in verifier
+    assert "tracked source modified outside committed authority" in verifier

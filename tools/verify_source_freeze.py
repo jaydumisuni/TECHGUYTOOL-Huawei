@@ -51,12 +51,29 @@ IGNORED_PARTS = {"__pycache__", ".pytest_cache", ".venv", "venv", "target"}
 IGNORED_EXACT = {"techguy_huawei/resources_rc.py"}
 
 
-def digest(path: Path) -> str:
-    value = hashlib.sha256()
-    with path.open("rb") as stream:
-        for block in iter(lambda: stream.read(1024 * 1024), b""):
-            value.update(block)
-    return value.hexdigest()
+def digest_bytes(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def git_blob_bytes(rel: str) -> bytes | None:
+    try:
+        result = subprocess.run(
+            ["git", "show", f"HEAD:{rel}"],
+            cwd=ROOT,
+            capture_output=True,
+            check=False,
+        )
+    except OSError:
+        return None
+    return result.stdout if result.returncode == 0 else None
+
+
+def canonical_bytes(rel: str, path: Path) -> bytes:
+    if rel not in GENERATED_SOURCE_PATHS:
+        blob = git_blob_bytes(rel)
+        if blob is not None:
+            return blob
+    return path.read_bytes()
 
 
 def is_phase_receipt(rel: str) -> bool:
@@ -79,7 +96,7 @@ def is_ignored(path: Path) -> bool:
 def _git_tracked_files() -> list[Path] | None:
     try:
         result = subprocess.run(
-            ["git", "ls-files", "-z"],
+            ["git", "ls-tree", "-r", "--name-only", "-z", "HEAD"],
             cwd=ROOT,
             capture_output=True,
             check=False,
@@ -102,6 +119,29 @@ def _git_tracked_files() -> list[Path] | None:
     return paths
 
 
+
+def _dirty_tracked_paths() -> list[str]:
+    try:
+        result = subprocess.run(
+            ["git", "diff", "--name-only", "-z", "HEAD", "--"],
+            cwd=ROOT,
+            capture_output=True,
+            check=False,
+        )
+    except OSError:
+        return []
+    if result.returncode != 0:
+        return []
+    dirty: list[str] = []
+    for raw in result.stdout.split(b"\0"):
+        if not raw:
+            continue
+        rel = raw.decode("utf-8")
+        path = ROOT / rel
+        if rel not in SELF_EXCLUDED and not is_ignored(path):
+            dirty.append(rel)
+    return sorted(set(dirty))
+
 def tracked_files() -> list[Path]:
     git_paths = _git_tracked_files()
     if git_paths is not None:
@@ -113,6 +153,8 @@ def tracked_files() -> list[Path]:
 
 def verify() -> list[str]:
     errors: list[str] = []
+    for rel in _dirty_tracked_paths():
+        errors.append(f"tracked source modified outside committed authority: {rel}")
     for required in (ROOT / "FULL_PLAN.md", INVENTORY, PRIVATE, EXTERNAL):
         if not required.is_file():
             errors.append(f"missing required authority file: {required.relative_to(ROOT)}")
@@ -149,9 +191,10 @@ def verify() -> list[str]:
     for rel in sorted(set(declared) & set(actual_paths)):
         item = declared[rel]
         path = actual_paths[rel]
-        if item.get("size_bytes") != path.stat().st_size:
+        data = canonical_bytes(rel, path)
+        if item.get("size_bytes") != len(data):
             errors.append(f"size mismatch: {rel}")
-        if item.get("sha256") != digest(path):
+        if item.get("sha256") != digest_bytes(data):
             errors.append(f"sha256 mismatch: {rel}")
 
     private = json.loads(PRIVATE.read_text(encoding="utf-8"))
