@@ -454,8 +454,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "pyproject.toml",
-      "sha256": "d2585b65d024bc21b81a6593453472b9dcb289ed84a6c6b1ca29615aed5fdb51",
-      "size_bytes": 593
+      "sha256": "629b8f8bac90d593ec74b4ef19e96b97116516ba324a21b20c4beb78f9c7a426",
+      "size_bytes": 619
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -634,8 +634,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "requirements.txt",
-      "sha256": "c1f73e86a8ee5454b62dab6909045e72c45f35d0f9fe6f727700a498c5f9bec6",
-      "size_bytes": 16
+      "sha256": "1c947526666aa58efa4620dc11ac48208644101eed9a898bfc4bdd8d09f47770",
+      "size_bytes": 17
     },
     {
       "origin": "phase15_windows_release",
@@ -1126,8 +1126,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "tests/test_repository_contracts.py",
-      "sha256": "ba3d42edf645c31ea72b2cd3ff5a06e4798585643d89703ca32bacf3835ab992",
-      "size_bytes": 2817
+      "sha256": "66a5448b82db8acdec25a0350dcfe63b4c29e0762a6de347c245aec3cccf0124",
+      "size_bytes": 3416
     },
     {
       "origin": "phase14_qcom_mtk",
@@ -1216,8 +1216,8 @@
     {
       "origin": "phase7_bounded_executor_framework",
       "path": "tools/build_source_inventory.py",
-      "sha256": "8f953147e98c73d65b7052d72e193398b3ba44bdecec05568434f2ac9094bb1d",
-      "size_bytes": 7851
+      "sha256": "1f25c28ffc36f73dd1a7b2753195b469e85188db5e3603660e64882510735c3e",
+      "size_bytes": 8741
     },
     {
       "origin": "phase15_windows_release",

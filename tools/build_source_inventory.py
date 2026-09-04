@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -120,8 +121,32 @@ def is_ignored(path: Path) -> bool:
     )
 
 
+GENERATED_SOURCE_PATHS = {
+    "rust/device_gateway/Cargo.lock",
+}
+
+
 def source_files() -> list[Path]:
-    files = [path for path in ROOT.rglob("*") if path.is_file() and not is_ignored(path)]
+    result = subprocess.run(
+        ["git", "ls-files", "-z"],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise SystemExit("git ls-files failed while building source inventory")
+
+    files: list[Path] = []
+    for raw in result.stdout.split(b"\0"):
+        if not raw:
+            continue
+        path = ROOT / raw.decode("utf-8")
+        if path.is_file() and not is_ignored(path):
+            files.append(path)
+    for rel in GENERATED_SOURCE_PATHS:
+        path = ROOT / rel
+        if path.is_file() and not is_ignored(path) and path not in files:
+            files.append(path)
     return sorted(files, key=lambda item: item.relative_to(ROOT).as_posix())
 
 

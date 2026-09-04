@@ -65,3 +65,16 @@ def test_onefile_deployment_contract() -> None:
     assert "New-Item -ItemType Directory -Force $TargetDirectory" in build
     assert "Move-Item" in build
     assert "Get-FileHash -Algorithm SHA256" in build
+
+
+def test_qt_release_dependency_is_frozen() -> None:
+    pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    requirements = (ROOT / "requirements.txt").read_text(encoding="utf-8")
+    proof_workflow = (ROOT / ".github" / "workflows" / "proof.yml").read_text(encoding="utf-8")
+
+    exact = "PySide6==6.11.1"
+    assert exact in pyproject
+    assert exact in requirements
+    assert exact in proof_workflow
+    assert "PySide6>=6.8,<7" not in pyproject
+    assert "PySide6>=6.8,<7" not in requirements
