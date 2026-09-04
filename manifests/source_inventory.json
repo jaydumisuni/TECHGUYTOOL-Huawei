@@ -454,8 +454,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "pyproject.toml",
-      "sha256": "629b8f8bac90d593ec74b4ef19e96b97116516ba324a21b20c4beb78f9c7a426",
-      "size_bytes": 619
+      "sha256": "6a9e88f46e12a0a7a81725449a457585e03c50920e25c145908b8ba28758beec",
+      "size_bytes": 593
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -634,8 +634,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "requirements.txt",
-      "sha256": "1c947526666aa58efa4620dc11ac48208644101eed9a898bfc4bdd8d09f47770",
-      "size_bytes": 17
+      "sha256": "b2c05cff96b4a84d25ca81b466a73745906053b3b50168df50b28884560e2ecb",
+      "size_bytes": 16
     },
     {
       "origin": "phase15_windows_release",
@@ -1126,8 +1126,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "tests/test_repository_contracts.py",
-      "sha256": "ff3c6ef8edee0de6a1a7abc4664b0935cb4b6723d1faab08f3d9eea72d97ad67",
-      "size_bytes": 3755
+      "sha256": "c4f1364abc0af30b851cf8407fa653438c88578eec96140d9e411ac1afd6b2ea",
+      "size_bytes": 4335
     },
     {
       "origin": "phase14_qcom_mtk",
@@ -1216,8 +1216,8 @@
     {
       "origin": "phase7_bounded_executor_framework",
       "path": "tools/build_source_inventory.py",
-      "sha256": "1f25c28ffc36f73dd1a7b2753195b469e85188db5e3603660e64882510735c3e",
-      "size_bytes": 8741
+      "sha256": "2e6e937188e1a9506a30201a913a3a93a044f78c2dab3219d7c75a916f481874",
+      "size_bytes": 8938
     },
     {
       "origin": "phase15_windows_release",
@@ -1372,8 +1372,8 @@
     {
       "origin": "phase3_device_gateway",
       "path": "tools/verify_source_freeze.py",
-      "sha256": "00210eb0aacbe70dc3536c233924b171d963cf46998916eed24983cc0d8d140f",
-      "size_bytes": 6522
+      "sha256": "e3ff8c6c73dea694846d6aacaf8370d5f0709549d38a5f833860f2f4e38d555c",
+      "size_bytes": 7727
     }
   ],
   "inventory_definition_date": "2026-08-09",
