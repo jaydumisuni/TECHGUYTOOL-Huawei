@@ -1024,8 +1024,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "techguy_huawei/physical_evidence.py",
-      "sha256": "e88fc8171bb25b26921d315656598c47de4aec133776c916368c6cd73a7fd222",
-      "size_bytes": 7758
+      "sha256": "69f96207d33571bf48c22fb3e7f00c10bc1659cb7f67af03256588cc22ceff3c",
+      "size_bytes": 8274
     },
     {
       "origin": "phase14_qcom_mtk",
@@ -1132,8 +1132,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "tests/test_physical_evidence_record.py",
-      "sha256": "f4ab7b207cdce8d0f1ef999c04dfcc383a71799681f2ae4c9eb2ba1e73f33bee",
-      "size_bytes": 9362
+      "sha256": "e89f97c17a61e1bfe444c5d008176daa5228937b62c7a1953eb2c3bbfbd097e8",
+      "size_bytes": 11025
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
