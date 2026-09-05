@@ -91,9 +91,9 @@ def test_probe_prefers_huawei_storage_identity_over_unrelated_redmi_adb(
     result = subject.probe()
     assert result.ok is True
     assert result.payload is not None
-    assert result.payload["interface"] == "Huawei USB / Pre-service"
+    assert result.payload["interface"] == "Huawei Android / Charge only"
     assert result.payload["model"] == "Huawei device (identity pending)"
-    assert result.payload["usb_discovery"]["state"] == "storage_only_pre_service"
+    assert result.payload["usb_discovery"]["state"] == "normal_android_charge_only"
     assert result.payload["usb_discovery"]["write_authority"] == "none"
 
 

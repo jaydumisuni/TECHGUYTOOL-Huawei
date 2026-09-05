@@ -38,7 +38,7 @@
 ```python
 def test_107e_storage_only_is_pre_service_without_model_inference():
     report = discover_huawei_usb(storage_only_fixture())
-    assert report.state == "storage_only_pre_service"
+    assert report.state == "normal_android_charge_only"
     assert report.model == "identity_pending"
     assert report.write_authority == "none"
     assert report.screen_required is False
@@ -86,7 +86,7 @@ class UsbDiscoveryReport:
     write_authority: str = "none"
 ```
 
-Classifier precedence: `huawei_usb_com_1_0`, `upgrade_mode`, `normal_fastboot`, `recovery`, `adb`, `mtp`, `storage_only_pre_service`, `unknown_huawei`. Group Huawei observations by container/serial continuity. Two physical Huawei groups emit `multiple_huawei_devices`.
+Classifier precedence: `huawei_usb_com_1_0`, `upgrade_mode`, `normal_fastboot`, `recovery`, `adb`, `mtp`, `normal_android_charge_only`, `unknown_huawei`. Group Huawei observations by container/serial continuity. Two physical Huawei groups emit `multiple_huawei_devices`.
 
 - [ ] **Step 4: Add Redmi-isolation and ambiguity regressions**
 
@@ -94,7 +94,7 @@ Classifier precedence: `huawei_usb_com_1_0`, `upgrade_mode`, `normal_fastboot`, 
 def test_redmi_adb_does_not_change_huawei_identity():
     report = discover_huawei_usb(storage_only_fixture() + redmi_adb_fixture())
     assert report.vid == "12D1"
-    assert report.state == "storage_only_pre_service"
+    assert report.state == "normal_android_charge_only"
 
 
 def test_two_huawei_devices_fail_closed():
@@ -130,7 +130,7 @@ def test_collector_uses_fixed_powershell_argv_without_shell():
         calls.append((command, kwargs))
         return subprocess.CompletedProcess(command, 0, fixture_json(), "")
     report = discover_windows_huawei_usb(runner=runner)
-    assert report.state == "storage_only_pre_service"
+    assert report.state == "normal_android_charge_only"
     assert calls[0][1]["shell"] is False
 ```
 
@@ -186,8 +186,8 @@ def test_probe_prefers_huawei_storage_identity_over_unrelated_redmi_adb(monkeypa
     monkeypatch.setattr(subject, "_run", fake_redmi_adb_run)
     result = subject.probe()
     assert result.ok is True
-    assert result.payload["interface"] == "Huawei USB / Pre-service"
-    assert result.payload["usb_discovery"]["state"] == "storage_only_pre_service"
+    assert result.payload["interface"] == "Huawei Android / Charge only"
+    assert result.payload["usb_discovery"]["state"] == "normal_android_charge_only"
 ```
 
 - [ ] **Step 2: Confirm RED**
@@ -200,7 +200,7 @@ For one storage/pre-service Huawei, return a read-only snapshot:
 
 ```text
 connected=True
-interface="Huawei USB / Pre-service"
+interface="Huawei Android / Charge only"
 platform="Huawei USB"
 security="Read-only / identity pending"
 model="Huawei device (identity pending)"
@@ -277,14 +277,14 @@ Commit: `feat(gateway): record Huawei USB discovery endpoints`
 - Modify: `docs/PHASE_3_DEVICE_GATEWAY.md`
 
 **Interfaces:**
-- Adds matrix id: `dead_screen_pre_service_usb_discovery`
+- Adds matrix id: `dead_screen_normal_android_charge_only_discovery`
 
 - [ ] **Step 1: Add failing matrix-row test**
 
 ```python
-def test_matrix_requires_dead_screen_pre_service_usb_discovery():
+def test_matrix_requires_dead_screen_normal_android_charge_only_discovery():
     rows = {row["id"]: row for row in load_matrix()["entries"]}
-    assert rows["dead_screen_pre_service_usb_discovery"]["status"] in {
+    assert rows["dead_screen_normal_android_charge_only_discovery"]["status"] in {
         "HARDWARE_PENDING", "PHYSICAL_PASS"
     }
 ```
@@ -311,7 +311,7 @@ Commit: `docs(huawei): define dead-screen USB certification boundary`
 ### Task 6: Live physical proof, freeze, review, merge
 
 **Files:**
-- Ignored: `proof/physical/dead_screen_pre_service_usb_discovery/<run>/...`
+- Ignored: `proof/physical/dead_screen_normal_android_charge_only_discovery/<run>/...`
 - Modify after review: `manifests/phase15_physical_proof_matrix.json`
 - Modify: `manifests/source_inventory.json`
 
@@ -320,10 +320,10 @@ Commit: `docs(huawei): define dead-screen USB certification boundary`
 Use Builder Python 3.11:
 
 ```text
-tools/discover_huawei_usb.py --output proof/physical/dead_screen_pre_service_usb_discovery/<run>/discovery.json
+tools/discover_huawei_usb.py --output proof/physical/dead_screen_normal_android_charge_only_discovery/<run>/discovery.json
 ```
 
-Expected: `present=true`, `vid=12D1`, `pid=107E`, `state=storage_only_pre_service`, `screen_required=false`, `write_authority=none`.
+Expected: `present=true`, `vid=12D1`, `pid=107E`, `state=normal_android_charge_only`, `screen_required=false`, `write_authority=none`.
 
 - [ ] **Step 2: Prove Redmi separation**
 
@@ -331,11 +331,11 @@ Capture `adb devices -l` simultaneously. The Redmi serial must not appear in Hua
 
 - [ ] **Step 3: Generate physical evidence packet**
 
-Create ignored `subject.json` containing the raw Huawei USB identity and run `tools/record_physical_proof.py` for entry `dead_screen_pre_service_usb_discovery`, binding the live discovery and PnP capture. Confirm packet validation and confirm raw serial is absent from packet JSON.
+Create ignored `subject.json` containing the raw Huawei USB identity and run `tools/record_physical_proof.py` for entry `dead_screen_normal_android_charge_only_discovery`, binding the live discovery and PnP capture. Confirm packet validation and confirm raw serial is absent from packet JSON.
 
 - [ ] **Step 4: Promote only the proven row**
 
-If evidence satisfies the spec, set only `dead_screen_pre_service_usb_discovery` to `PHYSICAL_PASS` with its evidence binding. Leave MTP/ADB/Fastboot/Recovery/Upgrade/Testpoint/repair rows unchanged.
+If evidence satisfies the spec, set only `dead_screen_normal_android_charge_only_discovery` to `PHYSICAL_PASS` with its evidence binding. Leave MTP/ADB/Fastboot/Recovery/Upgrade/Testpoint/repair rows unchanged.
 
 - [ ] **Step 5: Freeze source authority**
 

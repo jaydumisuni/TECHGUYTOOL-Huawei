@@ -161,15 +161,15 @@ def _classify_state(group: Sequence[UsbObservation]) -> str:
         or "CDROM" in classes
         or any("CLASS_08" in value.upper() for item in group for value in item.compatible_ids)
     ):
-        return "storage_only_pre_service"
+        return "normal_android_charge_only"
     return "unknown_huawei"
 
 
 def _decision_for_state(state: str) -> tuple[str, str]:
     decisions = {
-        "storage_only_pre_service": (
-            "DIRECT_ROUTE_UNAVAILABLE",
-            "identify_model_then_enter_supported_service_mode",
+        "normal_android_charge_only": (
+            "ANDROID_CHARGE_ONLY_DETECTED",
+            "evaluate_screen_independent_setup_or_recovery_route",
         ),
         "mtp": ("MTP_CANDIDATE", "verify_mtp_operation_eligibility"),
         "adb": ("ADB_AUTHORIZATION_REQUIRED", "verify_adb_authorization"),
@@ -193,7 +193,7 @@ def _decision_for_state(state: str) -> tuple[str, str]:
 
 def _transport_for_state(state: str) -> str:
     return {
-        "storage_only_pre_service": "windows_pnp_usb_storage",
+        "normal_android_charge_only": "windows_pnp_android_charge_only",
         "mtp": "windows_wpd_mtp",
         "adb": "windows_usb_adb",
         "normal_fastboot": "windows_usb_fastboot",

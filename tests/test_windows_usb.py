@@ -39,7 +39,7 @@ def test_collector_uses_fixed_powershell_argv_without_shell() -> None:
         return subprocess.CompletedProcess(command, 0, stdout=fixture_payload(), stderr="")
 
     report = discover_windows_huawei_usb(runner=runner, powershell="powershell.exe")
-    assert report.state == "storage_only_pre_service"
+    assert report.state == "normal_android_charge_only"
     assert calls[0][0][0] == "powershell.exe"
     assert calls[0][0][1:3] == ["-NoProfile", "-NonInteractive"]
     assert calls[0][1]["shell"] is False

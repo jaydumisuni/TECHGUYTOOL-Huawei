@@ -313,7 +313,7 @@ These are certification/coverage tracks, not Phase 16.
 
 A connected dead-screen Huawei proved that direct-route certification cannot assume the technician can select MTP on the handset. The current read-only discovery layer therefore starts from Windows PnP/USB evidence, anchors Huawei identity before generic ADB/Fastboot enumeration, and classifies storage-only/pre-service, MTP, ADB, Fastboot, Recovery, Upgrade Mode and `HUAWEI USB COM 1.0` only from observed interfaces. Shared VID/PID values never identify an exact model by themselves.
 
-The cross-cutting matrix row `dead_screen_pre_service_usb_discovery` certifies detection/classification only. Passing it does not promote MTP, ADB, Fastboot, Recovery, Upgrade Mode, Testpoint, loader, firmware or repair support.
+The cross-cutting matrix row `dead_screen_normal_android_charge_only_discovery` certifies detection/classification only. Passing it does not promote MTP, ADB, Fastboot, Recovery, Upgrade Mode, Testpoint, loader, firmware or repair support.
 
 ### Track B — Direct-route certification
 

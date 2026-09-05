@@ -235,10 +235,10 @@ def test_deploy_spec_allows_reviewed_static_sources() -> None:
     assert find_prohibited_external_data_sources(spec) == []
 
 
-def test_physical_matrix_requires_dead_screen_pre_service_usb_discovery() -> None:
+def test_physical_matrix_requires_dead_screen_normal_android_charge_only_discovery() -> None:
     matrix = load_physical_matrix()
     rows = {row["id"]: row for row in matrix["entries"]}
-    assert rows["dead_screen_pre_service_usb_discovery"]["status"] in {
+    assert rows["dead_screen_normal_android_charge_only_discovery"]["status"] in {
         "HARDWARE_PENDING",
         "PHYSICAL_PASS",
     }

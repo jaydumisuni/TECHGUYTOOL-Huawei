@@ -96,15 +96,15 @@ def _read_line(stream: socket.socket) -> bytes:
 def _usb_report_payload() -> dict[str, object]:
     return {
         "present": True,
-        "state": "storage_only_pre_service",
-        "transport": "windows_pnp_usb_storage",
+        "state": "normal_android_charge_only",
+        "transport": "windows_pnp_android_charge_only",
         "vid": "12D1",
         "pid": "107E",
         "fingerprint_sha256": "a" * 64,
         "model": "identity_pending",
         "interfaces": ["HUAWEI", "USB Mass Storage Device"],
-        "decision_code": "DIRECT_ROUTE_UNAVAILABLE",
-        "next_action": "identify_model_then_enter_supported_service_mode",
+        "decision_code": "ANDROID_CHARGE_ONLY_DETECTED",
+        "next_action": "evaluate_screen_independent_setup_or_recovery_route",
         "screen_required": False,
         "device_modification": "none",
         "write_authority": "none",
@@ -152,7 +152,7 @@ def test_record_usb_discovery_uses_existing_physical_session_and_endpoint_contra
         "record",
         "session-1",
         "huawei-usb:aaaaaaaaaaaaaaaa",
-        "storage_only_pre_service",
+        "normal_android_charge_only",
         "windows_pnp_usb",
     )
     assert isinstance(record[5], dict)

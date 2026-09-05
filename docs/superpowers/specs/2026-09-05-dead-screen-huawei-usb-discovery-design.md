@@ -43,7 +43,7 @@ Huawei candidates require USB VID `12D1` or an explicit Huawei service descripto
 The fail-closed state set is:
 
 ```text
-storage_only_pre_service
+normal_android_charge_only
 mtp
 adb
 normal_fastboot
@@ -54,7 +54,7 @@ unknown_huawei
 multiple_huawei_devices
 ```
 
-Classification uses actual interface descriptors/classes, never PID alone. `12D1:107E` with only storage/CD-ROM children is `storage_only_pre_service`. The same VID/PID becomes `upgrade_mode` only when PCUI/DBAdapter-style service interfaces are actually observed.
+Classification uses actual interface descriptors/classes, never PID alone. `12D1:107E` with only storage/CD-ROM children is `normal_android_charge_only`. The same VID/PID becomes `upgrade_mode` only when PCUI/DBAdapter-style service interfaces are actually observed.
 
 Precedence is explicit service interface -> Upgrade Mode -> Fastboot -> Recovery -> ADB -> MTP -> storage-only -> unknown.
 
@@ -101,7 +101,7 @@ The Gateway payload contains only public discovery fields: state, VID/PID, finge
 
 ### Physical certification
 
-Add matrix row `dead_screen_pre_service_usb_discovery`. It certifies only screen-independent detection/classification of a Huawei in a pre-service/storage-only state. It does not certify model identity, MTP, ADB, Fastboot, Recovery, Upgrade Mode, Testpoint, loaders, firmware, or repair operations.
+Add matrix row `dead_screen_normal_android_charge_only_discovery`. It certifies only screen-independent detection/classification of a Huawei in a pre-service/storage-only state. It does not certify model identity, MTP, ADB, Fastboot, Recovery, Upgrade Mode, Testpoint, loaders, firmware, or repair operations.
 
 Live handset captures stay under ignored `proof/`. `tools/record_physical_proof.py` hashes raw subject identity and evidence; raw serial is not committed.
 
@@ -128,7 +128,7 @@ Live handset captures stay under ignored `proof/`. `tools/record_physical_proof.
 
 ## Acceptance criteria
 
-- The connected `12D1:107E` handset is detected without screen interaction and classified `storage_only_pre_service` when only storage/CD-ROM interfaces exist.
+- The connected `12D1:107E` handset is detected without screen interaction and classified `normal_android_charge_only` when only storage/CD-ROM interfaces exist.
 - The simultaneously attached Redmi ADB device is not identified as Huawei.
 - The public report has a stable physical fingerprint and no raw serial/write authority.
 - The existing Gateway can record the endpoint without raw serial.
