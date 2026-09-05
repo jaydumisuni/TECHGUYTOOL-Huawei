@@ -22,15 +22,15 @@
         "id":  "dead_screen_pre_service_usb_discovery",
         "status":  "PHYSICAL_PASS",
         "evidence":  {
-                         "evidence_id":  "dead_screen_pre_service_usb_discovery-81c75c347eb75cb9",
-                         "evidence_sha256":  "81c75c347eb75cb9482520ae7132764c43038576be4b275d107f704412aa4ea2",
+                         "evidence_id":  "dead_screen_pre_service_usb_discovery-5fec4f11740325c4",
+                         "evidence_sha256":  "5fec4f11740325c41da91db9625ec93d06b36628177bb8992a622ea38aabf976",
                          "evidence_refs":  [
                                                "artifact://athena/huawei/dead-screen-usb/adb-separation",
                                                "artifact://athena/huawei/dead-screen-usb/discovery",
                                                "artifact://athena/huawei/dead-screen-usb/pnp"
                                            ],
                          "subject_identity_hash":  "272ce5620f79c4829dfd1a2acf2674a3eece6734bf8fb0417267055f53bab0ca",
-                         "verified_at":  "2026-09-05T18:56:28Z",
+                         "verified_at":  "2026-09-05T19:04:03Z",
                          "verifier":  "THETECHGUY physical certification"
                      }
     },
