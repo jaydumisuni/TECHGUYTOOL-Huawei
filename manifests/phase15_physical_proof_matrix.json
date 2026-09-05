@@ -18,7 +18,22 @@
     {"id": "vog_kirin980_full_recovery_branding", "status": "HARDWARE_PENDING"},
     {"id": "historical_p10_vtr_regression", "status": "REPLAY_PROVEN_PHYSICAL_PENDING"},
     {"id": "mtp_direct_route", "status": "HARDWARE_PENDING"},
-    {"id": "dead_screen_pre_service_usb_discovery", "status": "HARDWARE_PENDING"},
+    {
+        "id":  "dead_screen_pre_service_usb_discovery",
+        "status":  "PHYSICAL_PASS",
+        "evidence":  {
+                         "evidence_id":  "dead_screen_pre_service_usb_discovery-769be5d32953f443",
+                         "evidence_sha256":  "769be5d32953f443192c7331632f92020b5f1ea890dde334e047206c59d473c8",
+                         "evidence_refs":  [
+                                               "artifact://athena/huawei/dead-screen-usb/adb-separation",
+                                               "artifact://athena/huawei/dead-screen-usb/discovery",
+                                               "artifact://athena/huawei/dead-screen-usb/pnp"
+                                           ],
+                         "subject_identity_hash":  "272ce5620f79c4829dfd1a2acf2674a3eece6734bf8fb0417267055f53bab0ca",
+                         "verified_at":  "2026-09-05T14:37:48Z",
+                         "verifier":  "THETECHGUY physical certification"
+                     }
+    },
     {"id": "authorized_adb_direct_route", "status": "HARDWARE_PENDING"},
     {"id": "normal_fastboot_direct_route", "status": "HARDWARE_PENDING"},
     {"id": "recovery_detection", "status": "HARDWARE_PENDING"},
