@@ -46,3 +46,4 @@ runtime-export/
 transfer-probe-*
 transfer-test.*
 *.b64
+.worktrees/
