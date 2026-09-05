@@ -8,6 +8,8 @@ import pytest
 from techguy_huawei.windows_usb_descriptor import (
     POWERSHELL_USB_DESCRIPTOR_SCRIPT,
     UsbDescriptorError,
+    UsbInterfaceDescriptor,
+    UsbRawDescriptor,
     collect_windows_usb_descriptor,
 )
 
@@ -122,3 +124,42 @@ def test_descriptor_reader_rejects_nonzero_powershell_exit() -> None:
 def test_descriptor_script_requests_read_only_hub_access() -> None:
     assert "GENERIC_READ" in POWERSHELL_USB_DESCRIPTOR_SCRIPT
     assert "GENERIC_WRITE" not in POWERSHELL_USB_DESCRIPTOR_SCRIPT
+
+def test_mass_storage_only_requires_one_unique_interface_number() -> None:
+    descriptor = UsbRawDescriptor(
+        vid="12D1",
+        pid="107E",
+        bcd_device="0299",
+        manufacturer="unknown",
+        product="HUAWEI",
+        configuration_count=1,
+        interfaces=(
+            UsbInterfaceDescriptor(0, 0, 0x08, 0x06, 0x50),
+            UsbInterfaceDescriptor(1, 0, 0x08, 0x06, 0x50),
+        ),
+    )
+    assert descriptor.mass_storage_only is False
+
+
+def test_mass_storage_only_allows_alternate_settings_for_same_interface() -> None:
+    descriptor = UsbRawDescriptor(
+        vid="12D1",
+        pid="107E",
+        bcd_device="0299",
+        manufacturer="unknown",
+        product="HUAWEI",
+        configuration_count=1,
+        interfaces=(
+            UsbInterfaceDescriptor(0, 0, 0x08, 0x06, 0x50),
+            UsbInterfaceDescriptor(0, 1, 0x08, 0x06, 0x50),
+        ),
+    )
+    assert descriptor.mass_storage_only is True
+
+
+def test_descriptor_script_fetches_complete_configuration_length() -> None:
+    assert "Descriptor(handle, port, 2, configurationIndex, 0, 9" in POWERSHELL_USB_DESCRIPTOR_SCRIPT
+    assert "int totalLength = BitConverter.ToUInt16(header, 14)" in POWERSHELL_USB_DESCRIPTOR_SCRIPT
+    assert "Descriptor(handle, port, 2, configurationIndex, 0, totalLength" in POWERSHELL_USB_DESCRIPTOR_SCRIPT
+    assert "fullReturned < 12 + totalLength" in POWERSHELL_USB_DESCRIPTOR_SCRIPT
+    assert "Descriptor(handle, port, 2, configurationIndex, 0, 1024" not in POWERSHELL_USB_DESCRIPTOR_SCRIPT

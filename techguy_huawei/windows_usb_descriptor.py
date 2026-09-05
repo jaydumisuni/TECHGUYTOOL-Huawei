@@ -47,8 +47,9 @@ public static class TtgUsbDescriptorReader {
     const uint IOCTL_USB_GET_NODE_CONNECTION_INFORMATION_EX = 0x220448u;
     const uint IOCTL_USB_GET_DESCRIPTOR_FROM_NODE_CONNECTION = 0x220410u;
 
-    static byte[] Descriptor(SafeFileHandle handle, int port, int type, int index, int language, int length) {
-        var buffer = new byte[2048];
+    static byte[] Descriptor(SafeFileHandle handle, int port, int type, int index, int language, int length, out int returned) {
+        if (length < 0 || length > UInt16.MaxValue) throw new InvalidOperationException("descriptor length out of range");
+        var buffer = new byte[12 + Math.Max(length, 4)];
         Array.Copy(BitConverter.GetBytes(port), 0, buffer, 0, 4);
         buffer[4] = 0x80;
         buffer[5] = 0x06;
@@ -56,18 +57,20 @@ public static class TtgUsbDescriptorReader {
         Array.Copy(BitConverter.GetBytes(value), 0, buffer, 6, 2);
         Array.Copy(BitConverter.GetBytes((ushort)language), 0, buffer, 8, 2);
         Array.Copy(BitConverter.GetBytes((ushort)length), 0, buffer, 10, 2);
-        int returned;
         if (!DeviceIoControl(handle, IOCTL_USB_GET_DESCRIPTOR_FROM_NODE_CONNECTION, buffer, buffer.Length, buffer, buffer.Length, out returned, IntPtr.Zero)) {
             throw new InvalidOperationException("descriptor ioctl failed: " + Marshal.GetLastWin32Error());
         }
+        if (returned < 12) throw new InvalidOperationException("descriptor response shorter than request header");
         return buffer;
     }
 
     static string UsbString(SafeFileHandle handle, int port, int index, int language) {
         if (index == 0) return "";
-        var buffer = Descriptor(handle, port, 3, index, language, 255);
+        int stringReturned;
+        var buffer = Descriptor(handle, port, 3, index, language, 255, out stringReturned);
+        if (stringReturned < 14) return "";
         int length = buffer[12];
-        if (length < 2 || buffer[13] != 3) return "";
+        if (length < 2 || buffer[13] != 3 || stringReturned < 12 + length) return "";
         return Encoding.Unicode.GetString(buffer, 14, length - 2).TrimEnd('\0');
     }
 
@@ -93,18 +96,27 @@ public static class TtgUsbDescriptorReader {
             int configurationCount = info[21];
             int language = 0x0409;
             try {
-                var languages = Descriptor(handle, port, 3, 0, 0, 255);
-                if (languages[12] >= 4) language = BitConverter.ToUInt16(languages, 14);
+                int languageReturned;
+                var languages = Descriptor(handle, port, 3, 0, 0, 255, out languageReturned);
+                if (languageReturned >= 16 && languages[12] >= 4 && languageReturned >= 12 + languages[12]) {
+                    language = BitConverter.ToUInt16(languages, 14);
+                }
             } catch { }
             string manufacturer = UsbString(handle, port, iManufacturer, language);
             string product = UsbString(handle, port, iProduct, language);
             var interfaces = new List<string>();
             for (int configurationIndex = 0; configurationIndex < configurationCount; configurationIndex++) {
-                var config = Descriptor(handle, port, 2, configurationIndex, 0, 1024);
+                int headerReturned;
+                var header = Descriptor(handle, port, 2, configurationIndex, 0, 9, out headerReturned);
+                if (headerReturned < 21 || header[13] != 2) throw new InvalidOperationException("configuration header truncated or invalid");
+                int totalLength = BitConverter.ToUInt16(header, 14);
+                if (totalLength < 9) throw new InvalidOperationException("configuration total length is invalid");
+                int fullReturned;
+                var config = Descriptor(handle, port, 2, configurationIndex, 0, totalLength, out fullReturned);
+                if (fullReturned < 12 + totalLength) throw new InvalidOperationException("configuration descriptor truncated");
                 int offset = 12;
-                if (config[offset + 1] != 2) continue;
-                int totalLength = BitConverter.ToUInt16(config, offset + 2);
-                int end = Math.Min(offset + totalLength, config.Length);
+                if (config[offset + 1] != 2) throw new InvalidOperationException("configuration descriptor type mismatch");
+                int end = offset + totalLength;
                 for (int cursor = offset; cursor + 1 < end;) {
                     int length = config[cursor];
                     int type = config[cursor + 1];
@@ -166,9 +178,10 @@ class UsbRawDescriptor:
 
     @property
     def mass_storage_only(self) -> bool:
+        interface_numbers = {item.number for item in self.interfaces}
         return (
             self.configuration_count == 1
-            and bool(self.interfaces)
+            and len(interface_numbers) == 1
             and all(
                 item.class_code == 0x08
                 and item.subclass_code == 0x06
