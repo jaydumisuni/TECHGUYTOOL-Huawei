@@ -23,7 +23,7 @@
     "manifests/source_inventory.json",
     "manifests/source_inventory.receipt.json"
   ],
-  "file_count": 235,
+  "file_count": 236,
   "files": [
     {
       "origin": "phase15_windows_release",
@@ -406,7 +406,7 @@
     {
       "origin": "phase15_windows_release",
       "path": "manifests/phase15_physical_proof_matrix.json",
-      "sha256": "0bca77fe39a38e4595920b4e32e68851c8d8b19013e2eb0b03b930110a469c9e",
+      "sha256": "344764ac72bda31eb8184a0e7498176f8ed673067245c1465cb76cb0a2a7e02f",
       "size_bytes": 3368
     },
     {
@@ -988,8 +988,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "techguy_huawei/device_engine.py",
-      "sha256": "4f1e0dab943df7c82752a40cf9c10838fd62097708d4090972521154af20e736",
-      "size_bytes": 9818
+      "sha256": "7928fcf59c53cef3f26514175a9762aa3497629cda35e5ea9495729540cb03b8",
+      "size_bytes": 10287
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -1000,8 +1000,8 @@
     {
       "origin": "phase3_device_gateway",
       "path": "techguy_huawei/gateway_client.py",
-      "sha256": "d4251cb84350ac396a8ea78a349c0f481c28a1fec4248dc96f316f1b223567d5",
-      "size_bytes": 9066
+      "sha256": "1a07065da2b7383c2094edf1ab929a8f9b70ec681c0a04ad8708de917d90f071",
+      "size_bytes": 9627
     },
     {
       "origin": "phase8_p10revive_golden_theorem",
@@ -1066,8 +1066,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "techguy_huawei/usb_discovery.py",
-      "sha256": "0e47efd07bee51641bbb0b15e8ac6e32ea183ff3ff8b9c0560cf2d7f048bf354",
-      "size_bytes": 9619
+      "sha256": "0185be3c866b89e7dad96964aabaaf1cbc25eaa6bc6ffcf5af53e808c2696cbe",
+      "size_bytes": 10785
     },
     {
       "origin": "phase9_vog_l29_c185_recipe",
@@ -1108,8 +1108,14 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "tests/test_device_engine.py",
-      "sha256": "5f26ddab41e661853082b6c68c70e7c3e3d496dd3bae913592d5d546c5c9cf67",
-      "size_bytes": 7918
+      "sha256": "f0f17d4559eb0103465c17ad13b007deeeae4df9d5f95ed6dcf207289dadc537",
+      "size_bytes": 9934
+    },
+    {
+      "origin": "github_actions:huawei-source-workspace:8833608382",
+      "path": "tests/test_discover_huawei_usb_cli.py",
+      "sha256": "8a6241c5073eaa6dd1e497797160177c916ec7dacb70a968dc23877ee941b2aa",
+      "size_bytes": 1912
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -1120,8 +1126,8 @@
     {
       "origin": "phase3_device_gateway",
       "path": "tests/test_gateway_client.py",
-      "sha256": "c78262d138bfd07a7f646597ffeb2ae8a14c8fe2f0b6bdf48eeb43ec7194a991",
-      "size_bytes": 5420
+      "sha256": "da51a6da1a35de635490b7967f027b62323c8345bb3c981caa4c68c5c27bbceb",
+      "size_bytes": 5777
     },
     {
       "origin": "phase8_p10revive_golden_theorem",
@@ -1204,8 +1210,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "tests/test_usb_discovery.py",
-      "sha256": "3955e4555b58710211c83b65db668dbb86059e7c02aeec63d6ce0446d90f209e",
-      "size_bytes": 8596
+      "sha256": "1c5f0b9e965e2dc328c64b212b03d9bcb3265af959eecb3198e0b61c8f8546f9",
+      "size_bytes": 11157
     },
     {
       "origin": "phase9_vog_l29_c185_recipe",
