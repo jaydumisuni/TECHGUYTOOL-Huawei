@@ -406,7 +406,7 @@
     {
       "origin": "phase15_windows_release",
       "path": "manifests/phase15_physical_proof_matrix.json",
-      "sha256": "fdf71877a2004d60a50bd4057ba5ec34fc6f14fc3c29d67641c2a6a218f38474",
+      "sha256": "1a86a9a1a28fc2359ec66d4471572540cc212568d00afa31fa739b581fe10391",
       "size_bytes": 3528
     },
     {
@@ -1090,8 +1090,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "techguy_huawei/windows_usb_descriptor.py",
-      "sha256": "022395077620c2a362b78d062af557ed1c692e171befd735b0d757476abfc30c",
-      "size_bytes": 10409
+      "sha256": "8d761c71489da497a610c823627a69038d2bbc745a9f36d2a034abcd83e16d6c",
+      "size_bytes": 11651
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -1240,8 +1240,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "tests/test_windows_usb_descriptor.py",
-      "sha256": "eb704ecca02a9a57bda8034662f446429695c2c7e4417540c89c340c702cb104",
-      "size_bytes": 4252
+      "sha256": "038e56551b3a94a0d15053941ced7425fe26b2a6e7a6967be54a2ec98f3de0f5",
+      "size_bytes": 5841
     },
     {
       "origin": "phase7_bounded_executor_framework",
