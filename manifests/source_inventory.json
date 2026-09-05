@@ -406,7 +406,7 @@
     {
       "origin": "phase15_windows_release",
       "path": "manifests/phase15_physical_proof_matrix.json",
-      "sha256": "4d1ead227274d2e5647bc91029efa880413900fbeaeecb087aeeb0f967fe07da",
+      "sha256": "0bca77fe39a38e4595920b4e32e68851c8d8b19013e2eb0b03b930110a469c9e",
       "size_bytes": 3368
     },
     {
@@ -988,8 +988,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "techguy_huawei/device_engine.py",
-      "sha256": "ce70c73354bc802b870d59a3201414e9de71700754e7c330878b86356660c7b4",
-      "size_bytes": 9886
+      "sha256": "4f1e0dab943df7c82752a40cf9c10838fd62097708d4090972521154af20e736",
+      "size_bytes": 9818
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -1066,8 +1066,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "techguy_huawei/usb_discovery.py",
-      "sha256": "fa87bb430e3d3433d04d26e353abb01e6499fe9035810b20f55ab087223ef295",
-      "size_bytes": 9372
+      "sha256": "0e47efd07bee51641bbb0b15e8ac6e32ea183ff3ff8b9c0560cf2d7f048bf354",
+      "size_bytes": 9619
     },
     {
       "origin": "phase9_vog_l29_c185_recipe",
@@ -1108,8 +1108,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "tests/test_device_engine.py",
-      "sha256": "c8540e0db54186f2474b26138dc2e9d1df7c970f3232e6856ac039299d4a619e",
-      "size_bytes": 6448
+      "sha256": "5f26ddab41e661853082b6c68c70e7c3e3d496dd3bae913592d5d546c5c9cf67",
+      "size_bytes": 7918
     },
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
@@ -1204,8 +1204,8 @@
     {
       "origin": "github_actions:huawei-source-workspace:8833608382",
       "path": "tests/test_usb_discovery.py",
-      "sha256": "1fccb9a6ec0dd0c3bd70953954c2e794150204f1455a24280e4d5792b39c7c19",
-      "size_bytes": 6732
+      "sha256": "3955e4555b58710211c83b65db668dbb86059e7c02aeec63d6ce0446d90f209e",
+      "size_bytes": 8596
     },
     {
       "origin": "phase9_vog_l29_c185_recipe",
