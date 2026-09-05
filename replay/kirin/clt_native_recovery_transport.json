@@ -1,0 +1,43 @@
+{
+  "schema": "techguytool-huawei.clt-native-recovery-transport-replay.v1",
+  "transport_id": "clt-native-system-recovery-v1",
+  "family": "CLT",
+  "research_artifact": {
+    "name": "Huawei HiSuite 14.0.0.370",
+    "sha256": "7801f3fff3be0b3c63a68f7c577cad3dece98e4854644a1d605679c9b6d7e498",
+    "bundled": false,
+    "runtime_dependency": false,
+    "purpose": "clean_room_interoperability_research_only"
+  },
+  "observed_protocol_labels": [
+    "full_recovery",
+    "rescue0.3",
+    "rescue0.4",
+    "rescue0.5",
+    "restrictedRecovery"
+  ],
+  "observed_package_roles": [
+    "base",
+    "cust",
+    "preload"
+  ],
+  "observed_exports": [
+    "SetZipPackages",
+    "SystemUpdateAuth",
+    "UpdateFirmware"
+  ],
+  "transport_primitives": [
+    "winusb_control_transfer",
+    "winusb_read_pipe",
+    "winusb_write_pipe"
+  ],
+  "evidence_level": "static_interop_research",
+  "write_certified": false,
+  "blockers": [
+    "SYSTEM_RECOVERY_AUTH_FLOW_UNKNOWN",
+    "SYSTEM_RECOVERY_COMMAND_FRAMING_UNKNOWN",
+    "SYSTEM_RECOVERY_COMMIT_SEQUENCE_UNKNOWN",
+    "SYSTEM_RECOVERY_TRANSFER_FRAMING_UNKNOWN"
+  ],
+  "truth_boundary": "Static clean-room interoperability evidence proves Huawei recovery package roles, recovery labels, exported recovery orchestration functions, and WinUSB primitives only. It does not prove command framing, authentication, transfer framing, commit order, or device-write safety and therefore grants no execution authority."
+}
