@@ -179,3 +179,53 @@ def test_non_huawei_observations_return_no_huawei() -> None:
     assert report.present is False
     assert report.state == "no_huawei"
     assert report.decision_code == "NO_HUAWEI_DEVICE"
+
+
+def test_fingerprint_ignores_composite_child_topology_churn() -> None:
+    root_observation = {
+        "instance_id": r"USB\VID_12D1&PID_107E\ROOTSERIAL123",
+        "class_name": "USB",
+        "friendly_name": "HUAWEI",
+        "bus_reported_desc": "HUAWEI",
+        "hardware_ids": [r"USB\VID_12D1&PID_107E"],
+        "container_id": "stable-container",
+    }
+    child_a = {
+        "instance_id": r"USB\VID_12D1&PID_107E&MI_00\6&AAA111&0&0000",
+        "class_name": "USB",
+        "friendly_name": "USB Mass Storage Device",
+        "hardware_ids": [r"USB\VID_12D1&PID_107E&MI_00"],
+        "container_id": "stable-container",
+        "parent_instance_id": r"USB\VID_12D1&PID_107E\ROOTSERIAL123",
+    }
+    child_b = dict(child_a)
+    child_b["instance_id"] = r"USB\VID_12D1&PID_107E&MI_00\7&BBB222&0&0000"
+
+    first = discover_huawei_usb([root_observation, child_a])
+    second = discover_huawei_usb([root_observation, child_b])
+
+    assert first.fingerprint_sha256 == second.fingerprint_sha256
+
+
+def test_fingerprint_survives_huawei_pid_mode_transition() -> None:
+    pre_service = {
+        "instance_id": r"USB\VID_12D1&PID_107E\ROOTSERIAL123",
+        "class_name": "USB",
+        "friendly_name": "HUAWEI",
+        "bus_reported_desc": "HUAWEI",
+        "hardware_ids": [r"USB\VID_12D1&PID_107E"],
+        "container_id": "stable-container",
+    }
+    fastboot = {
+        "instance_id": r"USB\VID_12D1&PID_3609\ROOTSERIAL123",
+        "class_name": "AndroidUsbDeviceClass",
+        "friendly_name": "HUAWEI Android Bootloader Interface",
+        "bus_reported_desc": "HUAWEI Fastboot",
+        "hardware_ids": [r"USB\VID_12D1&PID_3609"],
+        "container_id": "stable-container",
+    }
+
+    first = discover_huawei_usb([pre_service])
+    second = discover_huawei_usb([fastboot])
+
+    assert first.fingerprint_sha256 == second.fingerprint_sha256

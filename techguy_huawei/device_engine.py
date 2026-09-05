@@ -117,7 +117,7 @@ class DeviceEngine:
                     ActionState.GUARDED,
                     {"usb_discovery": usb_report.to_dict()},
                 )
-            if usb_report.present and usb_report.state not in {"adb", "normal_fastboot"}:
+            if usb_report.present and usb_report.state != "adb":
                 return self._result_from_usb_report(usb_report)
 
         adb = self._tool("adb")
@@ -138,8 +138,6 @@ class DeviceEngine:
             elif usb_report.state == "adb":
                 adb_rows = self._verified_huawei_adb_rows(adb, adb_rows) if adb else []
                 fastboot_rows = []
-            elif usb_report.state == "normal_fastboot":
-                adb_rows = []
 
         total = len(adb_rows) + len(fastboot_rows)
         if total == 0:
@@ -202,6 +200,7 @@ class DeviceEngine:
         labels = {
             "storage_only_pre_service": "Huawei USB / Pre-service",
             "mtp": "MTP",
+            "normal_fastboot": "Fastboot",
             "recovery": "Recovery",
             "upgrade_mode": "Upgrade Mode",
             "huawei_usb_com_1_0": "HUAWEI USB COM 1.0",

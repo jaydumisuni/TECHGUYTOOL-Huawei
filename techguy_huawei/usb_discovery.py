@@ -101,7 +101,7 @@ def discover_huawei_usb(
     group = huawei_groups[0]
     state = _classify_state(group)
     vid, pid = _primary_usb_id(group)
-    fingerprint = _fingerprint(group, vid=vid, pid=pid)
+    fingerprint = _fingerprint(group, vid=vid)
     decision_code, next_action = _decision_for_state(state)
     return UsbDiscoveryReport(
         present=True,
@@ -216,10 +216,9 @@ def _primary_usb_id(group: Sequence[UsbObservation]) -> tuple[str, str]:
     return matches[0]
 
 
-def _fingerprint(group: Sequence[UsbObservation], *, vid: str, pid: str) -> str:
+def _fingerprint(group: Sequence[UsbObservation], *, vid: str) -> str:
     private_material = {
         "vid": vid,
-        "pid": pid,
         "serials": sorted({value for item in group if (value := _usb_serial(item))}),
         "containers": sorted({item.container_id for item in group if item.container_id}),
     }
@@ -234,10 +233,19 @@ def _fingerprint(group: Sequence[UsbObservation], *, vid: str, pid: str) -> str:
 
 
 def _usb_serial(item: UsbObservation) -> str:
-    if not _USB_ID_RE.search(item.instance_id):
-        return ""
-    parts = item.instance_id.split("\\")
-    return parts[-1].strip() if len(parts) >= 3 else ""
+    for instance_id in (item.parent_instance_id, item.instance_id):
+        if not instance_id or not _USB_ID_RE.search(instance_id):
+            continue
+        parts = instance_id.split("\\")
+        if len(parts) < 3:
+            continue
+        device_id = parts[1].upper()
+        if "&MI_" in device_id:
+            continue
+        serial = parts[-1].strip()
+        if serial and "&" not in serial:
+            return serial
+    return ""
 
 
 def _public_interfaces(items: Sequence[UsbObservation] | Any) -> set[str]:

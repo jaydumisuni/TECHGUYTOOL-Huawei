@@ -163,3 +163,38 @@ def test_multiple_huawei_usb_devices_are_guarded(monkeypatch, tmp_path: Path) ->
     assert result.ok is False
     assert result.health_state is ActionState.GUARDED
     assert "Multiple Huawei" in result.message
+
+
+def test_pnp_fastboot_does_not_bind_unrelated_fastboot_cli_serial(monkeypatch, tmp_path: Path) -> None:
+    import techguy_huawei.device_engine as device_engine
+    from techguy_huawei.usb_discovery import discover_huawei_usb
+
+    huawei_fastboot = discover_huawei_usb(
+        [
+            {
+                "instance_id": r"USB\VID_12D1&PID_3609\HUAWEIROOT",
+                "class_name": "AndroidUsbDeviceClass",
+                "friendly_name": "HUAWEI Android Bootloader Interface",
+                "bus_reported_desc": "HUAWEI Fastboot",
+                "hardware_ids": [r"USB\VID_12D1&PID_3609"],
+                "container_id": "huawei-fastboot-container",
+            }
+        ]
+    )
+    subject = engine(tmp_path)
+    monkeypatch.setattr(device_engine, "_is_windows", lambda: True, raising=False)
+    monkeypatch.setattr(
+        device_engine, "discover_windows_huawei_usb", lambda: huawei_fastboot, raising=False
+    )
+
+    def unexpected_run(*args, **kwargs):
+        raise AssertionError("PnP-proven Huawei Fastboot must not consume an unbound CLI serial")
+
+    monkeypatch.setattr(subject, "_run", unexpected_run)
+    result = subject.probe()
+    assert result.ok is True
+    assert result.payload is not None
+    assert result.payload["interface"] == "Fastboot"
+    assert result.payload["serial"] == ""
+    assert result.payload["usb_discovery"]["state"] == "normal_fastboot"
+    assert result.payload["usb_discovery"]["write_authority"] == "none"
