@@ -18,7 +18,22 @@
     {"id": "vog_kirin980_full_recovery_branding", "status": "HARDWARE_PENDING"},
     {"id": "historical_p10_vtr_regression", "status": "REPLAY_PROVEN_PHYSICAL_PENDING"},
     {"id": "mtp_direct_route", "status": "HARDWARE_PENDING"},
-    {"id": "dead_screen_normal_android_charge_only_discovery", "status": "HARDWARE_PENDING"},
+    {
+        "id":  "dead_screen_normal_android_charge_only_discovery",
+        "status":  "PHYSICAL_PASS",
+        "evidence":  {
+                         "evidence_id":  "dead_screen_normal_android_charge_only_discovery-b73cb56f40ce87e2",
+                         "evidence_sha256":  "b73cb56f40ce87e27470e1bf886364669f52873a7b4bb4515f88f6fbcc6e8f18",
+                         "evidence_refs":  [
+                                               "artifact://athena/huawei/dead-screen-charge-only/adb-separation",
+                                               "artifact://athena/huawei/dead-screen-charge-only/discovery",
+                                               "artifact://athena/huawei/dead-screen-charge-only/pnp"
+                                           ],
+                         "subject_identity_hash":  "b4974282be43b06ade0af67f8abc8108e5ef2269ab228af8dea1e3f85d635e5f",
+                         "verified_at":  "2026-09-05T21:23:18Z",
+                         "verifier":  "THETECHGUY physical certification"
+                     }
+    },
     {"id": "authorized_adb_direct_route", "status": "HARDWARE_PENDING"},
     {"id": "normal_fastboot_direct_route", "status": "HARDWARE_PENDING"},
     {"id": "recovery_detection", "status": "HARDWARE_PENDING"},
