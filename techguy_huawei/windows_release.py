@@ -38,7 +38,7 @@ REQUIRED_MATRIX_IDS = frozenset(
         "vog_kirin980_full_recovery_branding",
         "historical_p10_vtr_regression",
         "mtp_direct_route",
-        "dead_screen_pre_service_usb_discovery",
+        "dead_screen_normal_android_charge_only_discovery",
         "authorized_adb_direct_route",
         "normal_fastboot_direct_route",
         "recovery_detection",

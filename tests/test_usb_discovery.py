@@ -66,14 +66,14 @@ def redmi_adb_fixture() -> list[dict[str, object]]:
     ]
 
 
-def test_107e_storage_only_is_pre_service_without_model_inference() -> None:
+def test_107e_file_cd_gadget_is_normal_android_charge_only_without_model_inference() -> None:
     report = discover_huawei_usb(storage_only_fixture())
     assert report.present is True
-    assert report.state == "storage_only_pre_service"
+    assert report.state == "normal_android_charge_only"
     assert report.vid == "12D1"
     assert report.pid == "107E"
     assert report.model == "identity_pending"
-    assert report.decision_code == "DIRECT_ROUTE_UNAVAILABLE"
+    assert report.decision_code == "ANDROID_CHARGE_ONLY_DETECTED"
     assert report.screen_required is False
     assert report.device_modification == "none"
     assert report.write_authority == "none"
@@ -89,7 +89,7 @@ def test_fingerprint_is_deterministic_and_public_payload_omits_private_serial() 
 
 def test_redmi_adb_does_not_change_huawei_identity() -> None:
     report = discover_huawei_usb(storage_only_fixture() + redmi_adb_fixture())
-    assert report.state == "storage_only_pre_service"
+    assert report.state == "normal_android_charge_only"
     assert report.vid == "12D1"
     assert report.pid == "107E"
     assert "2717" not in repr(report.to_dict())
@@ -110,7 +110,7 @@ def test_two_huawei_devices_fail_closed() -> None:
 
 def test_upgrade_mode_requires_service_interface_evidence_not_pid_alone() -> None:
     storage = discover_huawei_usb(storage_only_fixture())
-    assert storage.state == "storage_only_pre_service"
+    assert storage.state == "normal_android_charge_only"
 
     upgrade = discover_huawei_usb(
         storage_only_fixture()

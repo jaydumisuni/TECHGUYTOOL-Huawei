@@ -207,7 +207,7 @@ class DeviceEngine:
 
     def _result_from_usb_report(self, usb_report) -> EngineResult:
         labels = {
-            "storage_only_pre_service": "Huawei USB / Pre-service",
+            "normal_android_charge_only": "Huawei Android / Charge only",
             "mtp": "MTP",
             "normal_fastboot": "Fastboot",
             "recovery": "Recovery",
