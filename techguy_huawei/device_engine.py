@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -11,6 +11,7 @@ import uuid
 
 from .action_health import ActionState
 from .evidence import EvidenceEnvelope, EvidenceJournal
+from .windows_usb import UsbDiscoveryError, discover_windows_huawei_usb
 
 
 @dataclass(slots=True)
@@ -97,6 +98,28 @@ class DeviceEngine:
         return rows
 
     def probe(self) -> EngineResult:
+        usb_report = None
+        if _is_windows():
+            try:
+                usb_report = discover_windows_huawei_usb()
+            except UsbDiscoveryError as exc:
+                self.snapshot = DeviceSnapshot(session_id=self.snapshot.session_id)
+                return EngineResult(
+                    False,
+                    f"Huawei USB discovery unavailable: {exc.message}",
+                    ActionState.FAILED,
+                )
+            if usb_report.state == "multiple_huawei_devices":
+                self.snapshot = DeviceSnapshot(session_id=self.snapshot.session_id)
+                return EngineResult(
+                    False,
+                    "Multiple Huawei devices detected. Select exactly one physical Huawei device.",
+                    ActionState.GUARDED,
+                    {"usb_discovery": usb_report.to_dict()},
+                )
+            if usb_report.present and usb_report.state not in {"adb", "normal_fastboot"}:
+                return self._result_from_usb_report(usb_report)
+
         adb = self._tool("adb")
         fastboot = self._tool("fastboot")
         adb_rows: list[str] = []
@@ -108,6 +131,16 @@ class DeviceEngine:
             result, _ = self._run("read_device", [fastboot, "devices"])
             fastboot_rows = self._fastboot_rows(result.stdout)
 
+        if _is_windows():
+            if usb_report is None or not usb_report.present:
+                adb_rows = self._verified_huawei_adb_rows(adb, adb_rows) if adb else []
+                fastboot_rows = []
+            elif usb_report.state == "adb":
+                adb_rows = self._verified_huawei_adb_rows(adb, adb_rows) if adb else []
+                fastboot_rows = []
+            elif usb_report.state == "normal_fastboot":
+                adb_rows = []
+
         total = len(adb_rows) + len(fastboot_rows)
         if total == 0:
             self.snapshot = DeviceSnapshot(session_id=self.snapshot.session_id)
@@ -118,15 +151,15 @@ class DeviceEngine:
                 missing.append("Fastboot")
             if missing:
                 return EngineResult(False, f"No device detected. Missing tools: {', '.join(missing)}.", ActionState.MISSING_DEPENDENCY)
-            return EngineResult(False, "No Huawei device detected in ADB or Fastboot mode.", ActionState.READY)
+            return EngineResult(False, "No Huawei device detected in USB, ADB or Fastboot mode.", ActionState.READY)
         if total > 1:
             self.snapshot = DeviceSnapshot(session_id=self.snapshot.session_id)
-            return EngineResult(False, "Multiple devices detected. Connect exactly one service device.", ActionState.GUARDED)
+            return EngineResult(False, "Multiple Huawei devices detected. Connect exactly one service device.", ActionState.GUARDED)
 
         if adb_rows:
             serial = adb_rows[0].split()[0]
             if "unauthorized" in adb_rows[0]:
-                return EngineResult(False, "ADB device is unauthorized. Accept the RSA prompt on the phone.", ActionState.GUARDED)
+                return EngineResult(False, "ADB device is unauthorized.", ActionState.GUARDED)
             if "offline" in adb_rows[0]:
                 return EngineResult(False, "ADB device is offline.", ActionState.FAILED)
             model = "Huawei Android Device"
@@ -141,7 +174,58 @@ class DeviceEngine:
         else:
             serial = fastboot_rows[0].split()[0]
             self.snapshot = DeviceSnapshot(True, "Fastboot", "Huawei Fastboot", "Read-only", "Huawei Fastboot Device", serial, str(uuid.uuid5(uuid.NAMESPACE_URL, serial)))
-        return EngineResult(True, f"Connected: {self.snapshot.model} via {self.snapshot.interface}.", ActionState.READY, asdict(self.snapshot))
+
+        payload: dict[str, object] = asdict(self.snapshot)
+        if usb_report is not None and usb_report.present:
+            payload["usb_discovery"] = usb_report.to_dict()
+        return EngineResult(True, f"Connected: {self.snapshot.model} via {self.snapshot.interface}.", ActionState.READY, payload)
+
+    def _verified_huawei_adb_rows(self, adb: str | None, rows: list[str]) -> list[str]:
+        if not adb:
+            return []
+        verified: list[str] = []
+        for row in rows:
+            lowered = row.lower()
+            if "unauthorized" in lowered or "offline" in lowered:
+                continue
+            serial = row.split()[0]
+            result, _ = self._run(
+                "read_device",
+                [adb, "-s", serial, "shell", "getprop", "ro.product.manufacturer"],
+            )
+            manufacturer = result.stdout.strip().upper()
+            if manufacturer in {"HUAWEI", "HONOR"}:
+                verified.append(row)
+        return verified
+
+    def _result_from_usb_report(self, usb_report) -> EngineResult:
+        labels = {
+            "storage_only_pre_service": "Huawei USB / Pre-service",
+            "mtp": "MTP",
+            "recovery": "Recovery",
+            "upgrade_mode": "Upgrade Mode",
+            "huawei_usb_com_1_0": "HUAWEI USB COM 1.0",
+            "unknown_huawei": "Huawei USB",
+        }
+        interface = labels.get(usb_report.state, "Huawei USB")
+        session_id = str(uuid.uuid5(uuid.NAMESPACE_URL, usb_report.fingerprint_sha256))
+        self.snapshot = DeviceSnapshot(
+            True,
+            interface,
+            "Huawei USB",
+            "Read-only / identity pending",
+            "Huawei device (identity pending)",
+            "",
+            session_id,
+        )
+        payload: dict[str, object] = asdict(self.snapshot)
+        payload["usb_discovery"] = usb_report.to_dict()
+        return EngineResult(
+            True,
+            f"Connected: {self.snapshot.model} via {interface}. {usb_report.decision_code}.",
+            ActionState.READY,
+            payload,
+        )
 
     def guarded(self, label: str) -> EngineResult:
         return EngineResult(
@@ -157,3 +241,7 @@ class DeviceEngine:
         if path.stat().st_size == 0:
             return EngineResult(False, "Firmware package is empty.", ActionState.FAILED)
         return EngineResult(True, f"Package selected: {path.name} ({path.stat().st_size:,} bytes).", ActionState.READY, {"path": str(path), "size": path.stat().st_size})
+
+
+def _is_windows() -> bool:
+    return os.name == "nt"

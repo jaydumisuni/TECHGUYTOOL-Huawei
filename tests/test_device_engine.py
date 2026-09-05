@@ -44,3 +44,122 @@ def test_firmware_preflight_accepts_nonempty_file(tmp_path: Path) -> None:
     result = engine(tmp_path).package_preflight(str(package))
     assert result.ok is True
     assert result.payload == {"path": str(package), "size": len(b"firmware-evidence")}
+
+
+def _storage_report():
+    from techguy_huawei.usb_discovery import discover_huawei_usb
+
+    return discover_huawei_usb(
+        [
+            {
+                "instance_id": r"USB\VID_12D1&PID_107E\HUAWEI-FIXTURE",
+                "class_name": "USB",
+                "friendly_name": "USB Mass Storage Device",
+                "device_desc": "USB Mass Storage Device",
+                "bus_reported_desc": "HUAWEI",
+                "manufacturer": "Compatible USB storage device",
+                "hardware_ids": [r"USB\VID_12D1&PID_107E"],
+                "compatible_ids": [r"USB\Class_08&SubClass_06&Prot_50"],
+                "container_id": "huawei-container",
+                "parent_instance_id": "root",
+            }
+        ]
+    )
+
+
+def _no_huawei_report():
+    from techguy_huawei.usb_discovery import discover_huawei_usb
+
+    return discover_huawei_usb([])
+
+
+def test_probe_prefers_huawei_storage_identity_over_unrelated_redmi_adb(
+    monkeypatch, tmp_path: Path
+) -> None:
+    import techguy_huawei.device_engine as device_engine
+
+    subject = engine(tmp_path)
+    monkeypatch.setattr(device_engine, "_is_windows", lambda: True, raising=False)
+    monkeypatch.setattr(
+        device_engine, "discover_windows_huawei_usb", lambda: _storage_report(), raising=False
+    )
+
+    def unexpected_run(*args, **kwargs):
+        raise AssertionError("ADB/Fastboot must not run before storage-only Huawei identity is returned")
+
+    monkeypatch.setattr(subject, "_run", unexpected_run)
+    result = subject.probe()
+    assert result.ok is True
+    assert result.payload is not None
+    assert result.payload["interface"] == "Huawei USB / Pre-service"
+    assert result.payload["model"] == "Huawei device (identity pending)"
+    assert result.payload["usb_discovery"]["state"] == "storage_only_pre_service"
+    assert result.payload["usb_discovery"]["write_authority"] == "none"
+
+
+def test_windows_generic_redmi_adb_is_not_accepted_as_huawei(
+    monkeypatch, tmp_path: Path
+) -> None:
+    import subprocess
+    import techguy_huawei.device_engine as device_engine
+
+    subject = engine(tmp_path)
+    monkeypatch.setattr(device_engine, "_is_windows", lambda: True, raising=False)
+    monkeypatch.setattr(
+        device_engine, "discover_windows_huawei_usb", lambda: _no_huawei_report(), raising=False
+    )
+    monkeypatch.setattr(subject, "_tool", lambda name: name)
+
+    def fake_run(action_id, args, timeout=12):
+        command = list(args)
+        if command[0] == "adb" and command[1:] == ["devices", "-l"]:
+            output = "List of devices attached\nREDMI123 device product:sky model:2312DRA50G\n"
+        elif command[0] == "fastboot":
+            output = ""
+        elif command[:4] == ["adb", "-s", "REDMI123", "shell"] and command[-1] == "ro.product.manufacturer":
+            output = "Xiaomi\n"
+        else:
+            output = ""
+        return subprocess.CompletedProcess(command, 0, stdout=output, stderr=""), command
+
+    monkeypatch.setattr(subject, "_run", fake_run)
+    result = subject.probe()
+    assert result.ok is False
+    assert result.health_state is ActionState.READY
+    assert "No Huawei device" in result.message
+    assert subject.snapshot.connected is False
+
+
+def test_multiple_huawei_usb_devices_are_guarded(monkeypatch, tmp_path: Path) -> None:
+    import techguy_huawei.device_engine as device_engine
+    from techguy_huawei.usb_discovery import discover_huawei_usb
+
+    multiple = discover_huawei_usb(
+        [
+            {
+                "instance_id": r"USB\VID_12D1&PID_107E\A",
+                "class_name": "USB",
+                "friendly_name": "USB Mass Storage Device",
+                "bus_reported_desc": "HUAWEI",
+                "hardware_ids": [r"USB\VID_12D1&PID_107E"],
+                "container_id": "container-a",
+            },
+            {
+                "instance_id": r"USB\VID_12D1&PID_107E\B",
+                "class_name": "USB",
+                "friendly_name": "USB Mass Storage Device",
+                "bus_reported_desc": "HUAWEI",
+                "hardware_ids": [r"USB\VID_12D1&PID_107E"],
+                "container_id": "container-b",
+            },
+        ]
+    )
+    subject = engine(tmp_path)
+    monkeypatch.setattr(device_engine, "_is_windows", lambda: True, raising=False)
+    monkeypatch.setattr(
+        device_engine, "discover_windows_huawei_usb", lambda: multiple, raising=False
+    )
+    result = subject.probe()
+    assert result.ok is False
+    assert result.health_state is ActionState.GUARDED
+    assert "Multiple Huawei" in result.message
