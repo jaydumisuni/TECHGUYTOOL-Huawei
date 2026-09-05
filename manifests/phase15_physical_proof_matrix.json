@@ -22,8 +22,8 @@
         "id":  "dead_screen_normal_android_charge_only_discovery",
         "status":  "PHYSICAL_PASS",
         "evidence":  {
-                         "evidence_id":  "dead_screen_normal_android_charge_only_discovery-f5e22f89b0d117ac",
-                         "evidence_sha256":  "f5e22f89b0d117ac28a3703483e2f16822a14ee83f04c70f186492aa3337d3d6",
+                         "evidence_id":  "dead_screen_normal_android_charge_only_discovery-f153a44f40e1e463",
+                         "evidence_sha256":  "f153a44f40e1e463c3470bbf24f8e394ba4fd00c0024a8ba38a89927ceb86e6b",
                          "evidence_refs":  [
                                                "artifact://athena/huawei/dead-screen-charge-only/adb-separation",
                                                "artifact://athena/huawei/dead-screen-charge-only/discovery",
@@ -31,7 +31,7 @@
                                                "artifact://athena/huawei/dead-screen-charge-only/raw-descriptor"
                                            ],
                          "subject_identity_hash":  "fac9f75dba49062e70ed42ef8d6f98dabc312df4aa29d451132d015726c71537",
-                         "verified_at":  "2026-09-05T22:08:01Z",
+                         "verified_at":  "2026-09-05T22:17:14Z",
                          "verifier":  "THETECHGUY physical certification"
                      }
     },
