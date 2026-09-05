@@ -1,0 +1,66 @@
+{
+  "schema": "techguytool-huawei.native-system-recovery.clt.v1",
+  "recipe_id": "clt-native-system-recovery-v1",
+  "recipe_version": "1.0.0",
+  "authority": "planning_only",
+  "execution_authority": "lease_required",
+  "production_enabled": false,
+  "family": "CLT",
+  "required_mode": "normal_fastboot",
+  "required_package_roles": [
+    "base",
+    "cust",
+    "preload"
+  ],
+  "stages": [
+    {
+      "id": "certify_continuity",
+      "kind": "observation"
+    },
+    {
+      "id": "verify_fastboot",
+      "kind": "observation"
+    },
+    {
+      "id": "resolve_identity",
+      "kind": "observation"
+    },
+    {
+      "id": "bind_packages",
+      "kind": "observation"
+    },
+    {
+      "id": "verify_package_set",
+      "kind": "observation"
+    },
+    {
+      "id": "acquire_recovery_lease",
+      "kind": "governed_execution"
+    },
+    {
+      "id": "prepare_transport",
+      "kind": "governed_execution"
+    },
+    {
+      "id": "transfer_recovery_payloads",
+      "kind": "governed_execution"
+    },
+    {
+      "id": "verify_transfer",
+      "kind": "observation"
+    },
+    {
+      "id": "enter_update_stage",
+      "kind": "governed_execution"
+    },
+    {
+      "id": "verify_resulting_identity",
+      "kind": "observation"
+    },
+    {
+      "id": "close_recovery_plan",
+      "kind": "observation"
+    }
+  ],
+  "truth_boundary": "Planning only. No recovery write may occur without an exact physical session, package set, certified transport, explicit owner approval, and single-use execution lease."
+}
