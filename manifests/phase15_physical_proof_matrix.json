@@ -22,15 +22,16 @@
         "id":  "dead_screen_normal_android_charge_only_discovery",
         "status":  "PHYSICAL_PASS",
         "evidence":  {
-                         "evidence_id":  "dead_screen_normal_android_charge_only_discovery-b73cb56f40ce87e2",
-                         "evidence_sha256":  "b73cb56f40ce87e27470e1bf886364669f52873a7b4bb4515f88f6fbcc6e8f18",
+                         "evidence_id":  "dead_screen_normal_android_charge_only_discovery-f5e22f89b0d117ac",
+                         "evidence_sha256":  "f5e22f89b0d117ac28a3703483e2f16822a14ee83f04c70f186492aa3337d3d6",
                          "evidence_refs":  [
                                                "artifact://athena/huawei/dead-screen-charge-only/adb-separation",
                                                "artifact://athena/huawei/dead-screen-charge-only/discovery",
-                                               "artifact://athena/huawei/dead-screen-charge-only/pnp"
+                                               "artifact://athena/huawei/dead-screen-charge-only/pnp",
+                                               "artifact://athena/huawei/dead-screen-charge-only/raw-descriptor"
                                            ],
-                         "subject_identity_hash":  "b4974282be43b06ade0af67f8abc8108e5ef2269ab228af8dea1e3f85d635e5f",
-                         "verified_at":  "2026-09-05T21:23:18Z",
+                         "subject_identity_hash":  "fac9f75dba49062e70ed42ef8d6f98dabc312df4aa29d451132d015726c71537",
+                         "verified_at":  "2026-09-05T22:08:01Z",
                          "verifier":  "THETECHGUY physical certification"
                      }
     },
