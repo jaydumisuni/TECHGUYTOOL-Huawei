@@ -36,7 +36,25 @@
                      }
     },
     {"id": "authorized_adb_direct_route", "status": "HARDWARE_PENDING"},
-    {"id": "normal_fastboot_direct_route", "status": "HARDWARE_PENDING"},
+    {
+        "id":  "normal_fastboot_direct_route",
+        "status":  "PHYSICAL_PASS",
+        "evidence":  {
+                         "evidence_id":  "normal_fastboot_direct_route-bc071ad7d4f33f0a",
+                         "evidence_sha256":  "bc071ad7d4f33f0ae2d8e5fd18ac2bfe453b4084107df3e77a58eb87e5c62cbe",
+                         "evidence_refs":  [
+                                               "artifact://athena/huawei/fastboot/device-engine-public",
+                                               "artifact://athena/huawei/fastboot/devices",
+                                               "artifact://athena/huawei/fastboot/lock-state",
+                                               "artifact://athena/huawei/fastboot/oem-bootinfo",
+                                               "artifact://athena/huawei/fastboot/oem-build",
+                                               "artifact://athena/huawei/fastboot/pnp"
+                                           ],
+                         "subject_identity_hash":  "976f239577e6689d12e0a898ec94c2aecae80452609afca932dbc6ed58ae39cb",
+                         "verified_at":  "2026-09-05T22:31:06Z",
+                         "verifier":  "THETECHGUY physical certification"
+                     }
+    },
     {"id": "recovery_detection", "status": "HARDWARE_PENDING"},
     {"id": "upgrade_mode_detection_recipe_eligibility", "status": "HARDWARE_PENDING"},
     {"id": "kirin_testpoint_usb_com_1_0", "status": "HARDWARE_PENDING"},
