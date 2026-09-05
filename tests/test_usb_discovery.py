@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from techguy_huawei.usb_discovery import discover_huawei_usb
 

@@ -1,4 +1,4 @@
-﻿# Dead-Screen Huawei USB Discovery Design
+# Dead-Screen Huawei USB Discovery Design
 
 **Status:** Owner-approved design  
 **Date:** 2026-09-05  
