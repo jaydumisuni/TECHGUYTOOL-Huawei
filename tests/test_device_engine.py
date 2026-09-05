@@ -246,3 +246,71 @@ def test_pnp_huawei_adb_without_verified_authorized_session_stays_guarded(monkey
     assert result.payload is not None
     assert result.payload["usb_discovery"]["state"] == "adb"
     assert "PRIVATE123" not in repr(result.payload)
+
+def test_windows_generic_fastboot_is_accepted_only_after_huawei_oem_verification(
+    monkeypatch, tmp_path: Path
+) -> None:
+    import subprocess
+    import techguy_huawei.device_engine as device_engine
+
+    subject = engine(tmp_path)
+    monkeypatch.setattr(device_engine, "_is_windows", lambda: True, raising=False)
+    monkeypatch.setattr(
+        device_engine, "discover_windows_huawei_usb", lambda: _no_huawei_report(), raising=False
+    )
+    monkeypatch.setattr(subject, "_tool", lambda name: name)
+
+    def fake_run(action_id, args, timeout=12):
+        command = list(args)
+        if command == ["adb", "devices", "-l"]:
+            output, error, code = "List of devices attached\n", "", 0
+        elif command == ["fastboot", "devices"]:
+            output, error, code = "HUAWEI123 fastboot\n", "", 0
+        elif command == ["fastboot", "-s", "HUAWEI123", "oem", "get-build-number"]:
+            output, error, code = "", "(bootloader) :CLT-LGRP2-OVS 9.1.0.325\nOKAY\n", 0
+        elif command == ["fastboot", "-s", "HUAWEI123", "oem", "get-bootinfo"]:
+            output, error, code = "", "(bootloader) locked\nOKAY\n", 0
+        else:
+            output, error, code = "", "", 0
+        return subprocess.CompletedProcess(command, code, stdout=output, stderr=error), command
+
+    monkeypatch.setattr(subject, "_run", fake_run)
+    result = subject.probe()
+    assert result.ok is True
+    assert result.payload is not None
+    assert result.payload["interface"] == "Fastboot"
+    assert result.payload["platform"] == "Huawei Fastboot"
+    assert result.payload["serial"] == "HUAWEI123"
+
+
+def test_windows_unverified_generic_fastboot_is_not_accepted_as_huawei(
+    monkeypatch, tmp_path: Path
+) -> None:
+    import subprocess
+    import techguy_huawei.device_engine as device_engine
+
+    subject = engine(tmp_path)
+    monkeypatch.setattr(device_engine, "_is_windows", lambda: True, raising=False)
+    monkeypatch.setattr(
+        device_engine, "discover_windows_huawei_usb", lambda: _no_huawei_report(), raising=False
+    )
+    monkeypatch.setattr(subject, "_tool", lambda name: name)
+
+    def fake_run(action_id, args, timeout=12):
+        command = list(args)
+        if command == ["adb", "devices", "-l"]:
+            output, error, code = "List of devices attached\n", "", 0
+        elif command == ["fastboot", "devices"]:
+            output, error, code = "OTHER123 fastboot\n", "", 0
+        elif command[:3] == ["fastboot", "-s", "OTHER123"]:
+            output, error, code = "", "FAILED (remote: Command not allowed)\n", 1
+        else:
+            output, error, code = "", "", 0
+        return subprocess.CompletedProcess(command, code, stdout=output, stderr=error), command
+
+    monkeypatch.setattr(subject, "_run", fake_run)
+    result = subject.probe()
+    assert result.ok is False
+    assert result.health_state is ActionState.READY
+    assert "No Huawei device" in result.message
+    assert subject.snapshot.connected is False

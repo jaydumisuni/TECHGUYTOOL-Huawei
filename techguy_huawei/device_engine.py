@@ -134,7 +134,11 @@ class DeviceEngine:
         if _is_windows():
             if usb_report is None or not usb_report.present:
                 adb_rows = self._verified_huawei_adb_rows(adb, adb_rows) if adb else []
-                fastboot_rows = []
+                fastboot_rows = (
+                    self._verified_huawei_fastboot_rows(fastboot, fastboot_rows)
+                    if fastboot
+                    else []
+                )
             elif usb_report.state == "adb":
                 adb_rows = self._verified_huawei_adb_rows(adb, adb_rows) if adb else []
                 fastboot_rows = []
@@ -186,6 +190,38 @@ class DeviceEngine:
         if usb_report is not None and usb_report.present:
             payload["usb_discovery"] = usb_report.to_dict()
         return EngineResult(True, f"Connected: {self.snapshot.model} via {self.snapshot.interface}.", ActionState.READY, payload)
+
+    def _verified_huawei_fastboot_rows(
+        self, fastboot: str, rows: list[str]
+    ) -> list[str]:
+        verified: list[str] = []
+        for row in rows:
+            serial = row.split()[0]
+            build, _ = self._run(
+                "read_device",
+                [fastboot, "-s", serial, "oem", "get-build-number"],
+            )
+            if build.returncode != 0:
+                continue
+            build_text = f"{build.stdout}\n{build.stderr}".upper()
+            if "(BOOTLOADER)" not in build_text or not re.search(
+                r"\b\d+\.\d+\.\d+(?:\.\d+)?\b", build_text
+            ):
+                continue
+
+            bootinfo, _ = self._run(
+                "read_device",
+                [fastboot, "-s", serial, "oem", "get-bootinfo"],
+            )
+            if bootinfo.returncode != 0:
+                continue
+            bootinfo_text = f"{bootinfo.stdout}\n{bootinfo.stderr}".upper()
+            if "(BOOTLOADER)" not in bootinfo_text or not re.search(
+                r"\b(?:UN)?LOCKED\b|\bLOCK STATE\b", bootinfo_text
+            ):
+                continue
+            verified.append(row)
+        return verified
 
     def _verified_huawei_adb_rows(self, adb: str | None, rows: list[str]) -> list[str]:
         if not adb:
