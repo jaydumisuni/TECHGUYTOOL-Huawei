@@ -1,6 +1,6 @@
 # Phase 3 — TTG Device Gateway
 
-Status: implementation authority for the device-inert persistent control plane.
+Status: persistent control-plane authority with a later read-only live-USB discovery extension.
 
 ## Purpose
 
@@ -165,10 +165,15 @@ xray_authority remains read_only
 
 ## Explicit exclusions
 
+### Later read-only USB discovery extension
+
+Physical certification on a dead-screen Huawei exposed a gap between the persistent Gateway contract and Windows device discovery. The later extension may enumerate present Windows PnP/USB metadata, classify Huawei interface states, derive a privacy-preserving physical fingerprint, and record the resulting endpoint through the existing `open_physical_session` / `record_endpoint` contract.
+
+This extension is screen-independent and read-only. It does not send vendor USB commands, change drivers, force modes, transfer loaders, read partitions, infer an exact model from a shared VID/PID, or widen write authority. A storage-only `VID_12D1:PID_107E` observation is therefore `storage_only_pre_service`, not MTP or Upgrade Mode unless the corresponding interfaces are actually observed.
+
 Phase 3 does not prove or authorize:
 
-- live USB discovery;
-- MTP, ADB, Fastboot, HUAWEI USB COM 1.0, or Testpoint communication;
+- active MTP, ADB, Fastboot, HUAWEI USB COM 1.0, or Testpoint protocol communication (the later extension may classify these interfaces read-only from Windows PnP evidence);
 - loader/programmer/DA transfer;
 - OEMINFO construction or write;
 - partition read or write;
