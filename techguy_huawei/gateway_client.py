@@ -142,6 +142,24 @@ class GatewayClient:
             "write_authority",
         )
         payload = {key: report[key] for key in allowed if key in report}
+        allowed_interfaces = {
+            "Huawei USB",
+            "USB Mass Storage",
+            "MTP",
+            "ADB",
+            "Fastboot",
+            "Recovery",
+            "PCUI",
+            "DBAdapter",
+            "HUAWEI USB COM 1.0",
+        }
+        interfaces = payload.get("interfaces")
+        if isinstance(interfaces, (list, tuple)):
+            payload["interfaces"] = sorted(
+                {str(value) for value in interfaces if str(value) in allowed_interfaces}
+            )
+        else:
+            payload["interfaces"] = []
         fingerprint = str(payload.get("fingerprint_sha256", ""))
         if len(fingerprint) != 64 or any(char not in "0123456789abcdefABCDEF" for char in fingerprint):
             raise ValueError("USB discovery fingerprint must be a SHA-256 hex digest")

@@ -157,3 +157,11 @@ def test_record_usb_discovery_uses_existing_physical_session_and_endpoint_contra
     )
     assert isinstance(record[5], dict)
     assert record[5]["write_authority"] == "none"
+
+
+def test_gateway_usb_interfaces_allowlist_drops_raw_private_labels() -> None:
+    report = _usb_report_payload()
+    report["interfaces"] = ["ADB", "HUAWEI ADB PRIVATE-SERIAL", "PRIVATE-SERIAL"]
+    payload = GatewayClient.usb_discovery_endpoint_payload(report)
+    assert payload["interfaces"] == ["ADB"]
+    assert "PRIVATE-SERIAL" not in repr(payload)

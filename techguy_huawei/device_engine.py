@@ -139,6 +139,15 @@ class DeviceEngine:
                 adb_rows = self._verified_huawei_adb_rows(adb, adb_rows) if adb else []
                 fastboot_rows = []
 
+            if usb_report is not None and usb_report.state == "adb" and not adb_rows:
+                self.snapshot = DeviceSnapshot(session_id=self.snapshot.session_id)
+                return EngineResult(
+                    False,
+                    "Huawei ADB interface detected, but no verified authorized Huawei ADB session is available.",
+                    ActionState.GUARDED,
+                    {"usb_discovery": usb_report.to_dict()},
+                )
+
         total = len(adb_rows) + len(fastboot_rows)
         if total == 0:
             self.snapshot = DeviceSnapshot(session_id=self.snapshot.session_id)

@@ -229,3 +229,67 @@ def test_fingerprint_survives_huawei_pid_mode_transition() -> None:
     second = discover_huawei_usb([fastboot])
 
     assert first.fingerprint_sha256 == second.fingerprint_sha256
+
+
+def test_public_interfaces_never_expose_raw_pnp_descriptions() -> None:
+    report = discover_huawei_usb(
+        [
+            {
+                "instance_id": r"USB\VID_12D1&PID_107E&MI_01\PRIVATE-SERIAL",
+                "class_name": "AndroidUsbDeviceClass",
+                "friendly_name": "HUAWEI ADB PRIVATE-SERIAL",
+                "device_desc": "PRIVATE-SERIAL device description",
+                "bus_reported_desc": "PRIVATE-SERIAL HUAWEI ADB",
+                "manufacturer": "HUAWEI",
+                "hardware_ids": [r"USB\VID_12D1&PID_107E&MI_01"],
+                "container_id": "private-interface-container",
+                "parent_instance_id": r"USB\VID_12D1&PID_107E\ROOTSERIAL",
+            }
+        ]
+    )
+    encoded = repr(report.to_dict())
+    assert "PRIVATE-SERIAL" not in encoded
+    assert report.interfaces == ("ADB",)
+
+
+def test_composite_children_group_by_confirmed_huawei_parent() -> None:
+    observations = [
+        {
+            "instance_id": r"USB\VID_12D1&PID_107E&MI_00\6&AAA&0&0000",
+            "class_name": "USB",
+            "friendly_name": "USB Mass Storage Device",
+            "hardware_ids": [r"USB\VID_12D1&PID_107E&MI_00"],
+            "parent_instance_id": r"USB\VID_12D1&PID_107E\ROOTSERIAL123",
+        },
+        {
+            "instance_id": r"USB\VID_12D1&PID_107E&MI_01\6&AAA&0&0001",
+            "class_name": "AndroidUsbDeviceClass",
+            "friendly_name": "HUAWEI ADB Interface",
+            "hardware_ids": [r"USB\VID_12D1&PID_107E&MI_01"],
+            "parent_instance_id": r"USB\VID_12D1&PID_107E\ROOTSERIAL123",
+        },
+    ]
+    report = discover_huawei_usb(observations)
+    assert report.state != "multiple_huawei_devices"
+    assert report.present is True
+
+
+def test_shared_non_huawei_hub_parent_does_not_merge_devices() -> None:
+    observations = [
+        {
+            "instance_id": r"USB\VID_12D1&PID_107E&MI_00\CHILDA",
+            "class_name": "USB",
+            "friendly_name": "USB Mass Storage Device",
+            "hardware_ids": [r"USB\VID_12D1&PID_107E&MI_00"],
+            "parent_instance_id": r"USB\VID_05E3&PID_0610\HUBSERIAL",
+        },
+        {
+            "instance_id": r"USB\VID_12D1&PID_107E&MI_00\CHILDB",
+            "class_name": "USB",
+            "friendly_name": "USB Mass Storage Device",
+            "hardware_ids": [r"USB\VID_12D1&PID_107E&MI_00"],
+            "parent_instance_id": r"USB\VID_05E3&PID_0610\HUBSERIAL",
+        },
+    ]
+    report = discover_huawei_usb(observations)
+    assert report.state == "multiple_huawei_devices"

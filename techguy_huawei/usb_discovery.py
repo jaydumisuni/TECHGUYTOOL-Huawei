@@ -234,7 +234,8 @@ def _fingerprint(group: Sequence[UsbObservation], *, vid: str) -> str:
 
 def _usb_serial(item: UsbObservation) -> str:
     for instance_id in (item.parent_instance_id, item.instance_id):
-        if not instance_id or not _USB_ID_RE.search(instance_id):
+        match = _USB_ID_RE.search(instance_id or "")
+        if not match or match.group(1).upper() != _HUAWEI_VID:
             continue
         parts = instance_id.split("\\")
         if len(parts) < 3:
@@ -251,10 +252,41 @@ def _usb_serial(item: UsbObservation) -> str:
 def _public_interfaces(items: Sequence[UsbObservation] | Any) -> set[str]:
     result: set[str] = set()
     for item in items:
-        for value in (item.friendly_name, item.device_desc, item.bus_reported_desc):
-            value = value.strip()
-            if value:
-                result.add(value)
+        text = _observation_text(item)
+        class_name = item.class_name.strip().upper()
+        matched = False
+        if "HUAWEI USB COM 1.0" in text:
+            result.add("HUAWEI USB COM 1.0")
+            matched = True
+        if "PC UI" in text or "PCUI" in text:
+            result.add("PCUI")
+            matched = True
+        if "DBADAPTER" in text:
+            result.add("DBAdapter")
+            matched = True
+        if "FASTBOOT" in text or "BOOTLOADER INTERFACE" in text:
+            result.add("Fastboot")
+            matched = True
+        if "RECOVERY" in text:
+            result.add("Recovery")
+            matched = True
+        if "ADB" in text:
+            result.add("ADB")
+            matched = True
+        if class_name == "WPD" or "MTP" in text or "MEDIA TRANSFER PROTOCOL" in text:
+            result.add("MTP")
+            matched = True
+        if (
+            "USB MASS STORAGE" in text
+            or "FILE-CD GADGET" in text
+            or "CD-ROM" in text
+            or class_name == "CDROM"
+            or any("CLASS_08" in value.upper() for value in item.compatible_ids)
+        ):
+            result.add("USB Mass Storage")
+            matched = True
+        if not matched and _is_huawei_observation(item):
+            result.add("Huawei USB")
     return result
 
 
