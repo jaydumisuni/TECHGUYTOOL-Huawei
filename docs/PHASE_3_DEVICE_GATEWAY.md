@@ -167,9 +167,9 @@ xray_authority remains read_only
 
 ### Later read-only USB discovery extension
 
-Physical certification on a dead-screen Huawei exposed a gap between the persistent Gateway contract and Windows device discovery. The later extension may enumerate present Windows PnP/USB metadata, classify Huawei interface states, derive a privacy-preserving physical fingerprint, and record the resulting endpoint through the existing `open_physical_session` / `record_endpoint` contract.
+Physical certification on a dead-screen Huawei exposed a gap between the persistent Gateway contract and Windows device discovery. The read-only extension enumerates present Windows PnP/USB metadata, classifies Huawei interface states, derives a privacy-preserving physical fingerprint, and records the resulting endpoint through the existing `open_physical_session` / `record_endpoint` contract.
 
-This extension is screen-independent and read-only. It does not send vendor USB commands, change drivers, force modes, transfer loaders, read partitions, infer an exact model from a shared VID/PID, or widen write authority. A `VID_12D1:PID_107E` observation exposing only the Huawei/File-CD mass-storage composition is therefore `normal_android_charge_only`, not MTP, Fastboot, or Upgrade Mode unless those interfaces are actually observed. A setup-wizard or locked-screen condition may explain why MTP is unavailable, but USB evidence alone does not assert that UI state.
+This extension is screen-independent and read-only. It does not send vendor USB commands, change drivers, force modes, transfer loaders, read partitions, infer an exact model from a shared VID/PID, or widen write authority. On Windows, the discovery path also reads the hub's standard USB device/configuration descriptors through GET-only IOCTLs. `normal_android_charge_only` is confirmed only when the raw descriptor agrees with Huawei `VID_12D1`/the observed PID and exposes exactly one mass-storage interface (`08/06/50`); descriptor failure, mismatch, or a composite configuration fails closed to `unknown_huawei`. A setup-wizard or locked-screen condition may explain why MTP is unavailable, but USB evidence alone does not assert that UI state.
 
 Phase 3 does not prove or authorize:
 
