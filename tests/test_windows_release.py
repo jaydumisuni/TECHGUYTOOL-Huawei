@@ -233,3 +233,12 @@ def test_deploy_spec_rejects_quoted_spaced_source() -> None:
 def test_deploy_spec_allows_reviewed_static_sources() -> None:
     spec = "extra_args = --include-data-dir=data=data --include-data-dir=assets=assets --include-data-dir=runtime=runtime"
     assert find_prohibited_external_data_sources(spec) == []
+
+
+def test_physical_matrix_requires_dead_screen_pre_service_usb_discovery() -> None:
+    matrix = load_physical_matrix()
+    rows = {row["id"]: row for row in matrix["entries"]}
+    assert rows["dead_screen_pre_service_usb_discovery"]["status"] in {
+        "HARDWARE_PENDING",
+        "PHYSICAL_PASS",
+    }

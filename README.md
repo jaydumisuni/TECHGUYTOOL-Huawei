@@ -75,7 +75,7 @@ See `FULL_PLAN.md` for the complete contract.
 
 ## Current next milestone
 
-The next practical milestone is **owner-machine Windows proof on ATHENA**, not more architecture work and not recovery of the retired P30 handset.
+The current practical milestone is **external Huawei hardware certification**, beginning with read-only, screen-independent discovery on whatever representative Huawei hardware is physically available. Owner-machine source/UI proof is already complete; do not reopen it.
 
 Use:
 
@@ -105,9 +105,9 @@ Future certification uses whichever exact supported Huawei devices are actually 
 
 ## Current certification tracks
 
-After ATHENA local proof, continue evidence-driven certification without reopening the software phases:
+Continue evidence-driven certification without reopening the software phases:
 
-- direct MTP/ADB/Fastboot/Recovery/Upgrade routing;
+- screen-independent Huawei USB/PnP discovery before direct MTP/ADB/Fastboot/Recovery/Upgrade routing;
 - Kirin service-entry and bounded-recipe proof;
 - Qualcomm 9008/Firehose read-only proof before model-specific writes;
 - MediaTek BROM/Preloader/DA read-only proof before model-specific writes;

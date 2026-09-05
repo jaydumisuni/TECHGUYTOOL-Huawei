@@ -18,6 +18,7 @@
     {"id": "vog_kirin980_full_recovery_branding", "status": "HARDWARE_PENDING"},
     {"id": "historical_p10_vtr_regression", "status": "REPLAY_PROVEN_PHYSICAL_PENDING"},
     {"id": "mtp_direct_route", "status": "HARDWARE_PENDING"},
+    {"id": "dead_screen_pre_service_usb_discovery", "status": "HARDWARE_PENDING"},
     {"id": "authorized_adb_direct_route", "status": "HARDWARE_PENDING"},
     {"id": "normal_fastboot_direct_route", "status": "HARDWARE_PENDING"},
     {"id": "recovery_detection", "status": "HARDWARE_PENDING"},
