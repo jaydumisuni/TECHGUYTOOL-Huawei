@@ -4,9 +4,15 @@ import json
 import os
 import shutil
 import subprocess
+from dataclasses import replace
 from typing import Callable
 
 from .usb_discovery import UsbDiscoveryReport, UsbObservation, discover_huawei_usb
+from .windows_usb_descriptor import (
+    UsbDescriptorError,
+    UsbRawDescriptor,
+    collect_windows_usb_descriptor,
+)
 
 POWERSHELL_DISCOVERY_SCRIPT = r'''
 $get = {
@@ -101,7 +107,48 @@ def discover_windows_huawei_usb(
     *,
     runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
     powershell: str | None = None,
+    descriptor_reader: Callable[[str], UsbRawDescriptor] | None = None,
 ) -> UsbDiscoveryReport:
-    return discover_huawei_usb(
-        collect_windows_usb_observations(runner=runner, powershell=powershell)
+    observations = collect_windows_usb_observations(runner=runner, powershell=powershell)
+    report = discover_huawei_usb(observations)
+    if report.state != "normal_android_charge_only":
+        return report
+
+    root_instances = sorted(
+        {
+            item.instance_id
+            for item in observations
+            if item.instance_id.upper().startswith("USB\\VID_12D1&PID_")
+            and "&MI_" not in item.instance_id.upper()
+        }
+    )
+    if len(root_instances) != 1:
+        return _descriptor_unconfirmed(report)
+
+    reader = descriptor_reader
+    if reader is None:
+        reader = lambda instance_id: collect_windows_usb_descriptor(
+            instance_id, powershell=powershell
+        )
+    try:
+        descriptor = reader(root_instances[0])
+    except UsbDescriptorError:
+        return _descriptor_unconfirmed(report)
+
+    if (
+        descriptor.vid != report.vid
+        or descriptor.pid != report.pid
+        or not descriptor.mass_storage_only
+    ):
+        return _descriptor_unconfirmed(report)
+    return report
+
+
+def _descriptor_unconfirmed(report: UsbDiscoveryReport) -> UsbDiscoveryReport:
+    return replace(
+        report,
+        state="unknown_huawei",
+        transport="windows_pnp_usb",
+        decision_code="HUAWEI_USB_STATE_UNKNOWN",
+        next_action="collect_more_read_only_identity_evidence",
     )
