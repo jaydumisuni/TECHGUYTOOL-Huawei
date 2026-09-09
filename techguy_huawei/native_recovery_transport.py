@@ -12,10 +12,10 @@ ROOT=Path(__file__).resolve().parents[1]
 DEFAULT_REPLAY=ROOT/"replay"/"kirin"/"clt_native_recovery_transport.json"
 _STATIC_LEVELS=frozenset({"static_interop_research"})
 _REQUIRED_BLOCKERS=frozenset({
-    "SYSTEM_RECOVERY_COMMAND_FRAMING_UNKNOWN",
-    "SYSTEM_RECOVERY_AUTH_FLOW_UNKNOWN",
+    "OFFICIAL_AUTH_PROVIDER_REQUEST_SCHEMA_UNCERTIFIED",
     "SYSTEM_RECOVERY_TRANSFER_FRAMING_UNKNOWN",
     "SYSTEM_RECOVERY_COMMIT_SEQUENCE_UNKNOWN",
+    "SYSTEM_RECOVERY_WRITE_SAFETY_UNPROVEN",
 })
 
 class NativeRecoveryTransportError(RuntimeError):

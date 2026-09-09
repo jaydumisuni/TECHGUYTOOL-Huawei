@@ -29,15 +29,17 @@
   "transport_primitives": [
     "winusb_control_transfer",
     "winusb_read_pipe",
-    "winusb_write_pipe"
+    "winusb_write_pipe",
+    "system_update_auth_prefix_h_or_e",
+    "system_update_auth_success_byte_02"
   ],
   "evidence_level": "static_interop_research",
   "write_certified": false,
   "blockers": [
-    "SYSTEM_RECOVERY_AUTH_FLOW_UNKNOWN",
-    "SYSTEM_RECOVERY_COMMAND_FRAMING_UNKNOWN",
+    "OFFICIAL_AUTH_PROVIDER_REQUEST_SCHEMA_UNCERTIFIED",
     "SYSTEM_RECOVERY_COMMIT_SEQUENCE_UNKNOWN",
-    "SYSTEM_RECOVERY_TRANSFER_FRAMING_UNKNOWN"
+    "SYSTEM_RECOVERY_TRANSFER_FRAMING_UNKNOWN",
+    "SYSTEM_RECOVERY_WRITE_SAFETY_UNPROVEN"
   ],
-  "truth_boundary": "Static clean-room interoperability evidence proves Huawei recovery package roles, recovery labels, exported recovery orchestration functions, and WinUSB primitives only. It does not prove command framing, authentication, transfer framing, commit order, or device-write safety and therefore grants no execution authority."
+  "truth_boundary": "Static clean-room interoperability evidence proves Huawei recovery package roles, recovery labels, exported recovery orchestration functions, WinUSB primitives, and SystemUpdateAuth request/response framing (H/E prefix; response byte 0x02 accepted). It does not certify the official authorization provider request schema, recovery payload transfer framing, commit order, or device-write safety and therefore grants no execution authority."
 }

@@ -36,6 +36,8 @@ def test_replay_records_clean_room_research_without_runtime_dependency():
     assert replay["research_artifact"]["runtime_dependency"] is False
     assert replay["observed_package_roles"]==["base","cust","preload"]
     assert replay["write_certified"] is False
+    assert "system_update_auth_prefix_h_or_e" in replay["transport_primitives"]
+    assert "system_update_auth_success_byte_02" in replay["transport_primitives"]
 
 
 def test_clt_fastboot_is_observed_but_not_write_certified():
@@ -43,7 +45,9 @@ def test_clt_fastboot_is_observed_but_not_write_certified():
     assert cap.status is TransportStatus.OBSERVED_UNCERTIFIED
     assert cap.write_certified is False
     assert cap.transport_id=="clt-native-system-recovery-v1"
-    assert "SYSTEM_RECOVERY_COMMAND_FRAMING_UNKNOWN" in cap.blockers
+    assert "OFFICIAL_AUTH_PROVIDER_REQUEST_SCHEMA_UNCERTIFIED" in cap.blockers
+    assert "SYSTEM_RECOVERY_AUTH_FLOW_UNKNOWN" not in cap.blockers
+    assert "SYSTEM_RECOVERY_COMMAND_FRAMING_UNKNOWN" not in cap.blockers
 
 
 def test_non_clt_identity_is_unsupported():
