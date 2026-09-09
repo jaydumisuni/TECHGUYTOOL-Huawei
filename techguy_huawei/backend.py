@@ -11,6 +11,7 @@ from PySide6.QtCore import QObject, Property, QTimer, Signal, Slot
 from .action_health import ActionRegistry, ActionState
 from .device_engine import DeviceEngine, EngineResult
 from .evidence import EvidenceJournal
+from .native_recovery_controller import NativeRecoveryController
 from .storage import AppPaths
 from .testpoint_catalog import (
     exact_testpoint_record,
@@ -27,6 +28,7 @@ class Backend(QObject):
     progressChanged = Signal()
     registrationChanged = Signal()
     firmwareChanged = Signal()
+    recoveryChanged = Signal()
     operationSelectionChanged = Signal()
 
     def __init__(self, app_root: Path) -> None:
@@ -34,6 +36,17 @@ class Backend(QObject):
         self.app_root = app_root
         self.paths = AppPaths.resolve()
         self.engine = DeviceEngine(app_root, EvidenceJournal(self.paths.evidence / "operations.jsonl"))
+        self.native_recovery = NativeRecoveryController(self.engine.recovery_identity)
+        self._recovery_state: dict[str, object] = {
+            "start_enabled": False,
+            "blockers": ["RUN_RECOVERY_PREFLIGHT"],
+            "identity_status": "NEED_IDENTITY_EVIDENCE",
+            "package_ready": False,
+            "transport_status": "OBSERVED_UNCERTIFIED",
+            "official_authorization_ready": False,
+            "packages": {role: {"selected": False, "display_name": "", "authority_label": "", "sha256": "", "size_bytes": 0} for role in ("base", "cust", "preload")},
+            "destructive_warning": "Native Huawei System Recovery writes stock recovery/system firmware and may erase user data. Bootloader unlock is not part of this workflow.",
+        }
         self._log_lines: list[str] = []
         self._progress = 0
         self._registered = self.paths.registration.is_file()
@@ -115,7 +128,23 @@ class Backend(QObject):
         return EngineResult(True, "This computer is registered." if self._registered else "This computer is not registered.", ActionState.READY)
 
     def _firmware_preflight(self) -> EngineResult:
-        return self.engine.package_preflight(self._firmware_path)
+        readiness = self.native_recovery.preflight()
+        self._recovery_state = self.native_recovery.public_state()
+        self.recoveryChanged.emit()
+        if readiness.start_enabled:
+            return EngineResult(
+                True,
+                "Native recovery plan verified. Explicit destructive owner approval and a governed execution lease are still required before execution.",
+                ActionState.READY,
+                self._recovery_state,
+            )
+        blockers = ", ".join(readiness.blockers) or "UNKNOWN_BLOCKER"
+        return EngineResult(
+            False,
+            f"Native recovery blocked: {blockers}.",
+            ActionState.GUARDED,
+            self._recovery_state,
+        )
 
     @Property(str, notify=logTextChanged)
     def logText(self) -> str:
@@ -163,6 +192,14 @@ class Backend(QObject):
     def firmwarePath(self) -> str:
         return self._firmware_path
 
+    @Property(str, notify=recoveryChanged)
+    def recoverySummaryJson(self) -> str:
+        return json.dumps(self._recovery_state, sort_keys=True)
+
+    @Property(bool, notify=recoveryChanged)
+    def recoveryCanStart(self) -> bool:
+        return bool(self._recovery_state.get("start_enabled", False))
+
     @Property(str, constant=True)
     def deviceProfilesJson(self) -> str:
         return json.dumps(self._device_profiles, sort_keys=True)
@@ -180,6 +217,31 @@ class Backend(QObject):
         self._firmware_path = path.removeprefix("file:///") if sys.platform.startswith("win") else path.removeprefix("file://")
         self.firmwareChanged.emit()
         self._append(f"Firmware package selected: {self._firmware_path}")
+
+    @Slot(str, str, str)
+    def setRecoveryPackage(self, role: str, path: str, authority_label: str) -> None:
+        normalized = path.removeprefix("file:///") if sys.platform.startswith("win") else path.removeprefix("file://")
+        try:
+            self.native_recovery.set_package(role, normalized, authority_label.strip())
+        except ValueError as exc:
+            self._append(str(exc), "ERROR")
+            return
+        if role.strip().lower() == "base":
+            self._firmware_path = normalized
+            self.firmwareChanged.emit()
+        self._recovery_state = self.native_recovery.public_state()
+        self.recoveryChanged.emit()
+        self._append(f"Native recovery {role.upper()} package selected: {Path(normalized).name}")
+
+    @Slot(result=str)
+    def requestNativeRecoveryStart(self) -> str:
+        if not self.recoveryCanStart:
+            message = "Native recovery start is blocked until every readiness authority is green."
+            self._append(message, "GUARD")
+            return message
+        message = "Native recovery readiness is green; governed execution lease handoff is required before the first write."
+        self._append(message, "GUARD")
+        return message
 
     @Slot(str, str)
     def setSelectedOperation(self, action_id: str, label: str) -> None:

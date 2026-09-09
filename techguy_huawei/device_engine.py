@@ -11,6 +11,11 @@ import uuid
 
 from .action_health import ActionState
 from .evidence import EvidenceEnvelope, EvidenceJournal
+from .recovery_identity import (
+    RecoveryIdentity,
+    RecoveryIdentityStatus,
+    resolve_fastboot_recovery_identity,
+)
 from .windows_usb import UsbDiscoveryError, discover_windows_huawei_usb
 
 
@@ -269,6 +274,27 @@ class DeviceEngine:
             f"Connected: {self.snapshot.model} via {interface}. {usb_report.decision_code}.",
             ActionState.READY,
             payload,
+        )
+
+    def recovery_identity(self) -> RecoveryIdentity:
+        if self.snapshot.interface != "Fastboot" or not self.snapshot.serial:
+            return RecoveryIdentity(
+                RecoveryIdentityStatus.NEED_IDENTITY_EVIDENCE,
+                None, None, None, None, None, None, None, None,
+            )
+        fastboot = self._tool("fastboot")
+        if not fastboot:
+            return RecoveryIdentity(
+                RecoveryIdentityStatus.NEED_IDENTITY_EVIDENCE,
+                None, None, None, None, None, None, None, None,
+            )
+
+        def journaled_run(command, **_kwargs):
+            completed, _ = self._run("native_recovery_identity", command)
+            return completed
+
+        return resolve_fastboot_recovery_identity(
+            journaled_run, fastboot, self.snapshot.serial
         )
 
     def guarded(self, label: str) -> EngineResult:

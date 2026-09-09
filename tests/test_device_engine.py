@@ -314,3 +314,45 @@ def test_windows_unverified_generic_fastboot_is_not_accepted_as_huawei(
     assert result.health_state is ActionState.READY
     assert "No Huawei device" in result.message
     assert subject.snapshot.connected is False
+
+
+def test_recovery_identity_reuses_selected_huawei_fastboot_and_journals_fixed_queries(monkeypatch, tmp_path: Path) -> None:
+    import subprocess
+    from techguy_huawei.device_engine import DeviceSnapshot
+    from techguy_huawei.recovery_identity import RecoveryIdentityStatus
+
+    subject=engine(tmp_path)
+    subject.snapshot=DeviceSnapshot(True,'Fastboot','Huawei Fastboot','Read-only','Huawei Fastboot Device','HUAWEI123','session-1')
+    monkeypatch.setattr(subject,'_tool',lambda name: name)
+    calls=[]
+    values={
+        ('oem','get-build-number'):'(bootloader) :CLT-LGRP2-OVS 9.1.0.325\nOKAY\n',
+        ('oem','get-bootinfo'):'(bootloader) locked\nOKAY\n',
+        ('oem','oeminforead-ANDROID_VERSION'):'(bootloader) :9\nOKAY\n',
+        ('oem','oeminforead-BOARDID'):'(bootloader) :6546\nOKAY\n',
+        ('oem','get-product-model'):'(bootloader) :CLT-L29\nOKAY\n',
+        ('oem','oeminforead-CUST'):'(bootloader) :C432\nOKAY\n',
+        ('oem','oeminforead-PRELOAD'):'(bootloader) :C432R1\nOKAY\n',
+    }
+    def fake_run(action_id,args,timeout=12):
+        command=list(args); calls.append((action_id,command))
+        key=tuple(command[3:])
+        return subprocess.CompletedProcess(command,0,stdout='',stderr=values[key]),command
+    monkeypatch.setattr(subject,'_run',fake_run)
+    identity=subject.recovery_identity()
+    assert identity.status is RecoveryIdentityStatus.READY
+    assert identity.model=='CLT-L29'
+    assert identity.region=='C432'
+    assert identity.preload_region=='C432R1'
+    assert all(action_id=='native_recovery_identity' for action_id,_ in calls)
+    assert all(command[:3]==['fastboot','-s','HUAWEI123'] for _,command in calls)
+
+
+def test_recovery_identity_fails_closed_without_bound_fastboot_serial(tmp_path: Path) -> None:
+    from techguy_huawei.device_engine import DeviceSnapshot
+    from techguy_huawei.recovery_identity import RecoveryIdentityStatus
+    subject=engine(tmp_path)
+    subject.snapshot=DeviceSnapshot(True,'Fastboot','Huawei USB','Read-only','Huawei device (identity pending)','','session-1')
+    identity=subject.recovery_identity()
+    assert identity.status is RecoveryIdentityStatus.NEED_IDENTITY_EVIDENCE
+    assert identity.family is None
