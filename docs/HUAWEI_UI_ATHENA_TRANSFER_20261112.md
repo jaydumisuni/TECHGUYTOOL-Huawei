@@ -176,3 +176,74 @@ D:/projects/TECHGUYTOOL-Huawei/.workspace/evidence/
 Completion classification: corrective source update + source/behavior
 verification, not yet a production EXE rebuild. Main checkout remains
 intentionally dirty to preserve owner's pre-existing edits.
+
+## Pinout viewer and gear placement — ATHENA proof 2026-11-12
+
+User clarified this is about the **tool-side pinout image UX**, not changing
+the pinout site's publishing architecture. The Finder stays unchanged.
+
+Recovered actual source:
+- D:/projects/testpoints-verse, branch main, private data and images organized
+  under test-points/ and isp-pinouts/; origin is GitHub.
+- The project's finder/README.md establishes private GitHub source/archive,
+  Firebase Hosting for base catalogue/images, Cloudflare custom-domain gateway,
+  protected live additions and opaque image URLs.
+- At inspection, https://pinout.thetechguyds.com/catalog.json returned a live
+  Cloudflare-served ttg-pinout-finder-v1 catalogue with 3,389 records, 736
+  Huawei/Honor records and ~793 KB response data.
+- Direct GitHub image retrieval was rejected: it would duplicate the site
+  index/credential concerns, weaken provenance controls and is not inherently
+  faster. Huawei Backend -> PinoutProvider already caches its catalogue for
+  six hours and only downloads selected, membership-validated WebP images,
+  caching those locally for repeat opens.
+- Read-only real test: query Huawei "VOG-AL00" test-point returns exact
+  "P30 PRO VOG AL00", one exact and one browse-only alternative. Image
+  3947433f28164c8983fcb4cd.webp, 1024x576, 73,374 bytes, fetched
+  in ~0.406 seconds, Qt WebP decoder succeeded. Re-fetch from cache was
+  proven with networking explicitly blocked in the test.
+- QML TestpointDialog now normalizes punctuated model codes before presenting
+  backend results, preserving matches like VOG-AL00 versus VOG AL00;
+  a sole authoritative exact match auto-selects its verified image.
+  Backend-triggered popup invokes real trusted search rather than stopping
+  at a local metadata-only profile.
+- New PinoutImageViewer.qml is a separate, user-enlargeable Qt window;
+  real cached image can be opened by clicking its preview or ENLARGE/ZOOM.
+  Features: wheel/+/− zoom, 100%-pixel size, Fit, drag-pan, maximize/restore,
+  close, and multi-image PREV/NEXT in source popup.
+- Removed the entire "OPERATION RESUME STATE" and "EXPECTED SERVICE
+  INTERFACE" panels and all visible operating-resume messaging. Internal
+  openForOperation(modelId, label) compatibility remains to prepopulate the
+  model, but does not display operation-control text in this image viewer.
+- Real ATHENA Backend end-to-end QtTest proof:
+  search VOG-AL00 -> exact match -> image read from ProgramData local cache ->
+  enlarge -> zoom factor 1.25 -> fit -> actual pixels -> drag pan ->
+  maximize -> restore -> close, zero QML warnings and zero device commands.
+  Evidence on ATHENA:
+  .workspace/evidence/verify_pinout_zoom_live_20261112.py
+  .workspace/evidence/20261112_pinout_zoom_live_report.json
+  .workspace/evidence/20261112_pinout_viewer_real_image.png.
+- Gear menu had previously extended ~39px outside compact right boundary.
+  Corrected settings anchor to reference-canvas local point and applied actual
+  UI scaling; removed offsets from About, Fix Drivers and Register dialogs.
+  Geometric QML probe verified all six popups wholly inside 840x525 and
+  1536x864 windows, centred dialogs and gear menu aligned to gear button
+  right edge. Evidence:
+  .workspace/evidence/gear_popup_geometry_probe.py
+  .workspace/evidence/popup_*.png.
+
+**Critical current status at handoff:** ATHENA Oracle node went offline after
+a supplementary test for a record with multiple images stalled. Thus the
+two-image carousel's live test is UNCONFIRMED, and the open Huawei process
+has NOT been restarted to pick up the latest changed QML. Do not claim a
+live-window deployment of this subsequent update until ATHENA reconnects,
+the app safely restarts and native GUI geometry/viewer are rechecked.
+
+Source edits reside in the existing ATHENA main source checkout only:
+qml/Main.qml, qml/dialogs/AboutDialog.qml, DriverDialog.qml,
+RegisterDialog.qml, TestpointDialog.qml and newly added
+qml/dialogs/PinoutImageViewer.qml.
+Recovery originals:
+.workspace/recovery/20261112_gear_popup_geometry/
+.workspace/recovery/20261112_pinout_viewer/
+The owner-approved main tool's earlier backend integration is unchanged,
+and no device writes were made during these image-UI tests.
