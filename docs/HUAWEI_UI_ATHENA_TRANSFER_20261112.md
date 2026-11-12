@@ -247,3 +247,55 @@ Recovery originals:
 .workspace/recovery/20261112_pinout_viewer/
 The owner-approved main tool's earlier backend integration is unchanged,
 and no device writes were made during these image-UI tests.
+
+
+## ATHENA terminal filesystem navigation — 2026-11-12
+
+Owner requested local directory navigation inside Huawei's integrated
+ADB/Fastboot terminal, preserving the approved confirmation flow.
+
+Implementation in ATHENA main SOURCE (not packaged EXE):
+- cd, cd /d "C:\firmware folder", cd .., pwd, dir, ls. Quoted
+  Windows paths, spaces, other drives, parent and relative paths work.
+- Directories are scoped per terminal session, never via global os.chdir.
+  Builtins do not spawn cmd.exe, PowerShell or arbitrary shell commands.
+- ADB/Fastboot subprocesses use the selected cwd and existing trusted
+  platform tools, allowing user-selected relative firmware filenames.
+- The confirmation fingerprint binds the exact working directory.
+  Changing directory cancels a pending write approval. Device serial
+  checks, explicit confirmation and audit logging are retained.
+- Initial terminal view remains a lone dash, with cwd displayed only
+  after the first command. Transcript scrollback is preserved.
+
+Main source touched:
+techguy_huawei/terminal_directory.py
+techguy_huawei/backend.py
+techguy_huawei/terminal_engine.py
+techguy_huawei/service_dispatch.py
+techguy_huawei/device_engine.py
+qml/dialogs/TerminalDialog.qml
+tests/test_terminal_directory.py
+
+Verification on ATHENA:
+- 49 focused tests passed, including existing terminal write,
+  read-device, async worker and auditing contracts.
+- Read-only adb version and fastboot --version executed from
+  C:/Program Files/platform-tools; each produced a durable log
+  recording the command's working directory.
+- Offscreen rendered Qt test at 840x525 passed initial dash,
+  cross-drive cd, directory listing, history and bounded expand,
+  with zero QML warnings.
+- Prepared fastboot flash was NOT executed; changing directories
+  cleared pending confirmation.
+- Main source application restarted, ATHENA PID 26212 at proof,
+  centered 840x525 and responsive, zero startup QML errors.
+- No hardware writes; distributable EXE was NOT rebuilt.
+
+Proof files in main project's .workspace/evidence:
+20261112_terminal_directory_acceptance.json
+20261112_terminal_directory_real_report.json
+20261112_terminal_qml_navigation.json
+
+Recovery snapshot: .workspace/recovery/20261112_terminal_directory.
+The existing pinout viewer and popup corrections remain source-level
+changes on ATHENA; the pinout website/repository was not modified.
