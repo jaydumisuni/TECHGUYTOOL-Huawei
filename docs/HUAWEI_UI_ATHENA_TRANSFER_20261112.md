@@ -124,3 +124,55 @@ reconnected, the main tool was replaced and verified:
 - Task-owned pytest temporary directories cleaned.
 - Source replacement complete; packaged/distributable EXE was NOT rebuilt.
   Source inventory and QRC packaging remain at prior preserved state.
+
+## ATHENA intermittent console window correction — 2026-11-12
+
+Symptom: After promoting the compact Huawei source UI to ATHENA, the owner
+noticed a Windows terminal/console window briefly flashing from time to time.
+
+Evidence traced:
+- Actual main backend Backend.__init__ creates a 5-second health timer.
+- Every twelfth heartbeat (~60 seconds), Backend._heartbeat triggers
+  _audit_runtime_wiring; it also runs once at initial startup.
+- HealthAuditWorker.run used subprocess.run on the native Rust
+  runtime/health/techguy_health_core.exe without CREATE_NO_WINDOW.
+- The secondary ActionRegistry.run_rust_audit path likewise lacked it.
+- ADB/Fastboot, PowerShell USB discovery and USB descriptor query paths
+  already use CREATE_NO_WINDOW. No need to change device operations.
+- The console flash itself was not captured with a PID. This is a
+  source-confirmed likely cause matching the periodic timing, not proof
+  that other Windows applications can never spawn their own consoles.
+
+Changes applied **in the current ATHENA main source**:
+- techguy_huawei/desktop_worker.py:
+  supply creationflags=subprocess.CREATE_NO_WINDOW on Windows to periodic
+  health worker subprocess.run, preserving output capture and timeout.
+- techguy_huawei/action_health.py:
+  same flag for the alternate audit entry point.
+- tests/test_health_audit_console.py:
+  add regression tests proving the hidden-window creation flag is passed
+  and both workers retain successful audit output.
+- No QML, terminal UI, device write commands or firmware services altered.
+
+Proof on ATHENA:
+- 22 focused tests passed, including both console regression tests,
+  backend action log tests, async worker tests and terminal/read tests.
+- The actual native Rust health executable launched with the no-console
+  creation flag, returned exit code 0 and audited 13 actions in ~0.021s.
+- Main Huawei source application was safely restarted: previous PID 19176
+  closed, new pythonw PID 6720 started through approved project launcher.
+- One native main Huawei window remains open at 840x525, topmost disabled,
+  with no QML startup warnings. No device write action performed.
+- Only task-owned pytest temporary material (~736 bytes) removed.
+
+Rollback:
+D:/projects/TECHGUYTOOL-Huawei/.workspace/recovery/
+20261112_health_audit_console_fix/{desktop_worker.py,action_health.py,manifest.json}
+
+Updated evidence in:
+D:/projects/TECHGUYTOOL-Huawei/.workspace/evidence/
+20261112_main_swap_verification.json
+
+Completion classification: corrective source update + source/behavior
+verification, not yet a production EXE rebuild. Main checkout remains
+intentionally dirty to preserve owner's pre-existing edits.
