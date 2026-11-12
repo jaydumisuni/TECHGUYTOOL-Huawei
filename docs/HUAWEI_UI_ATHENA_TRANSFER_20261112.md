@@ -83,3 +83,44 @@ Still required before acceptance or promotion:
 6. Review all six tabs, terminal, flash (preflight only), on ATHENA.
 7. Commit reviewed integration branch if accepted; do not transplant into
    dirty primary checkout or build production EXE without approval.
+
+## ATHENA main source replacement — verified 2026-11-12
+
+Owner approved replacing the main Huawei source frontend. After ATHENA Oracle
+reconnected, the main tool was replaced and verified:
+
+- Main source root: D:/projects/TECHGUYTOOL-Huawei
+  (existing detached HEAD 114f2c2).
+- UI QML/assets came from reviewed candidate 53c93d4. Python service backend
+  came from latest clean ATHENA live-service branch at 67d4942.
+- Exactly 167 source files were added/replaced with SHA256 content verification.
+  The original README, ROADMAP, build spec, resource inventory, resources.qrc
+  and untracked resources_rc.py were preserved with all prior dirty changes.
+- Main source app.py loader (main.py) now loads filesystem QML first in source
+  mode, so old compiled resources_rc does not shadow the replaced UI.
+- Rollback archive (2,138,267 bytes):
+  D:/projects/TECHGUYTOOL-Huawei/.workspace/recovery/
+  20261112_main_huawei_ui_backend_swap_rollback.zip
+  and corresponding 20261112_main_huawei_ui_backend_swap_manifest.json.
+- Main Pythonw process PID 19176 (at check) launched and was responsive;
+  actual Windows window 840x525 logical pixels, centered, not topmost;
+  diagnostic qml_root_ready with zero QML warnings.
+- Reused existing shared C:/Program Files/platform-tools ADB/Fastboot.
+  No downloads, installs or unrelated project writes.
+- Corrected Windows USB read-only PnP property retrieval by batching the same
+  seven keys, reducing ATHENA collection to about 3.616 seconds. Source test:
+  20 USB/discovery tests plus 39 terminal/pinout/service contract tests passed.
+- QtTest click on real Read Device UI dispatched actual async backend. A
+  durable TXT log was saved. Connected device reported Huawei Kirin 980 via
+  Fastboot, exact model/build unresolved. No device writes.
+- APP/XML Flash START remains disabled until actual verified executor exists.
+- One-click project-local launcher added:
+  D:/projects/TECHGUYTOOL-Huawei/Launch Huawei Tool.cmd
+  and tools/launch_huawei_main.ps1.
+  It did not spawn a duplicate while app was already running.
+- Proof: D:/projects/TECHGUYTOOL-Huawei/.workspace/evidence/
+  20261112_main_swap_verification.json and
+  20261112_main_ui_backend_smoke.json.
+- Task-owned pytest temporary directories cleaned.
+- Source replacement complete; packaged/distributable EXE was NOT rebuilt.
+  Source inventory and QRC packaging remain at prior preserved state.
