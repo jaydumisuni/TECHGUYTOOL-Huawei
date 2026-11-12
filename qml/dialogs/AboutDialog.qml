@@ -7,17 +7,19 @@ import "../components"
 Dialog {
     id: root
     objectName: "aboutDialog"
-    width: 455
-    height: 340
+    width: 465
+    height: 350
     modal: true
     focus: true
-    anchors.centerIn: parent
+    x: parent ? Math.round((parent.width - width) / 2) + (-38) : 0
+    y: parent ? Math.round((parent.height - height) / 2) + (-6) : 0
     padding: 0
     closePolicy: Popup.CloseOnEscape
     background: GlassPanel { panelOpacity: 0.98; borderColor: "#536d88" }
     contentItem: ColumnLayout {
         anchors.fill: parent
         anchors.margins: 22
+        anchors.topMargin: 10
         spacing: 10
         RowLayout {
             Layout.fillWidth: true
@@ -28,9 +30,10 @@ Dialog {
         RowLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            Image { source: "../../assets/brand/techguy_logo.svg"; fillMode: Image.PreserveAspectFit; Layout.preferredWidth: 120; Layout.preferredHeight: 120 }
+            Image { source: "../../assets/brand/techguy_header.png"; fillMode: Image.PreserveAspectFit; Layout.preferredWidth: 120; Layout.preferredHeight: 120; Layout.alignment: Qt.AlignTop }
             ColumnLayout {
                 Layout.fillWidth: true
+                Layout.alignment: Qt.AlignTop
                 spacing: 8
                 Text { text: "TECHGUY TOOL — HUAWEI"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 20; font.weight: Font.Medium }
                 Text { text: "Service & Recovery Edition"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 13 }

@@ -9,63 +9,13 @@ GlassPanel {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 14
-        spacing: 10
-
-        Text {
-            text: "PARTITION MANAGER"
-            color: Theme.text
-            font.family: Theme.fontFamily
-            font.pixelSize: 21
-            font.weight: Font.Medium
+        anchors.margins: 18
+        spacing: 8
+        DeviceSearchHeader {
+            pageTitle: "PARTITION MANAGER"
+            placeholder: "Search Huawei / Honor model..."
+            hint: "Switch to Chipset to browse Kirin platform families"
         }
-
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: 14
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 42
-                radius: 7
-                color: "#081322"
-                border.width: 1
-                border.color: "#3c5676"
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.leftMargin: 12
-                    anchors.rightMargin: 12
-                    Text { text: "⌕"; color: "#9cb7d7"; font.pixelSize: 22 }
-                    Text { Layout.fillWidth: true; text: "Search Huawei / Honor model..."; color: "#8798ad"; font.family: Theme.fontFamily; font.pixelSize: 13 }
-                    Text { text: "⌄"; color: Theme.text; font.pixelSize: 17 }
-                }
-            }
-            Rectangle {
-                Layout.preferredWidth: 266
-                Layout.preferredHeight: 36
-                radius: 6
-                color: "#0b1727"
-                border.width: 1
-                border.color: "#3b5270"
-                Row {
-                    anchors.fill: parent
-                    Rectangle {
-                        width: parent.width / 2; height: parent.height; radius: 6
-                        gradient: Gradient {
-                            orientation: Gradient.Horizontal
-                            GradientStop { position: 0; color: "#5a33ad" }
-                            GradientStop { position: 1; color: "#10598f" }
-                        }
-                        Text { anchors.centerIn: parent; text: "MODEL"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
-                    }
-                    Rectangle {
-                        width: parent.width / 2; height: parent.height; color: "transparent"
-                        Text { anchors.centerIn: parent; text: "CHIPSET"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
-                    }
-                }
-            }
-        }
-
-        Text { text: "Switch to Chipset to browse Kirin platform families"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 11 }
 
         RowLayout {
             Layout.fillWidth: true
@@ -102,11 +52,11 @@ GlassPanel {
                     RowLayout {
                         anchors.fill: parent; anchors.leftMargin: 10; anchors.rightMargin: 10
                         Text { text: "□"; color: Theme.muted; font.pixelSize: 15; Layout.preferredWidth: 28 }
-                        Text { text: "PARTITION"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 10; Layout.preferredWidth: 185 }
-                        Text { text: "LUN"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 10; Layout.preferredWidth: 65 }
-                        Text { text: "START"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 10; Layout.fillWidth: true }
-                        Text { text: "SIZE"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 10; Layout.preferredWidth: 105 }
-                        Text { text: "STATUS"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 10; Layout.preferredWidth: 85 }
+                        Text { text: "PARTITION"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12; Layout.preferredWidth: 185 }
+                        Text { text: "LUN"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12; Layout.preferredWidth: 65 }
+                        Text { text: "START"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12; Layout.fillWidth: true }
+                        Text { text: "SIZE"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12; Layout.preferredWidth: 105 }
+                        Text { text: "STATUS"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12; Layout.preferredWidth: 85 }
                     }
                 }
                 Item {
@@ -127,7 +77,7 @@ GlassPanel {
                             text: "Partition rows appear only from verified read evidence."
                             color: Theme.muted
                             font.family: Theme.fontFamily
-                            font.pixelSize: 11
+                            font.pixelSize: 12
                         }
                     }
                 }
@@ -153,15 +103,15 @@ GlassPanel {
                         Layout.fillHeight: true
                         ColumnLayout {
                             Layout.fillWidth: true
-                            Text { text: "Partition        —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 11 }
-                            Text { text: "LUN              —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 11 }
-                            Text { text: "Start            —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 11 }
+                            Text { text: "Partition        —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
+                            Text { text: "LUN              —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
+                            Text { text: "Start            —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
                         }
                         ColumnLayout {
                             Layout.fillWidth: true
-                            Text { text: "Size             —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 11 }
-                            Text { text: "File System      —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 11 }
-                            Text { text: "Type             —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 11 }
+                            Text { text: "Size             —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
+                            Text { text: "File System      —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
+                            Text { text: "Type             —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
                         }
                     }
                 }
@@ -189,15 +139,15 @@ GlassPanel {
                                 anchors.centerIn: parent
                                 width: 58; height: 58; radius: 29
                                 color: "#0b1727"
-                                Text { anchors.centerIn: parent; text: "—\nUsed"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 10; horizontalAlignment: Text.AlignHCenter }
+                                Text { anchors.centerIn: parent; text: "—\nUsed"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12; horizontalAlignment: Text.AlignHCenter }
                             }
                         }
                     }
                     ColumnLayout {
                         Layout.fillWidth: true
-                        Text { text: "■  Used      —"; color: "#b06cff"; font.family: Theme.fontFamily; font.pixelSize: 10 }
-                        Text { text: "■  Free       —"; color: "#4ba9ff"; font.family: Theme.fontFamily; font.pixelSize: 10 }
-                        Text { text: "■  Total      —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 10 }
+                        Text { text: "■  Used      —"; color: "#b06cff"; font.family: Theme.fontFamily; font.pixelSize: 12 }
+                        Text { text: "■  Free       —"; color: "#4ba9ff"; font.family: Theme.fontFamily; font.pixelSize: 12 }
+                        Text { text: "■  Total      —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
                     }
                 }
             }

@@ -7,11 +7,12 @@ import "../components"
 Dialog {
     id: root
     objectName: "driverDialog"
-    width: 520
-    height: 440
+    width: 538
+    height: 455
     modal: true
     focus: true
-    anchors.centerIn: parent
+    x: parent ? Math.round((parent.width - width) / 2) + (-22) : 0
+    y: parent ? Math.round((parent.height - height) / 2) + (-12) : 0
     padding: 0
     closePolicy: Popup.CloseOnEscape
     background: GlassPanel { panelOpacity: 0.98; borderColor: "#5784a8" }
@@ -27,10 +28,10 @@ Dialog {
         }
         Repeater {
             model: [
-                {name: "Huawei USB COM 1.0", glyph: "♧"},
-                {name: "Huawei Android USB", glyph: "♙"},
-                {name: "Huawei Fastboot", glyph: ">_"},
-                {name: "Qualcomm HS-USB QDLoader", glyph: "⌕"}
+                {name: "Huawei USB COM 1.0", icon: "usb", glyph: "♧"},
+                {name: "Huawei Android USB", icon: "driver", glyph: "♙"},
+                {name: "Huawei Fastboot", icon: "terminal", glyph: ">_"},
+                {name: "Qualcomm HS-USB QDLoader", icon: "connection", glyph: "⌕"}
             ]
             Rectangle {
                 Layout.fillWidth: true
@@ -43,7 +44,7 @@ Dialog {
                     anchors.fill: parent
                     anchors.leftMargin: 15
                     anchors.rightMargin: 15
-                    Text { text: modelData.glyph; color: "#8cb5ff"; font.family: "Segoe UI Symbol"; font.pixelSize: 21; Layout.preferredWidth: 33; horizontalAlignment: Text.AlignHCenter }
+                    Image { source: Qt.resolvedUrl("../../assets/ui-icons/" + modelData.icon + ".svg"); Layout.preferredWidth: 33; Layout.preferredHeight: 30; fillMode: Image.PreserveAspectFit }
                     Text { text: modelData.name; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 14; Layout.fillWidth: true }
                     Text { text: "Check required"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
                 }

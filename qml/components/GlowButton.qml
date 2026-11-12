@@ -19,8 +19,12 @@ Button {
         border.color: root.enabled ? (root.hovered ? "#9adfff" : "#5f7fd8") : "#324152"
         gradient: Gradient {
             orientation: Gradient.Horizontal
-            GradientStop { position: 0.0; color: root.enabled && root.primary ? Qt.rgba(root.accentA.r, root.accentA.g, root.accentA.b, root.down ? 0.58 : 0.76) : "#122033" }
-            GradientStop { position: 1.0; color: root.enabled && root.primary ? Qt.rgba(root.accentB.r, root.accentB.g, root.accentB.b, root.down ? 0.45 : 0.60) : "#0c1726" }
+            GradientStop { position: 0.00; color: root.enabled && root.primary ? (root.down ? "#6422a2" : "#a035df") : "#122033" }
+            GradientStop { position: 0.15; color: root.enabled && root.primary ? (root.down ? "#2d1b77" : "#4d26a3") : "#102033" }
+            GradientStop { position: 0.40; color: root.enabled && root.primary ? (root.down ? "#0b164e" : "#102060") : "#102033" }
+            GradientStop { position: 0.60; color: root.enabled && root.primary ? (root.down ? "#071938" : "#041b4b") : "#0c1726" }
+            GradientStop { position: 0.86; color: root.enabled && root.primary ? (root.down ? "#09284a" : "#06315f") : "#0c1726" }
+            GradientStop { position: 1.00; color: root.enabled && root.primary ? (root.down ? "#073659" : "#07527c") : "#0c1726" }
         }
         Rectangle {
             anchors.fill: parent

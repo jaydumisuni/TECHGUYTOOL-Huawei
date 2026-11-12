@@ -1,0 +1,101 @@
+[
+  {
+    "icon": "frp-repair",
+    "crop_xyxy": [
+      368,
+      391,
+      422,
+      449
+    ],
+    "file": "frp-repair-reference.png",
+    "sha256": "218de48b3f4f400046b520978218972be5a86cbe4b871baa737705d5898f748d"
+  },
+  {
+    "icon": "bootloader",
+    "crop_xyxy": [
+      619,
+      391,
+      673,
+      449
+    ],
+    "file": "bootloader-reference.png",
+    "sha256": "af291dae01b8eb12b153bcb35286005ccf97a5e4d2e05c933f6d6b099c7a5dd1"
+  },
+  {
+    "icon": "huawei-id",
+    "crop_xyxy": [
+      865,
+      392,
+      919,
+      450
+    ],
+    "file": "huawei-id-reference.png",
+    "sha256": "1b6741edfcf86523f0a04d25e588004d62ed11e281abf8f35699b7ef128fed71"
+  },
+  {
+    "icon": "verlist",
+    "crop_xyxy": [
+      370,
+      499,
+      424,
+      557
+    ],
+    "file": "verlist-reference.png",
+    "sha256": "c5229319cb2be6a849f7947c21617a8588275c4cf971e4790ae4f799faee025d"
+  },
+  {
+    "icon": "pair",
+    "crop_xyxy": [
+      620,
+      499,
+      674,
+      557
+    ],
+    "file": "pair-reference.png",
+    "sha256": "f13f6e0057c40d4e1e9b9dd1a73bb85ed8e736d75f9c6b0608e172a968983742"
+  },
+  {
+    "icon": "full-oeminfo",
+    "crop_xyxy": [
+      868,
+      499,
+      922,
+      557
+    ],
+    "file": "full-oeminfo-reference.png",
+    "sha256": "1de0cf8d806bca8d57b0be19fe1472a1e42ddd5e50b3d39cc772c087a40ec9ca"
+  },
+  {
+    "icon": "flash-firmware",
+    "crop_xyxy": [
+      368,
+      613,
+      422,
+      671
+    ],
+    "file": "flash-firmware-reference.png",
+    "sha256": "c2cd500ce37e9ae02131824868bbb588d16ffc490264373e8beaf9a32daf9cd5"
+  },
+  {
+    "icon": "board-repair",
+    "crop_xyxy": [
+      620,
+      613,
+      674,
+      671
+    ],
+    "file": "board-repair-reference.png",
+    "sha256": "f7de75bd765f1f3c2d754d17706e407da87da6ea92952c7a4890478b21d7a99f"
+  },
+  {
+    "icon": "backup",
+    "crop_xyxy": [
+      867,
+      613,
+      921,
+      671
+    ],
+    "file": "backup-reference.png",
+    "sha256": "e5ef58dc88340dece40b833eb7a35022124ed209a1641afd1334f52dbf5027dc"
+  }
+]

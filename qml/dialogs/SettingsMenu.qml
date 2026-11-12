@@ -13,7 +13,7 @@ Popup {
     signal testpointRequested()
     signal aboutRequested()
     width: 380
-    height: 312
+    height: 322
     padding: 10
     modal: false
     focus: true
@@ -24,20 +24,25 @@ Popup {
     }
     contentItem: ColumnLayout {
         spacing: 7
-        Text {
-            text: "SETTINGS"
-            color: Theme.text
-            font.family: Theme.fontFamily
-            font.pixelSize: 16
-            font.letterSpacing: 0.8
-            Layout.leftMargin: 5
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 23
+            Text {
+                text: "SETTINGS"
+                color: Theme.text
+                font.family: Theme.fontFamily
+                font.pixelSize: 16
+                font.letterSpacing: 0.8
+                Layout.leftMargin: 5
+            }
+            Item { Layout.fillWidth: true }
         }
         Repeater {
             model: [
-                {label: "Fix Drivers", detail: "Repair Huawei USB and Fastboot drivers", glyph: "⚒", action: "drivers"},
-                {label: "Register Device", detail: "Register this computer or service device", glyph: "▣", action: "register"},
-                {label: "Testpoint / Pinout Library", detail: "Exact-model, owner-approved service references", glyph: "⌖", action: "testpoint"},
-                {label: "About", detail: "Version, licence and product information", glyph: "ⓘ", action: "about"}
+                {label: "Fix Drivers", icon: "repair", detail: "Repair Huawei USB and Fastboot drivers", glyph: "⚒", action: "drivers"},
+                {label: "Register Device", icon: "monitor", detail: "Register this computer or service device", glyph: "▣", action: "register"},
+                {label: "Testpoint / Pinout Library", icon: "testpoint", detail: "Search exact-model service images and pinouts", glyph: "⌖", action: "testpoint"},
+                {label: "About", icon: "info", detail: "Version, licence and product information", glyph: "ⓘ", action: "about"}
             ]
             Button {
                 Layout.fillWidth: true
@@ -51,13 +56,12 @@ Popup {
                 }
                 contentItem: RowLayout {
                     spacing: 14
-                    Text {
-                        text: modelData.glyph
-                        color: "#77a5ff"
-                        font.family: "Segoe UI Symbol"
-                        font.pixelSize: 28
+                    Image {
+                        source: Qt.resolvedUrl("../../assets/ui-icons/" + modelData.icon + ".svg")
                         Layout.preferredWidth: 40
-                        horizontalAlignment: Text.AlignHCenter
+                        Layout.preferredHeight: 36
+                        fillMode: Image.PreserveAspectFit
+                        smooth: true
                     }
                     ColumnLayout {
                         Layout.fillWidth: true

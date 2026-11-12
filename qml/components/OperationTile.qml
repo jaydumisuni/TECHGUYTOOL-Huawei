@@ -5,6 +5,7 @@ import ".."
 Button {
     id: root
     property string glyph: "□"
+    property string iconName: ""
     property string subtitle: ""
     property bool active: false
     property bool vertical: false
@@ -15,7 +16,7 @@ Button {
     background: Rectangle {
         id: tileBackground
         radius: 9
-        color: root.down ? "#15243a" : (root.hovered ? "#11243a" : "#0b1828")
+        color: root.down ? "#15243a" : (root.hovered ? "#0a1b2d" : "#020f1c")
         border.width: root.active ? 2 : 1
         border.color: root.active ? "#c05dff" : (root.hovered ? "#50c8ff" : "#3e6482")
 
@@ -30,7 +31,7 @@ Button {
                 GradientStop { position: 0.50; color: "#071321" }
                 GradientStop { position: 1.00; color: root.active ? "#102a4a" : "#0b2435" }
             }
-            opacity: root.active ? 0.31 : 0.17
+            opacity: root.active ? 0.25 : 0.10
         }
 
         Rectangle {
@@ -61,6 +62,20 @@ Button {
             }
             opacity: root.active ? 0.68 : 0.32
         }
+
+        // Reference-derived glass edge: 9-sliced so the card remains a
+        // genuine interactive Qt control, with live layout and text.
+        BorderImage {
+            anchors.fill: parent
+            visible: !root.vertical
+            source: Qt.resolvedUrl("../../assets/glass-skins/" +
+                                   (root.active ? "operation-active-edge.png" : "operation-regular-edge.png"))
+            border.left: 20; border.right: 20
+            border.top: 20; border.bottom: 20
+            horizontalTileMode: BorderImage.Stretch
+            verticalTileMode: BorderImage.Stretch
+            smooth: true
+        }
     }
 
     contentItem: Item {
@@ -70,14 +85,28 @@ Button {
             anchors.leftMargin: 17
             anchors.rightMargin: 12
             spacing: 14
-            Text {
-                width: 48
-                text: root.glyph
-                color: root.active ? "#d885ff" : "#74a5ff"
-                font.family: "Segoe UI Symbol"
-                font.pixelSize: 39
-                horizontalAlignment: Text.AlignHCenter
+            Item {
+                width: 48; height: 48
                 anchors.verticalCenter: parent.verticalCenter
+                Image {
+                    anchors.centerIn: parent
+                    width: 52; height: 52
+                    source: root.iconName ? Qt.resolvedUrl("../../assets/ui-icons/" + root.iconName +
+                           (root.vertical ? (root.active ? "-active.svg" : ".svg") : "-reference.png")) : ""
+                    fillMode: Image.PreserveAspectFit
+                    smooth: true
+                    visible: root.iconName !== ""
+                }
+                Text {
+                    anchors.fill: parent
+                    visible: root.iconName === ""
+                    text: root.glyph
+                    color: root.active ? "#d885ff" : "#74a5ff"
+                    font.family: "Segoe UI Symbol"
+                    font.pixelSize: 39
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
             }
             Column {
                 width: root.width - 90
@@ -110,13 +139,26 @@ Button {
             anchors.centerIn: parent
             width: Math.max(80, parent.width - 24)
             spacing: 5
-            Text {
+            Item {
                 width: parent.width
-                text: root.glyph
-                color: root.active ? "#d885ff" : "#74a5ff"
-                font.family: "Segoe UI Symbol"
-                font.pixelSize: 34
-                horizontalAlignment: Text.AlignHCenter
+                height: 39
+                Image {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: 34; height: 34
+                    source: root.iconName ? Qt.resolvedUrl("../../assets/ui-icons/" + root.iconName + (root.active ? "-active" : "") + ".svg") : ""
+                    fillMode: Image.PreserveAspectFit
+                    smooth: true
+                    visible: root.iconName !== ""
+                }
+                Text {
+                    anchors.fill: parent
+                    visible: root.iconName === ""
+                    text: root.glyph
+                    color: root.active ? "#d885ff" : "#74a5ff"
+                    font.family: "Segoe UI Symbol"
+                    font.pixelSize: 34
+                    horizontalAlignment: Text.AlignHCenter
+                }
             }
             Text {
                 width: parent.width

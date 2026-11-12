@@ -7,14 +7,15 @@ import "../components"
 Dialog {
     id: root
     objectName: "registerDialog"
-    width: 520
+    width: 530
     // 390 px clips the 48 px action buttons once the two text fields,
     // status row and approved spacing are laid out by Qt Quick Controls.
     // Keep the action row fully inside the dialog in both live and QA renders.
-    height: 440
+    height: 405
     modal: true
     focus: true
-    anchors.centerIn: parent
+    x: parent ? Math.round((parent.width - width) / 2) + (-14) : 0
+    y: parent ? Math.round((parent.height - height) / 2) + (2) : 0
     padding: 0
     closePolicy: Popup.CloseOnEscape
     background: GlassPanel { panelOpacity: 0.98; borderColor: "#5d6e93" }
@@ -26,7 +27,7 @@ Dialog {
             Layout.fillWidth: true
             Item { Layout.preferredWidth: 30 }
             Text { text: "REGISTER DEVICE"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 22; font.weight: Font.Medium; Layout.fillWidth: true; horizontalAlignment: Text.AlignHCenter }
-            Text { text: "♢"; color: Theme.text; font.family: "Segoe UI Symbol"; font.pixelSize: 30; Layout.preferredWidth: 30 }
+            Image { source: Qt.resolvedUrl("../../assets/ui-icons/security.svg"); Layout.preferredWidth: 30; Layout.preferredHeight: 30; fillMode: Image.PreserveAspectFit }
         }
         GlassPanel {
             Layout.fillWidth: true

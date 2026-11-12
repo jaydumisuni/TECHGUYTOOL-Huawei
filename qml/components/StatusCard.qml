@@ -4,6 +4,7 @@ import ".."
 Rectangle {
     id: root
     property string glyph: "□"
+    property string iconName: ""
     property string title: "Connection"
     property string value: "Not Connected"
     radius: 8
@@ -16,14 +17,27 @@ Rectangle {
         anchors.fill: parent
         anchors.margins: 14
         spacing: 12
-        Text {
-            width: 44
-            text: root.glyph
-            color: "#91b5ff"
-            font.family: "Segoe UI Symbol"
-            font.pixelSize: 31
+        Item {
+            width: 44; height: 44
             anchors.verticalCenter: parent.verticalCenter
-            horizontalAlignment: Text.AlignHCenter
+            Image {
+                anchors.centerIn: parent
+                width: 31; height: 31
+                source: root.iconName ? Qt.resolvedUrl("../../assets/ui-icons/" + root.iconName + ".svg") : ""
+                fillMode: Image.PreserveAspectFit
+                smooth: true
+                visible: root.iconName !== ""
+            }
+            Text {
+                anchors.fill: parent
+                visible: root.iconName === ""
+                text: root.glyph
+                color: "#91b5ff"
+                font.family: "Segoe UI Symbol"
+                font.pixelSize: 31
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
         }
         Column {
             anchors.verticalCenter: parent.verticalCenter

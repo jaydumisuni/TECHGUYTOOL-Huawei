@@ -7,92 +7,30 @@ import "../components"
 GlassPanel {
     id: root
 
+    function iconForGlyph(glyph) {
+        var mapping = {
+            "▯": "phone", "◇": "security", "▦": "platform",
+            "↕": "usb-interface", "▤": "firmware-flash",
+            "▥": "device-information", "◴": "operation-history",
+            "◉": "partition-manager", "◎": "board-repair",
+            "▣": "monitor"
+        }
+        return Qt.resolvedUrl("../../assets/ui-icons/" +
+                              (mapping[glyph] || "info") + ".svg")
+    }
+
     function display(value) {
         return value && value.length ? value : "—"
     }
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 14
-        spacing: 10
-
-        Text {
-            text: "DEVICE INFORMATION"
-            color: Theme.text
-            font.family: Theme.fontFamily
-            font.pixelSize: 21
-            font.weight: Font.Medium
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: 14
-
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 42
-                radius: 7
-                color: "#081322"
-                border.width: 1
-                border.color: "#3c5676"
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.leftMargin: 12
-                    anchors.rightMargin: 12
-                    Text { text: "⌕"; color: "#9cb7d7"; font.pixelSize: 22 }
-                    Text {
-                        Layout.fillWidth: true
-                        text: "Search Huawei / Honor model..."
-                        color: "#8798ad"
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 13
-                    }
-                    Text { text: "⌄"; color: Theme.text; font.pixelSize: 17 }
-                }
-            }
-
-            Text {
-                text: "SELECT DEVICE BY"
-                color: Theme.text
-                font.family: Theme.fontFamily
-                font.pixelSize: 11
-            }
-
-            Rectangle {
-                Layout.preferredWidth: 266
-                Layout.preferredHeight: 36
-                radius: 6
-                color: "#0b1727"
-                border.width: 1
-                border.color: "#3b5270"
-                Row {
-                    anchors.fill: parent
-                    Rectangle {
-                        width: parent.width / 2
-                        height: parent.height
-                        radius: 6
-                        gradient: Gradient {
-                            orientation: Gradient.Horizontal
-                            GradientStop { position: 0; color: "#5a33ad" }
-                            GradientStop { position: 1; color: "#10598f" }
-                        }
-                        Text { anchors.centerIn: parent; text: "MODEL"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
-                    }
-                    Rectangle {
-                        width: parent.width / 2
-                        height: parent.height
-                        color: "transparent"
-                        Text { anchors.centerIn: parent; text: "CHIPSET"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
-                    }
-                }
-            }
-        }
-
-        Text {
-            text: "Switch to Chipset to browse Kirin platform families"
-            color: Theme.muted
-            font.family: Theme.fontFamily
-            font.pixelSize: 11
+        anchors.margins: 18
+        spacing: 8
+        DeviceSearchHeader {
+            pageTitle: "DEVICE INFORMATION"
+            placeholder: "Search Huawei / Honor model..."
+            hint: "Switch to Chipset to browse Kirin platform families"
         }
 
         GlassPanel {
@@ -125,11 +63,11 @@ GlassPanel {
                                 anchors.fill: parent
                                 anchors.margins: 9
                                 spacing: 8
-                                Text { text: modelData.icon; color: "#9fc4ff"; font.pixelSize: 21; font.family: Theme.fontFamily }
+                                Image { source: root.iconForGlyph(modelData.icon); Layout.preferredWidth: 27; Layout.preferredHeight: 27; fillMode: Image.PreserveAspectFit }
                                 ColumnLayout {
                                     Layout.fillWidth: true
                                     spacing: 3
-                                    Text { text: modelData.label; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 10 }
+                                    Text { text: modelData.label; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
                                     Text { text: modelData.value; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12; elide: Text.ElideRight; Layout.fillWidth: true }
                                 }
                             }
@@ -167,10 +105,10 @@ GlassPanel {
                             border.color: "#304862"
                             RowLayout {
                                 anchors.fill: parent; anchors.margins: 9; spacing: 8
-                                Text { text: modelData.icon; color: "#9fc4ff"; font.pixelSize: 18; font.family: Theme.fontFamily }
+                                Image { source: root.iconForGlyph(modelData.icon); Layout.preferredWidth: 27; Layout.preferredHeight: 27; fillMode: Image.PreserveAspectFit }
                                 ColumnLayout {
                                     Layout.fillWidth: true; spacing: 3
-                                    Text { text: modelData.label; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 10 }
+                                    Text { text: modelData.label; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
                                     Text { text: modelData.value; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
                                 }
                             }
@@ -208,10 +146,10 @@ GlassPanel {
                             border.color: "#304862"
                             RowLayout {
                                 anchors.fill: parent; anchors.margins: 9; spacing: 8
-                                Text { text: modelData.icon; color: "#9fc4ff"; font.pixelSize: 18; font.family: Theme.fontFamily }
+                                Image { source: root.iconForGlyph(modelData.icon); Layout.preferredWidth: 27; Layout.preferredHeight: 27; fillMode: Image.PreserveAspectFit }
                                 ColumnLayout {
                                     Layout.fillWidth: true; spacing: 3
-                                    Text { text: modelData.label; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 10 }
+                                    Text { text: modelData.label; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
                                     Text { text: modelData.value; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12; elide: Text.ElideRight; Layout.fillWidth: true }
                                 }
                             }
@@ -249,7 +187,7 @@ GlassPanel {
                             border.color: "#304862"
                             ColumnLayout {
                                 anchors.fill: parent; anchors.margins: 8; spacing: 3
-                                Text { text: modelData.label; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 10 }
+                                Text { text: modelData.label; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
                                 Text { text: modelData.value; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12; elide: Text.ElideRight; Layout.fillWidth: true }
                             }
                         }
@@ -263,8 +201,8 @@ GlassPanel {
                     border.color: "#304862"
                     RowLayout {
                         anchors.fill: parent; anchors.margins: 9
-                        Text { text: "◎"; color: "#9fc4ff"; font.pixelSize: 18; font.family: Theme.fontFamily }
-                        Text { text: "VENDOR / COUNTRY"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 10 }
+                        Image { source: root.iconForGlyph("◎"); Layout.preferredWidth: 27; Layout.preferredHeight: 27; fillMode: Image.PreserveAspectFit }
+                        Text { text: "VENDOR / COUNTRY"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
                         Text { Layout.fillWidth: true; text: "—"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
                     }
                 }
