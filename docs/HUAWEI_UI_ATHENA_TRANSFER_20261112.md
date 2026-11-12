@@ -401,3 +401,38 @@ Current ATHENA source documentation was updated in place:
 
 No installed Support package, signed driver, application Setup EXE or
 production distribution was created or promoted in this work.
+
+
+## Final native Windows titlebar proof and Builder source reconciliation
+
+On ATHENA a separate native Windows Qt probe loaded the real
+qml/dialogs/TerminalDialog.qml, inspected the resulting Win32 HWND
+and recorded:
+- Title: TECHGUY — Terminal; native decorated size 481x272 at 125% DPI.
+- WS_MINIMIZEBOX=false; WS_MAXIMIZEBOX=false; Close requested=true.
+- Initial prompt is the single literal dash, inside the output panel.
+- No device writes. The main Huawei UI was relaunched as a single
+  responsive source process. 53 focused Huawei tests pass.
+- Native style receipt:
+  D:/projects/TECHGUYTOOL-Huawei/.workspace/evidence/
+  native_terminal_titlebar_proof_20261112.json.
+
+Concurrent Builder work was reconciled to a single GitHub review branch:
+github.com/jaydumisuni/thetechguy-software-builder/tree/
+work/shared-support-installer-20261112
+merge commit 36f05d1ab1b74e64794e82e4744bb1996040a4a7.
+This merges b66f0c2 with the newer 1955a1b UAC gate and evidence;
+the resulting implementation tree matches ATHENA's local Builder main.
+Do not create another competing shared-support branch.
+
+The last full Builder test result is 557 passed, 9 skipped, 2 baseline
+failures (browser uninstall contract and stale physical qualification).
+Earlier Windows test fixture issues were cwd/host sensitive. No exact-head
+physical installer proof or customer Setup EXE is claimed. Program Files
+Support is not yet installed; existing platform tools remain unchanged.
+Seven task-owned temporary pytest folders were cleaned, while the
+Builder-owned vetted SDK source cache and rollback/evidence receipts stay.
+
+Local documents:
+- Builder/docs/SHARED_SUPPORT_WINDOWS_INSTALLER.md
+- Huawei/docs/HUAWEI_TERMINAL_AND_SHARED_SUPPORT_20261112.md.
