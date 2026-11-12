@@ -340,7 +340,7 @@ The Huawei main source was updated on ATHENA after direct owner feedback:
 - Builder review branch:
   github.com/jaydumisuni/thetechguy-software-builder/tree/
   work/shared-support-installer-20261112
-  commit b66f0c2179213705790a91de759ba119fb65fd24.
+  latest merged commit 36f05d1ab1b74e64794e82e4744bb1996040a4a7.
 - Local source documents:
   D:/projects/THETECHGUY Software Builder/docs/
   SHARED_SUPPORT_WINDOWS_INSTALLER.md
@@ -357,3 +357,47 @@ The Huawei main source was updated on ATHENA after direct owner feedback:
 Release gating remains a real one-file installer build, physical Windows
 UAC install/reuse/repair/uninstall validation, vendor provenance checks,
 resolution/acceptance of Builder test failures and owner promotion approval.
+
+
+### Final source handoff: single Builder review branch
+
+Builder's canonical shared Support source implementation was reconciled
+with the earlier review commit rather than leaving duplicate branches.
+The **single** review branch is now:
+
+  https://github.com/jaydumisuni/thetechguy-software-builder/tree/work/shared-support-installer-20261112
+
+Verified latest merge commit:
+  36f05d1ab1b74e64794e82e4744bb1996040a4a7
+
+The merged source tree matches the tested ATHENA Builder commit exactly.
+The redundant work/shared-support-windows-installer-20261112 branch
+(created during reconciliation) was deleted after the merge was pushed.
+
+Updated focused Builder support/onefile staging tests: **17 passed**.
+The actual Huawei configuration staged 14 platform-tools 37.0.1 files
+(17,529,398 bytes) from Builder's gitignored cache; all hashes matched.
+The temporary staging was removed. An explicit administrator/UAC
+packaging guard prevents a shared Program Files install through an
+installer configured without admin privileges.
+
+ATHENA correct-root Builder full regression also recorded **557 passed,
+9 skipped, 2 failed** (baseline legacy browser-uninstaller contract and
+historical standalone physical receipt). An earlier run recorded
+555 passed / 9 skipped / 4 failed, including two transient Git fixture
+failures. This is not full-green customer installer qualification.
+
+Huawei terminal's integrated command prompt displays **only a dash**
+inside the black output area; ScrollView/history and cd / pwd / dir / ls
+work, tool-owned ADB/Fastboot paths remain default, and native popup
+minimize/maximize controls were removed while Expand/Compact remains.
+Final QML terminal smoke passed without startup warnings, and no
+device write occurred. The on-demand exact-model pinout image viewer
+was also validated with VOG-AL00 and Nova 3 image navigation.
+
+Current ATHENA source documentation was updated in place:
+- Huawei README.md
+- Builder PROJECT_STATE.md and docs/SHARED_SUPPORT_WINDOWS_INSTALLER.md
+
+No installed Support package, signed driver, application Setup EXE or
+production distribution was created or promoted in this work.
