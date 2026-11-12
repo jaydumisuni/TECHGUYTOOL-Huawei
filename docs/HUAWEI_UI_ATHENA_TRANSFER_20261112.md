@@ -299,3 +299,61 @@ Proof files in main project's .workspace/evidence:
 Recovery snapshot: .workspace/recovery/20261112_terminal_directory.
 The existing pinout viewer and popup corrections remain source-level
 changes on ATHENA; the pinout website/repository was not modified.
+
+
+## ATHENA integrated terminal prompt and shared Builder Support — 2026-11-12
+
+The Huawei main source was updated on ATHENA after direct owner feedback:
+
+- Terminal now has an actual command input row **inside the same black
+  output panel**. Initial view contains a single interactive dash; no
+  fabricated transcript banner. Existing scrollback, directory navigation,
+  guarded ADB/Fastboot execution and explicit write confirmation retained.
+- Redundant native Minimize/Maximize titlebar controls removed by Dialog
+  customization; tool Expand/Compact stays, bounded to the screen.
+- Offscreen Qt image capture of compact terminal 370x180 completed and
+  was visually reviewed; zero QML warnings. Exact capture:
+  D:/projects/TECHGUYTOOL-Huawei/.workspace/evidence/
+  20261112_terminal_integrated_prompt.png.
+- User requested a **single shared installed Support root** at
+  C:/Program Files (x86)/THETECHGUY Digital Solutions/Support, holding
+  Android/platform-tools, future Drivers and manifests. This is a
+  **Builder-owned installer capability**, not a Huawei-only copy.
+- Huawei source platform_tools.py will consume Builder-provisioned ADB
+  and Fastboot only with a valid exact SHA-256 manifest covering all
+  installed files; fallback to its existing trusted runtime locations
+  remains until that support package is actually installed.
+- Huawei's techguy-build.json explicitly declares Android support
+  version 37.0.1 with a Builder-managed dependency cache source.
+- The canonical Builder source has an opt-in self-contained installer
+  package flow, reuse/explicit repair, checksum checks, rollback on
+  app-install failure, and no uninstall of global Support.
+- On ATHENA, Builder cached the existing platform-tools 37.0.1 source
+  (14 files, 17,529,398 bytes). No existing Program Files tool or
+  driver was moved, deleted or overwritten, and the new Support
+  directory was not installed.
+- Focused tests: Builder **17 passed**; Huawei **53 passed**.
+  Builder full suite from correct root: **555 passed, 9 skipped, 4
+  unrelated failures** (browser installer contract, 2 Windows Git
+  test fixtures, stale physical standalone receipt). No claim of
+  full-green Builder proof.
+- Builder review branch:
+  github.com/jaydumisuni/thetechguy-software-builder/tree/
+  work/shared-support-installer-20261112
+  commit b66f0c2179213705790a91de759ba119fb65fd24.
+- Local source documents:
+  D:/projects/THETECHGUY Software Builder/docs/
+  SHARED_SUPPORT_WINDOWS_INSTALLER.md
+  D:/projects/TECHGUYTOOL-Huawei/docs/
+  HUAWEI_TERMINAL_AND_SHARED_SUPPORT_20261112.md.
+- Rollback snapshots:
+  D:/projects/TECHGUYTOOL-Huawei/.workspace/recovery/
+  20261112_terminal_embedded_prompt and
+  20261112_shared_support_preference.
+- Current main Huawei checkout is intentionally dirty due to
+  previously preserved owner edits. Do not blindly commit or stage
+  unrelated files. No production Huawei EXE/Setup was rebuilt.
+
+Release gating remains a real one-file installer build, physical Windows
+UAC install/reuse/repair/uninstall validation, vendor provenance checks,
+resolution/acceptance of Builder test failures and owner promotion approval.
