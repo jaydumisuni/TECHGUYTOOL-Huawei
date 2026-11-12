@@ -531,3 +531,36 @@ Certification evidence procedure:
 The recorder creates evidence packets only. It does **not** mutate the physical matrix or enable production.
 
 Packaging, CI test signing and production Authenticode remain separate release-artifact/certificate work and may be performed later when an actual release artifact is required. The old P30 is not required.
+
+---
+
+## 12. November 2026 VOG/Kirin evidence and knowledge reconciliation
+
+**Status:** Evidence review only. No change to frozen Phase 1-15 architecture, signed Kirin capability packs, Device X-Ray, physical-certification status, or device-write authority. This reconciles the tool's existing knowledge with the November 12 VOG recovery handoff.
+
+### Already documented — no duplicate implementation
+
+- Phase 9 already accepts VOG-AL00 board-service and VOG-L29 C185 target roles, requires matching firmware, OEMINFO backup/readback and continued Board-Service Fastboot until approved release.
+- The existing Kirin rules already explain MAIN VERSION through OEMINFO rather than proven standalone VERLIST writes, preserve service mode, defer stock Fastboot to finalization, and separate branding normalization.
+- The Inquiry Governor, X-Ray Knowledge Workshop and five SHA-bound read-only Kirin packs already provide a quarantine, replay, challenge, hardware-proof and approval workflow. The promoted TTG Device X-Ray profile has no write authority.
+
+### Newer, separately scoped recovery evidence
+
+1. **Historical full-flash order:** August 2's 45-operation log placed SUPER at #29, USERDATA at #39, HISIUFS_GPT/ptable at #42, and UFSFW at #44. The failed first boot attempt preceded the full pass. Successful MAIN/Base/CUST/PRELOAD readback followed the matched 96 MiB OEMINFO restoration and real VERSION/PRELOAD images; the direct CUST_VERLIST write failed. Even the booted earlier phone had unresolved vendor/model branding.
+2. **Later VOG handset:** 43 of 45 historical image names matched by source SHA-256 and Fastboot acknowledgement as of the November 12 handoff. Its C185 OEMINFO was separately written and version strings read back. USERDATA and UFSFW lack new acknowledged writes. No Android boot, raw physical GPT readback or preserved handset-specific NV has been independently proved. Never infer live state from an older session.
+3. **Staging defect:** The historical extraction helper returns a shared current.img filename. Extracting three different entries into one directory reused that path and caused an image verification failure. The corrected run isolated per-partition files, rehashed immediately before writing, and received OKAY for MODEMNVM_UPDATE, MODEMNVM_CUST and HDCP. This is a verification-rule lesson, not permission for automatic retries.
+4. **UFSFW is multi-profile:** Official AL00 board ufs_fw.bin contains 33 UFSM controller profiles; official C185 UFSFW has 28, with 24 identical entries, nine board-only and four target-only. Some C185 Samsung and SK hynix revisions differ. The first 32GB header does not define the whole bundle. Live controller identity/revision and the loader's choice of embedded entry remain unverified.
+5. **USERDATA physical targeting differs:** The offline AL00 and C185 GPT sources place USERDATA's start 3,548,381,184 bytes apart. The August operation order and November write order differ. The current service Fastboot ptable listing is not a verified raw device GPT, and historical userdata initialization altered OEMINFO encryption state. Do not promote a data-destructive operation from source parity alone.
+6. **Protected identity remains unresolved:** Model/vendor-country reads fail through current service Fastboot. Prior failed protected-record writes and donor-template OEMINFO ACKs are not proof of intact unique calibration or branding.
+
+### Knowledge workflow and explicit gaps
+
+**Gaps requiring read-only evidence:** physical UFS manufacturer/model/revision; service loader's UFSFW profile matching behavior; physical GPT and USERDATA placement; protected branding readback. Unsupported fastboot getvar/fetch/dump-storage responses cannot be treated as successful raw reads.
+
+Retain private raw journals and firmware SHA-256 evidence in owner-controlled ATHENA/Google Recovery storage. Admit only reviewed read-only parser, diagnostic rule or verification requirement candidates through the existing Phase 11 quarantine/replay/challenge/canary/hardware-proof procedure; revise pack hashes and Phase 13 X-Ray promotion only after review. Write-target, write-offset, destructive-recipe and expanded-authority proposals cannot auto-promote.
+
+**Hard boundary:** Published physical VOG certification remains HARDWARE_PENDING; production_enabled=false; Device X-Ray write_allowed=false. No reboot, relock, mode switch, userdata initialization or UFS controller firmware write is authorized by this note.
+
+**Evidence index:** Huawei recovery handoff: https://docs.google.com/document/d/1hV1ImXIMzL6QEKnme4YB758mjTTi9LaxQ9oVAZ12Afw/edit . Source journals remain in the approved ATHENA project evidence workspace, including the 43/45 reconciliation, failed/corrected stage receipts, and 33-versus-28 UFS profile comparison. Do not upload private device identifiers or firmware binaries to this public repository.
+
+**Contribution:** Correction + Verification + Update existing documentation. Source-pack promotion and hardware support remain pending.
