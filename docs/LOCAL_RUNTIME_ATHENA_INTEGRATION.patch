@@ -1,0 +1,160 @@
+--- a/main.py
++++ b/main.py
+@@ -97,0 +98,20 @@
++def xray_worker(arguments: list[str]) -> int:
++    from contextlib import redirect_stdout, redirect_stderr
++    from techguy_huawei.xray_read_device import bundled_source
++    if len(arguments) != 1:
++        return 2
++    job = Path(arguments[0]).resolve()
++    if not job.is_dir():
++        return 2
++    with (job / "scanner-summary.json").open("w", encoding="utf-8") as out, (job / "scanner-stderr.txt").open("w", encoding="utf-8") as err:
++        with redirect_stdout(out), redirect_stderr(err):
++            try:
++                source = bundled_source(app_root())
++                sys.path.insert(0, str(source))
++                from ttg_device_xray.cli import main as scan
++                return scan(["scan", "--deep", "--mission", "huawei-read-device", "--output", str(job)])
++            except Exception:
++                traceback.print_exc()
++                return 1
++
++
+@@ -98,0 +119,2 @@
++    if len(sys.argv) > 1 and sys.argv[1] == "--xray-worker":
++        raise SystemExit(xray_worker(sys.argv[2:]))
+--- a/build_windows.ps1
++++ b/build_windows.ps1
+@@ -40,0 +41,5 @@
++
++# Stage the existing local component assets before tests and packaging.
++python tools\stage_local_runtime.py
++if ($LASTEXITCODE -ne 0) { throw "Local runtime staging failed." }
++$env:PYTHONPATH = (Join-Path $Root "runtime\xray\src") + ";" + $env:PYTHONPATH
+--- a/pysidedeploy.spec
++++ b/pysidedeploy.spec
+@@ -23 +23 @@
+-extra_args = --quiet --msvc=latest --assume-yes-for-downloads --noinclude-qt-translations --include-data-dir=data=data --include-data-dir=assets=assets --include-data-dir=runtime=runtime --windows-console-mode=disable
++extra_args = --quiet --msvc=latest --assume-yes-for-downloads --noinclude-qt-translations --include-data-dir=data=data --include-data-dir=assets=assets --include-data-dir=runtime=runtime --include-package=ttg_device_xray --include-package-data=ttg_device_xray --windows-console-mode=disable
+--- a/techguy_huawei/backend.py
++++ b/techguy_huawei/backend.py
+@@ -85,0 +86 @@
++        self._device_partitions = []
+@@ -319,0 +321,4 @@
++    @Property("QVariantList", notify=deviceChanged)
++    def devicePartitions(self) -> list:
++        return list(self._device_partitions)
++
+@@ -866,0 +872 @@
++                self._device_partitions = []
+@@ -949,0 +956 @@
++            self._device_partitions = [dict(row) for row in payload.get("xray",{}).get("partitions",[]) if isinstance(row,dict) and row.get("name")]
+--- a/qml/components/DeviceSearchHeader.qml
++++ b/qml/components/DeviceSearchHeader.qml
+@@ -50 +50 @@
+-            var value = numeric ? "kirin" + numeric[1] : cpu
++            var value = numeric && cpu !== "hisi620" && cpu !== "hisi710" ? "kirin" + numeric[1] : cpu
+@@ -52 +52 @@
+-                entries.push({value: value, label: numeric ? "Kirin " + numeric[1] : cpu,
++                entries.push({value: value, label: value === cpu ? cpu + " (exact loader)" : "Kirin " + numeric[1],
+--- a/qml/pages/PartitionManagerPage.qml
++++ b/qml/pages/PartitionManagerPage.qml
+@@ -8,0 +9,13 @@
++    property var selectedPartition: ({})
++    function shown(value) {
++        return value === undefined || value === null || value === "" ? "Not reported" : String(value)
++    }
++    function partitionSize(row) {
++        var n = Number(row.size_bytes || 0)
++        if (n <= 0) return "Not reported"
++        return n >= 1073741824 ? (n / 1073741824).toFixed(2) + " GiB" : (n / 1048576).toFixed(2) + " MiB"
++    }
++    Connections {
++        target: backend
++        function onDeviceChanged() { root.selectedPartition = ({}) }
++    }
+@@ -64,0 +78,31 @@
++                    ListView {
++                        id: partitionList
++                        objectName: "livePartitionInventory"
++                        anchors.fill: parent
++                        clip: true
++                        model: backend.devicePartitions
++                        currentIndex: -1
++                        delegate: Rectangle {
++                            required property var modelData
++                            required property int index
++                            width: partitionList.width
++                            height: 32
++                            color: partitionList.currentIndex === index ? "#234764" : index % 2 === 0 ? "#0a1829" : "#102033"
++                            RowLayout {
++                                anchors.fill: parent
++                                anchors.leftMargin: 10
++                                anchors.rightMargin: 10
++                                Text { text: ""; Layout.preferredWidth: 28 }
++                                Text { text: root.shown(modelData.name); color: Theme.text; font.pixelSize: 12; Layout.preferredWidth: 185; elide: Text.ElideRight }
++                                Text { text: root.shown(modelData.lun); color: Theme.muted; font.pixelSize: 12; Layout.preferredWidth: 65; elide: Text.ElideRight }
++                                Text { text: root.shown(modelData.start_offset_bytes); color: Theme.muted; font.pixelSize: 12; Layout.fillWidth: true; elide: Text.ElideRight }
++                                Text { text: root.partitionSize(modelData); color: Theme.text; font.pixelSize: 12; Layout.preferredWidth: 105 }
++                                Text { text: modelData.read_only ? "Read-only" : "Observed"; color: Theme.muted; font.pixelSize: 12; Layout.preferredWidth: 85 }
++                            }
++                            MouseArea {
++                                anchors.fill: parent
++                                onClicked: { partitionList.currentIndex = index; root.selectedPartition = modelData }
++                            }
++                        }
++                        ScrollBar.vertical: ScrollBar {}
++                    }
+@@ -66,0 +111 @@
++                        visible: partitionList.count === 0
+@@ -70 +115 @@
+-                            text: backend.connected ? "No certified partition inventory has been returned yet." : "Connect and read a device to begin partition discovery."
++                            text: backend.connected ? "No partition inventory reported in this mode." : "Connect and read a device to begin partition discovery."
+@@ -74,7 +118,0 @@
+-                        }
+-                        Text {
+-                            anchors.horizontalCenter: parent.horizontalCenter
+-                            text: "Partition rows appear only from verified read evidence."
+-                            color: Theme.muted
+-                            font.family: Theme.fontFamily
+-                            font.pixelSize: 12
+@@ -106,3 +144,3 @@
+-                            Text { text: "Partition        —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
+-                            Text { text: "LUN              —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
+-                            Text { text: "Start            —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
++                            Text { text: "Partition: " + root.shown(root.selectedPartition.name); color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
++                            Text { text: "LUN: " + root.shown(root.selectedPartition.lun); color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
++                            Text { text: "Start: " + root.shown(root.selectedPartition.start_offset_bytes); color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
+@@ -112,3 +150,3 @@
+-                            Text { text: "Size             —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
+-                            Text { text: "File System      —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
+-                            Text { text: "Type             —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
++                            Text { text: "Size: " + root.partitionSize(root.selectedPartition); color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
++                            Text { text: "File System: " + root.shown(root.selectedPartition.filesystem); color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
++                            Text { text: "Type: " + root.shown(root.selectedPartition.risk); color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
+--- a/qml/pages/ServiceCenterPage.qml
++++ b/qml/pages/ServiceCenterPage.qml
+@@ -29,0 +30 @@
++    signal boardRepairRequested()
+@@ -128 +129 @@
+-            OperationTile { Layout.fillWidth: true; Layout.fillHeight: true; objectName: "operationBoardRepair"; enabled: backend.operationBusy !== true; text: "Board Repair"; subtitle: "Repair board functions and calibrations."; glyph: "⚒"; iconName: "board-repair"; active: root.invokedAction === "board_repair"; onClicked: root.invokeOperation("board_repair", "BOARD REPAIR") }
++            OperationTile { Layout.fillWidth: true; Layout.fillHeight: true; objectName: "operationBoardRepair"; enabled: backend.operationBusy !== true; text: "Board Repair"; subtitle: "Repair board functions and calibrations."; glyph: "⚒"; iconName: "board-repair"; active: root.invokedAction === "board_repair"; onClicked: root.boardRepairRequested() }
+--- a/qml/Main.qml
++++ b/qml/Main.qml
+@@ -412 +412,10 @@
+-    Component { id: serviceComponent; ServiceCenterPage {} }
++    Component {
++        id: serviceComponent
++        ServiceCenterPage {
++            onBoardRepairRequested: {
++                backend.setFirmwareMode("Repair")
++                app.pageIndex = 2
++                app.pageTitle = "Firmware Flash"
++            }
++        }
++    }
+--- a/manifests/phase15_physical_proof_matrix.json
++++ b/manifests/phase15_physical_proof_matrix.json
+@@ -20,0 +21 @@
++    {"id": "dead_screen_normal_android_charge_only_discovery", "status": "HARDWARE_PENDING"},

@@ -50,5 +50,7 @@ class BoardRuntimeTests(unittest.TestCase):
     def test_pin_runtime_on_athena_if_present(self):
         root=Path(__file__).resolve().parents[1]
         q=root/".workspace"/"tools"/"qdl-v2.9.1"/"extracted"/"qdl-binary-windows-x64"/"qdl.exe"
-        if not q.exists():self.skipTest("native QDL not staged on this host")
-        self.assertEqual(b.resolve_qdl(root),q)
+        bundled=root/"runtime"/"qdl"/"windows-x64"/"qdl.exe"
+        expected=bundled if bundled.is_file() else q
+        if not expected.exists():self.skipTest("native QDL not staged on this host")
+        self.assertEqual(b.resolve_qdl(root),expected)

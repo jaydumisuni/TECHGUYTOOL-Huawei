@@ -1,0 +1,15 @@
+{
+  "tools/stage_local_runtime.py": "ac6c988b39f0e134c582b305bb761c7719901a401a171dbf01efef61d19d98b8",
+  "techguy_huawei/xray_read_device.py": "8094fbfd29f8cea66d1fd14dc2ad23c212e5683fa8929c77b3a11e85378d0d70",
+  "techguy_huawei/service_loader_registry.py": "47d016bf4822a69bd5b69d803fed3b65b2e8c6572134d937f249511857b85873",
+  "tests/test_caz_al10_board_runtime.py": "759042056c10bee31905b4e82316039e7e071bbed81a30fd284e2aee6bf1e849",
+  "main.py": "9ee85b97acbfaad04af7bcbaa06dafb8375a9ff9e4f304e29348ec047374f2f5",
+  "build_windows.ps1": "73cc40dd148a1ab36f1748f0c7ccf5b835ade5533d8d7b1a96e00a6be18bc6fc",
+  "pysidedeploy.spec": "c12d02d3e81e078b700a18908d7f6f9cac6822a8b7f7cbb7373f53fafa4a879a",
+  "techguy_huawei/backend.py": "a65a50b2542e7de20a8202c7d397d6c49ab99d6028762d099cd4390bb9dc4fa0",
+  "qml/components/DeviceSearchHeader.qml": "d7287d2eeb4bd4f00312d4348291f85b526db1fd92566205b4794d3839f13c19",
+  "qml/pages/PartitionManagerPage.qml": "065e3e47b615ecf2c25b001f6c81b683349526c44b1624dcb6848dd49c9ab61c",
+  "qml/pages/ServiceCenterPage.qml": "e5d34afeb1cfc791859efb7cdf4847119ca646e645317ea6331bf5a586f1fc05",
+  "qml/Main.qml": "b2d49246f8cd244f8bea51cbef992e97f096570eb0b1aab00514b6a231310cb8",
+  "manifests/phase15_physical_proof_matrix.json": "3a1d898e3e624c7c397f194b4f340ea5bfcb4edf9056ebeed80534f0bbf24b8b"
+}

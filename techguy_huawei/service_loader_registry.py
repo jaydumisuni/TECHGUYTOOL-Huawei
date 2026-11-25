@@ -60,9 +60,9 @@ def _inventory_candidate(app_root: Path, selected: str) -> LoaderSelection:
     cpu=selected.replace("kirin","hisi",1) if selected.startswith("kirin") else selected
     if cpu in {"hisi650","hisi655","hisi658","hisi659","hisi65x"}:
         candidates=tuple(x for x in ("hisi65x_a","hisi65x_b") if x in families)
-    elif cpu=="hisi620":
+    elif cpu=="hisi620" and selected!="hisi620":
         candidates=tuple(x for x in ("hisi620","hisi620c") if x in families)
-    elif cpu=="hisi710":
+    elif cpu=="hisi710" and selected!="hisi710":
         candidates=tuple(x for x in ("hisi710","hisi710a") if x in families)
     else:
         candidates=(cpu,) if cpu in families else ()
@@ -90,6 +90,7 @@ def _inventory_candidate(app_root: Path, selected: str) -> LoaderSelection:
 
 
 def resolve_loader(app_root: Path, chipset: str) -> LoaderSelection:
+    raw=chipset.strip().lower().replace(" ","")
     selected = canonical_chipset(chipset)
     if not selected:
         return LoaderSelection("", "awaiting_chipset", reason="Select/detect a chipset")
@@ -104,7 +105,7 @@ def resolve_loader(app_root: Path, chipset: str) -> LoaderSelection:
         return LoaderSelection(selected, "registry_invalid", reason="Loader registry schema mismatch")
     matching = [p for p in payload["profiles"] if isinstance(p, dict) and p.get("chipset") == selected]
     if not matching or selected not in QUALIFIED:
-        return _inventory_candidate(app_root,selected)
+        return _inventory_candidate(app_root,raw if raw in {"hisi620","hisi710"} else selected)
     if len(matching) != 1:
         return LoaderSelection(selected, "registry_invalid", reason="Ambiguous chipset-to-loader mapping")
     profile = matching[0]

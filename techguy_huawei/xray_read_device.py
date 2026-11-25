@@ -18,26 +18,28 @@ from .action_health import ActionState
 from .platform_tools import resolve_tool
 
 
+def bundled_source(project:Path)->Path:
+    from hashlib import sha256
+    root=project/"runtime"/"xray"
+    manifest=json.loads((root/"source-manifest.json").read_text(encoding="utf8"))
+    if manifest.get("commit")!="47df719f60d85e06ccecd867fdd4d65b26864378":
+        raise RuntimeError("Unexpected bundled X-Ray source version")
+    for rel,expected in manifest["files"].items():
+        path=root/rel
+        if not path.is_file() or path.is_symlink() or root.resolve() not in path.resolve().parents or sha256(path.read_bytes()).hexdigest()!=expected:
+            raise RuntimeError("Bundled X-Ray integrity check failed: "+rel)
+    return root/"src"
+
+
 def _runtime(project:Path)->tuple[list[str],dict]:
     env=os.environ.copy()
-    # Installed launcher, or the canonical adjacent owner checkout. Do not
-    # substitute a local imitation of X-Ray.
-    candidates=(project/"runtime"/"xray", project.parent/"TTG-Device-X-Ray")
-    for root in candidates:
-        exe=root/("ttg-xray.exe" if os.name=="nt" else "ttg-xray")
-        if exe.is_file():
-            return [str(exe)],env
-        src=root/"src"
-        if (src/"ttg_device_xray"/"cli.py").is_file():
-            interpreter=Path(sys.executable)
-            if getattr(sys,"frozen",False):
-                continue
-            if interpreter.name.lower()=="pythonw.exe":
-                interpreter=interpreter.with_name("python.exe")
-            env["PYTHONPATH"]=str(src.resolve())
-            env["PYTHONDONTWRITEBYTECODE"]="1"
-            return [str(interpreter),"-m","ttg_device_xray.cli"],env
-    raise RuntimeError("TTG Device X-Ray runtime not installed or adjacent checkout unavailable")
+    bundled_source(project)
+    if getattr(sys,"frozen",False):
+        return [str(Path(sys.argv[0]).resolve()),"--xray-worker"],env
+    interpreter=Path(sys.executable)
+    if interpreter.name.lower()=="pythonw.exe":
+        interpreter=interpreter.with_name("python.exe")
+    return [str(interpreter),str(project/"main.py"),"--xray-worker"],env
 
 
 def scan(project:Path,root:Path)->dict:
@@ -47,15 +49,12 @@ def scan(project:Path,root:Path)->dict:
         if resolved:env["TTG_XRAY_"+tool.upper()]=resolved
     job=root.resolve()/("read-device-"+uuid.uuid4().hex)
     job.mkdir(parents=True,exist_ok=False)
-    p=subprocess.run([*cmd,"scan","--deep","--mission","huawei-read-device",
-                      "--output",str(job)],cwd=project,env=env,shell=False,
+    p=subprocess.run([*cmd,str(job)],cwd=project,env=env,shell=False,
                       capture_output=True,text=True,encoding="utf-8",errors="replace",
                       timeout=600,creationflags=getattr(subprocess,"CREATE_NO_WINDOW",0))
-    (job/"scanner-stderr.txt").write_text(p.stderr,encoding="utf8")
-    (job/"scanner-summary.json").write_text(p.stdout,encoding="utf8")
     if p.returncode not in (0,2):
         raise RuntimeError("X-Ray scanner failed; full diagnostic log saved")
-    summary=json.loads(p.stdout)
+    summary=json.loads((job/"scanner-summary.json").read_text(encoding="utf8"))
     bundle=Path(summary["output"]).resolve()
     if job not in bundle.parents or not bundle.is_dir():
         raise RuntimeError("X-Ray returned an invalid evidence path")
