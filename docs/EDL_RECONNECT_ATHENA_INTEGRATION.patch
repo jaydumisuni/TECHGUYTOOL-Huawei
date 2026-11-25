@@ -1,0 +1,46 @@
+--- a/techguy_huawei/desktop_worker.py
++++ b/techguy_huawei/desktop_worker.py
+@@ -6,0 +7,2 @@
++from threading import Event
++from .edl_reconnect import session
+@@ -20,0 +23 @@
++        self.reconnect_cancel = Event()
+@@ -27 +30,2 @@
+-            response = execute(self.request, progress=self.signals.progress.emit)
++            with session(self.reconnect_cancel,self.signals.progress.emit):
++                response = execute(self.request, progress=self.signals.progress.emit)
+--- a/techguy_huawei/backend.py
++++ b/techguy_huawei/backend.py
+@@ -146,0 +147,6 @@
++    @Slot()
++    def cancelEdlReconnect(self):
++        if self._worker is not None and self._operation_status.startswith("EDL RECONNECT REQUIRED:"):
++            event=getattr(self._worker,"reconnect_cancel",None)
++            if event is not None:event.set()
++
+--- a/qml/Main.qml
++++ b/qml/Main.qml
+@@ -431,0 +432,23 @@
++        id: edlReconnect
++        title: "Reconnect device in EDL"
++        modal: true
++        closePolicy: Popup.NoAutoClose
++        anchors.centerIn: Overlay.overlay
++        width: Math.min(500, Overlay.overlay.width - 40)
++        standardButtons: Dialog.Cancel
++        contentItem: Text {
++            text: backend.operationStatus + "\n\nThe pending stage resumes when the same device returns. An interrupted write with uncertain completion requires review."
++            color: Theme.text
++            wrapMode: Text.Wrap
++        }
++        onRejected: backend.cancelEdlReconnect()
++    }
++    Connections {
++        target: backend
++        function onProgressChanged() {
++            if (backend.operationStatus.indexOf("EDL RECONNECT REQUIRED:") === 0) {
++                if (!edlReconnect.visible) edlReconnect.open()
++            } else if (edlReconnect.visible) edlReconnect.close()
++        }
++    }
++    Dialog {

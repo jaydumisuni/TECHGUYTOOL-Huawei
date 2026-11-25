@@ -101,7 +101,8 @@ def execute(project,rawprogram,current,evidence,progress):
     package=current["package"]
     folder=Path(package["folder"])
     qdl=q.resolve_qdl(project)
-    serial=q._device(qdl,folder)
+    from .edl_reconnect import ensure,run_stage
+    serial=ensure(lambda:q._device(qdl,folder),expected_hash=current["serial_hash"],stage="vendor reconstruction")
     if sha256(serial.encode()).hexdigest()!=current["serial_hash"]:
         raise FlashError("EDL target changed")
     job=evidence/("reconstruction-"+uuid.uuid4().hex);job.mkdir()
@@ -110,12 +111,12 @@ def execute(project,rawprogram,current,evidence,progress):
     def save():
         tmp=job/"receipt.tmp";tmp.write_text(json.dumps(report,indent=2),encoding="utf8");tmp.replace(job/"receipt.json")
     def run(name,args,timeout=7200):
-        if q._device(qdl,folder)!=serial:raise FlashError("EDL target detached or changed")
         argv=["--color=never","--backend=qud","--serial="+serial,
             "--storage="+package["storage"],"--skip-reset","--include="+str(folder),
             str(folder/package["programmer"]),*args]
-        code,log=q._run(qdl,argv,folder,timeout)
-        (job/(name+".log")).write_text(log,encoding="utf8")
+        code,log=run_stage(lambda:q._device(qdl,folder),serial,name,args,
+            lambda:q._run(qdl,argv,folder,timeout),
+            lambda attempt,output:(job/(name+("" if attempt==1 else "-retry-"+str(attempt))+".log")).write_text(output,encoding="utf8"))
         if code or re.search(r"(?m)^ERR:",log):raise FlashError("QDL stopped at "+name)
         return log
     def read(name,op,start,count,dest):

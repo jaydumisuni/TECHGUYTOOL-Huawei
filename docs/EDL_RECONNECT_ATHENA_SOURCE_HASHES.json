@@ -1,0 +1,10 @@
+{
+  "techguy_huawei/edl_reconnect.py": "30d0e699b9c6c2b18ca7a2fa00e08878b79c0296b7e4b04db9fd61c36707eef0",
+  "techguy_huawei/qualcomm_package.py": "212bdc53d8b3f7d9c86c0fd8de32af0d4d72dcaf3b3af8480c0f492a9349225a",
+  "techguy_huawei/qualcomm_reconstruction.py": "ba60a20e5a8ef020b13834385e40608cab4fa766a68e20ce02e4aec34bce4751",
+  "techguy_huawei/caz_al10_board_runtime.py": "292491d78a19fa385df45c21821ddec7a6441ebee2fe9e35afc77091210ef718",
+  "tests/test_edl_reconnect.py": "e72d7fb32826c705eb9d59935ef56a21a35477eb55a9144051715397b5cbd25f",
+  "techguy_huawei/desktop_worker.py": "5a00c0d08972c9657e31389e4289fc57181763ec6f2488956645a43be5e0e9e3",
+  "techguy_huawei/backend.py": "83c78c30cbf9137fd416d89fbc72098838bb943a91f507373990b9b901d894fc",
+  "qml/Main.qml": "2ee4384cb6f5b917437eae61ba678b811e41cd19657ecc071d0eff4b047497bb"
+}

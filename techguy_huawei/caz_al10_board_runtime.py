@@ -104,7 +104,8 @@ def board_plan(project:Path,rawprogram:Path,model:str,chipset:str,evidence:Path)
     rawprogram=rawprogram.resolve()
     result=board_preview(rawprogram)
     qdl=resolve_qdl(project)
-    serial=_device(qdl,rawprogram.parent)
+    from .edl_reconnect import ensure
+    serial=ensure(lambda:_device(qdl,rawprogram.parent),stage="board preflight")
     evidence.mkdir(parents=True,exist_ok=True)
     if shutil.disk_usage(evidence).free<1024**3:
         raise FlashError("At least 1 GiB free is required for board backup and readback.")
@@ -136,7 +137,8 @@ def board_apply(project:Path,rawprogram:Path,model:str,chipset:str,fingerprint:s
         raise FlashError("Board plan or target changed; verify again.")
     folder=rawprogram.parent
     qdl=resolve_qdl(project)
-    serial=_device(qdl,folder)
+    from .edl_reconnect import ensure, run_stage
+    serial=ensure(lambda:_device(qdl,folder),expected_hash=current["serial_hash"],stage="board recovery")
     if sha256(serial.encode()).hexdigest()!=current["serial_hash"]:
         raise FlashError("EDL serial changed.")
     job=evidence/("board-run-"+uuid.uuid4().hex)
@@ -148,10 +150,9 @@ def board_apply(project:Path,rawprogram:Path,model:str,chipset:str,fingerprint:s
     def save():
         p=job/"receipt.tmp"; p.write_text(json.dumps(report,indent=2),encoding="utf8");p.replace(job/"receipt.json")
     def run(name,args,timeout=180,debug=False):
-        if _device(qdl,folder)!=serial:
-            raise FlashError("EDL target changed or disconnected.")
-        code,out=_run(qdl,(["--debug"] if debug else [])+_args(folder,serial)+args,folder,timeout)
-        (job/(name+".log")).write_text(out,encoding="utf8")
+        code,out=run_stage(lambda:_device(qdl,folder),serial,name,args,
+            lambda:_run(qdl,(["--debug"] if debug else [])+_args(folder,serial)+args,folder,timeout),
+            lambda attempt,log:(job/(name+("" if attempt==1 else "-retry-"+str(attempt))+".log")).write_text(log,encoding="utf8"))
         if code or re.search(r"(?m)^ERR:",out):
             raise FlashError("QDL stopped at "+name+"; evidence retained.")
         return out

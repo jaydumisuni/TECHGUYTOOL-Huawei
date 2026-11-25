@@ -157,6 +157,7 @@ def _geometry(package,layouts):
 
 def _live_layouts(package,qdl,serial,job,chip):
     """Read both GPT copies, including vendor-reserved tail sectors."""
+    from .edl_reconnect import run_stage
     sectors={}
     for op in package["all_operations"]:
         if not op["filename"]:continue
@@ -167,13 +168,14 @@ def _live_layouts(package,qdl,serial,job,chip):
     first={};second={};hashes={}
     for lun,sector in sectors.items():
         def read(role,start,count,debug=False):
-            if _device(qdl,folder)!=serial:raise FlashError("EDL device changed")
             file=job/f"gpt-{lun}-{role}.bin"
             args=(["--debug"] if debug else [])+["--color=never","--backend=qud","--serial="+serial,
                 "--storage="+package["storage"],"--skip-reset","--include="+str(folder),str(folder/package["programmer"]),
                 "read",f"{lun}/{start}+{count}",str(file)]
-            code,log=_run(qdl,args,folder,180)
-            (job/f"gpt-{lun}-{role}.log").write_text(log,encoding="utf8")
+            stage=f"gpt-{lun}-{role}"
+            code,log=run_stage(lambda:_device(qdl,folder),serial,stage,args[-3:],
+                lambda:_run(qdl,args,folder,180),
+                lambda attempt,output:(job/(stage+("" if attempt==1 else "-retry-"+str(attempt))+".log")).write_text(output,encoding="utf8"))
             if code or not file.is_file() or file.stat().st_size!=sector*count:
                 raise FlashError("GPT read incomplete")
             if debug and not _chip_matches(log,chip):raise FlashError("Live chipset does not match selected target")
@@ -219,7 +221,8 @@ def plan(project:Path,rawprogram:Path,model:str,chipset:str,evidence:Path):
         raise FlashError("QDL package dry-run did not acknowledge the complete selected plan.")
     result["dry_run"]="PASS"
     result["patch_count"]=count
-    try:serial=_device(qdl,folder)
+    from .edl_reconnect import ensure
+    try:serial=ensure(lambda:_device(qdl,folder),stage="package preflight")
     except FlashError as exc:
         result["device_status"]=str(exc);return result
     result["serial_hash"]=sha256(serial.encode()).hexdigest()
@@ -283,7 +286,8 @@ def apply(project:Path,rawprogram:Path,model:str,chipset:str,fingerprint:str,evi
         from .qualcomm_reconstruction import execute
         return execute(project,rawprogram,current,evidence,progress)
     package=current["package"];folder=Path(package["folder"]);qdl=resolve_qdl(project)
-    serial=_device(qdl,folder)
+    from .edl_reconnect import ensure,run_stage
+    serial=ensure(lambda:_device(qdl,folder),expected_hash=current["serial_hash"],stage="package repair")
     if sha256(serial.encode()).hexdigest()!=current["serial_hash"]:raise FlashError("EDL target changed.")
     job=evidence/("qualcomm-run-"+uuid.uuid4().hex);job.mkdir()
     report={"schema":SCHEMA,"fingerprint":fingerprint,"status":"RUNNING",
@@ -291,11 +295,11 @@ def apply(project:Path,rawprogram:Path,model:str,chipset:str,fingerprint:str,evi
     def save():
         tmp=job/"receipt.tmp";tmp.write_text(json.dumps(report,indent=2),encoding="utf8");tmp.replace(job/"receipt.json")
     def run(name,args,timeout=600,debug=False):
-        if _device(qdl,folder)!=serial:raise FlashError("EDL target detached or changed.")
         argv=(["--debug"] if debug else [])+["--color=never","--backend=qud","--serial="+serial,
             "--storage="+package["storage"],"--skip-reset","--include="+str(folder),str(folder/package["programmer"]),*args]
-        code,log=_run(qdl,argv,folder,timeout)
-        (job/(name+".log")).write_text(log,encoding="utf8")
+        code,log=run_stage(lambda:_device(qdl,folder),serial,name,args,
+            lambda:_run(qdl,argv,folder,timeout),
+            lambda attempt,output:(job/(name+("" if attempt==1 else "-retry-"+str(attempt))+".log")).write_text(output,encoding="utf8"))
         if code:raise FlashError("QDL stopped at "+name)
         return log
     def read(name,lun,start,count,sector,dest,debug=False):
