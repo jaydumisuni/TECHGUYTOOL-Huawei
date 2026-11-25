@@ -1,0 +1,10 @@
+--- a/techguy_huawei/service_dispatch.py
++++ b/techguy_huawei/service_dispatch.py
+@@ -117 +117 @@
+-                         "Reference board reconstruction; backup and readback before reset."))
++                         "Vendor GPT reconstruction; backup and readback before reset." if payload.get("vendor_reconstruction") else "Reference board reconstruction; backup and readback before reset."))
+--- a/qml/pages/FirmwareFlashPage.qml
++++ b/qml/pages/FirmwareFlashPage.qml
+@@ -47 +47 @@
+-                 + (root.flashPayload.same_layout ? ")? Program selected firmware on the existing layout. GPT, device-unique data and userdata excluded; backup and readback before completion. No automatic reset." : root.flashPayload.board_recovery ? ")? Factory board restoration replaces firmware and userdata. Backs up selected regions, verifies GPT and boot/recovery, then resets. Excludes six device-unique partitions." : root.flashPayload.userdata_replaced ? ")? This replaces USERDATA and CACHE. Factory boot chain retained. Stops on error; no automatic reboot." : ")? Stops on error. No OEMINFO write, unlock, erase or automatic reboot.")
++                 + (root.flashPayload.vendor_reconstruction ? ")? Restore the vendor GPT layout and selected firmware. Existing data may become inaccessible. Device-unique regions are preserved; backup and readback before completion. No automatic reset." : root.flashPayload.same_layout ? ")? Program selected firmware on the existing layout. GPT, device-unique data and userdata excluded; backup and readback before completion. No automatic reset." : root.flashPayload.board_recovery ? ")? Factory board restoration replaces firmware and userdata. Backs up selected regions, verifies GPT and boot/recovery, then resets. Excludes six device-unique partitions." : root.flashPayload.userdata_replaced ? ")? This replaces USERDATA and CACHE. Factory boot chain retained. Stops on error; no automatic reboot." : ")? Stops on error. No OEMINFO write, unlock, erase or automatic reboot.")

@@ -155,34 +155,79 @@ def _geometry(package,layouts):
             raise FlashError("Overlapping package writes in LUN "+str(lun))
         intervals.append((start,end))
 
+def _live_layouts(package,qdl,serial,job,chip):
+    """Read both GPT copies, including vendor-reserved tail sectors."""
+    sectors={}
+    for op in package["all_operations"]:
+        if not op["filename"]:continue
+        lun=op["physical_partition_number"];sector=op["sector_size"]
+        if lun in sectors and sectors[lun]!=sector:raise FlashError("Conflicting LUN sector sizes")
+        sectors[lun]=sector
+    folder=Path(package["folder"])
+    first={};second={};hashes={}
+    for lun,sector in sectors.items():
+        def read(role,start,count,debug=False):
+            if _device(qdl,folder)!=serial:raise FlashError("EDL device changed")
+            file=job/f"gpt-{lun}-{role}.bin"
+            args=(["--debug"] if debug else [])+["--color=never","--backend=qud","--serial="+serial,
+                "--storage="+package["storage"],"--skip-reset","--include="+str(folder),str(folder/package["programmer"]),
+                "read",f"{lun}/{start}+{count}",str(file)]
+            code,log=_run(qdl,args,folder,180)
+            (job/f"gpt-{lun}-{role}.log").write_text(log,encoding="utf8")
+            if code or not file.is_file() or file.stat().st_size!=sector*count:
+                raise FlashError("GPT read incomplete")
+            if debug and not _chip_matches(log,chip):raise FlashError("Live chipset does not match selected target")
+            hashes[file.name]=_digest(file)
+            return file.read_bytes()
+        first[lun]=_gpt(read("primary",0,34,True),sector,0,1)
+        capacity=first[lun]["disk_sectors"]
+        if capacity<68:raise FlashError("Invalid live capacity")
+        second[lun]=_gpt(read("backup",capacity-34,34),sector,capacity-34,33)
+    return first,second,hashes
+
 def plan(project:Path,rawprogram:Path,model:str,chipset:str,evidence:Path):
     target=_model(model)
     chip=_chipset(chipset)
     package=discover(rawprogram)
-    result={"schema":SCHEMA,"recipe":"qualcomm.package.same-layout",
+    from . import qualcomm_reconstruction as reconstruction
+    from .qualcomm_layout import templates
+    rebuild=bool(templates(package))
+    operations=reconstruction.operations(package) if rebuild else package["operations"]
+    result={"schema":SCHEMA,"recipe":"qualcomm.package.reconstruction" if rebuild else "qualcomm.package.same-layout",
         "model":target,"chipset":chip,"mode":"Board Firmware",
         "source_path":str(rawprogram.resolve()),"package":package,
-        "partitions":[{"partition":op["label"],**op} for op in package["operations"]],
+        "partitions":[{"partition":op["label"],**op} for op in operations],
         "excluded":package["excluded"],"preflight_only":True,"write_authorized":False,
-        "board_recovery":True,"same_layout":True,"userdata_replaced":False,"no_reboot":True,
-        "gpt_patches_deferred":True}
+        "board_recovery":True,"same_layout":not rebuild,"userdata_replaced":False,"no_reboot":True,
+        "gpt_patches_deferred":not rebuild,"vendor_reconstruction":rebuild}
     try:qdl=resolve_qdl(project)
     except FlashError as exc:
         result["device_status"]=str(exc);return result
     folder=Path(package["folder"])
     evidence.mkdir(parents=True,exist_ok=True)
     job=evidence/("qualcomm-plan-"+uuid.uuid4().hex);job.mkdir()
-    xml=job/"program.xml";filtered(package,xml)
+    xml=job/"program.xml";patch_args=[];count=0
+    if rebuild:
+        reconstruction.program_xml(package,xml)
+        patch=job/"patch.xml";count=reconstruction.patch_xml(package,patch)
+        if count:patch_args=[str(patch)]
+    else:filtered(package,xml)
     code,log=_run(qdl,["--color=never","--dry-run","--storage="+package["storage"],
-        "--include="+str(folder),str(folder/package["programmer"]),str(xml)],folder,180)
+        "--include="+str(folder),str(folder/package["programmer"]),str(xml),*patch_args],folder,180)
     (job/"dry-run.log").write_text(log,encoding="utf8")
-    if code or not _acks(log,package["operations"]):
-        raise FlashError("QDL package dry-run did not acknowledge all selected images.")
+    if code or not _acks(log,operations) or (count and not re.search(r"\b"+str(count)+r" patches applied\b",log)):
+        raise FlashError("QDL package dry-run did not acknowledge the complete selected plan.")
     result["dry_run"]="PASS"
+    result["patch_count"]=count
     try:serial=_device(qdl,folder)
     except FlashError as exc:
         result["device_status"]=str(exc);return result
     result["serial_hash"]=sha256(serial.encode()).hexdigest()
+    if rebuild:
+        first,second,hashes=_live_layouts(package,qdl,serial,job,chip)
+        layout=reconstruction.validate(package,first,second)
+        result["layout_delta"]=layout["delta"]
+        result["pre_gpt_hashes"]=hashes
     result["fingerprint"]=_hash_obj(result)
     return result
 
@@ -234,6 +279,9 @@ def _check_image(op,package,readback:Path):
 def apply(project:Path,rawprogram:Path,model:str,chipset:str,fingerprint:str,evidence:Path,progress):
     current=plan(project,rawprogram,model,chipset,evidence)
     if not fingerprint or current.get("fingerprint")!=fingerprint:raise FlashError("Board package or device changed; verify again.")
+    if current.get("vendor_reconstruction"):
+        from .qualcomm_reconstruction import execute
+        return execute(project,rawprogram,current,evidence,progress)
     package=current["package"];folder=Path(package["folder"]);qdl=resolve_qdl(project)
     serial=_device(qdl,folder)
     if sha256(serial.encode()).hexdigest()!=current["serial_hash"]:raise FlashError("EDL target changed.")

@@ -1,0 +1,7 @@
+{
+  "techguy_huawei/qualcomm_reconstruction.py": "c3a1f624bf3f8943688b0f004683a0417290f620e340d81bd73b0848d82e3f79",
+  "techguy_huawei/qualcomm_package.py": "dd5631066abc8e6a1f2223c9a3c0d5361c513e65462ba086e7330eb59fecd31f",
+  "tests/test_connected_adapters.py": "944902034893c4b7d4e40fd9b6bca1f233a7602394587aa51559ddf0833a9d18",
+  "techguy_huawei/service_dispatch.py": "fd2ab9dc5ce6494af098a656be71b97517c738566e13f69506c06a4fab17015c",
+  "qml/pages/FirmwareFlashPage.qml": "271ead173b54846625e6302c22991ddb567398fe71e617f37310cf6c9a381ff0"
+}
