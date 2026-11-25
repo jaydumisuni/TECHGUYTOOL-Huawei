@@ -1,0 +1,55 @@
+--- a/techguy_huawei/backend.py
++++ b/techguy_huawei/backend.py
+@@ -97,0 +98 @@
++        self._auto_target_serial = ""
+@@ -557,0 +559,28 @@
++    def _clear_detected_target(self):
++        self._auto_target_serial = ""
++        self._firmware_model = ""
++        self._firmware_chipset = ""
++        self._loader_variant = ""
++        self._invalidate_firmware_plan()
++        self.firmwareTargetChanged.emit()
++
++    def _apply_detected_target(self,payload):
++        from .detected_target import observed_target
++        target=observed_target(self._device_snapshot,payload,self._catalog_chipset)
++        if target.conflict:
++            self._append("Detected chipset differs from catalogue; review target identity.","GUARD")
++        if not target.model and not target.chipset:
++            if self._auto_target_serial:self._clear_detected_target()
++            return
++        if not self._auto_target_serial and (self._firmware_model or self._firmware_chipset_manually_selected):
++            return
++        changed=(self._auto_target_serial,self._firmware_model,self._firmware_chipset)!=(self._device_snapshot.serial,target.model,target.chipset)
++        self._auto_target_serial=self._device_snapshot.serial
++        if changed:
++            self._firmware_model=target.model
++            self._firmware_chipset=target.chipset
++            self._firmware_chipset_manually_selected=False
++            self._loader_variant=""
++            self._invalidate_firmware_plan()
++            self.firmwareTargetChanged.emit()
++
+@@ -564,0 +594 @@
++        self._auto_target_serial = ""
+@@ -588,0 +619 @@
++        self._auto_target_serial = ""
+@@ -1125,13 +1156,4 @@
+-            # Read-only detection feeds loader resolution without overriding
+-            # an explicitly selected chipset/model.
+-            import re
+-            platform_name = str(self._device_snapshot.platform or "")
+-            found = re.fullmatch(r"(?:Kirin|hisi)\s*(\d{3,4})", platform_name, re.I)
+-            if (found and not self._firmware_chipset_manually_selected
+-                    and not self._firmware_model):
+-                detected = "kirin" + found.group(1)
+-                if detected != self._firmware_chipset:
+-                    self._firmware_chipset = detected
+-                    self._loader_variant = ""
+-                    self._invalidate_firmware_plan()
+-                    self.firmwareTargetChanged.emit()
++            if response.result.ok:
++                self._apply_detected_target(payload)
++            elif self._auto_target_serial:
++                self._clear_detected_target()
