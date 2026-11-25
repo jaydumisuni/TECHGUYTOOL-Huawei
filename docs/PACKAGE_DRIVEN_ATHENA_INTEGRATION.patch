@@ -1,0 +1,179 @@
+--- a/techguy_huawei/device_engine.py
++++ b/techguy_huawei/device_engine.py
+@@ -10,0 +11 @@
++from .fastboot_identity import model_from_build, lock_state as parse_lock_state, product_from_response, kirin_product
+@@ -246 +247 @@
+-            model_match = re.search(r"\b[A-Z]{3}-[A-Z0-9]{2,8}\b", identity.stdout + identity.stderr)
++            model_match = model_from_build(identity.stdout + "\n" + identity.stderr)
+@@ -248,3 +249 @@
+-            unlocked = bool(re.search(r"\(bootloader\)\s*(?:bootinfo:\s*)?unlocked\b", boot_text, re.IGNORECASE))
+-            locked = bool(re.search(r"\(bootloader\)\s*(?:bootinfo:\s*)?locked\b", boot_text, re.IGNORECASE))
+-            lock_state = "unlocked" if unlocked else "locked" if locked else "unverified"
++            lock_state = parse_lock_state(boot_text)
+@@ -266 +265 @@
+-            if not model_match and product_value.lower() != "kirin980":
++            if not model_match and not kirin_product(product_value):
+@@ -273,2 +272,2 @@
+-                model_match.group(0) if model_match
+-                else "Huawei Kirin 980 (model unresolved)"
++                model_match if model_match
++                else f"Huawei {product_value} (model unresolved)"
+@@ -278 +277 @@
+-                platform="Kirin 980" if product_value.lower() == "kirin980" else "Huawei Fastboot",
++                platform=product_value or "Huawei Fastboot",
+@@ -281 +280 @@
+-                product_name="Huawei P30 Pro" if model_value.startswith("VOG-") else "Huawei Kirin 980 device",
++                product_name="Huawei P30 Pro" if model_value.startswith("VOG-") else model_value,
+@@ -315 +314 @@
+-                and bool(re.search(r"\b\d+\.\d+\.\d+(?:\.\d+)?\b", build_text))
++                and bool(model_from_build(build_text))
+@@ -322,3 +321 @@
+-                if product.returncode != 0 or not re.search(
+-                    r"\bproduct:\s*kirin980\b", chip_text, re.IGNORECASE
+-                ):
++                if product.returncode != 0 or not kirin_product(product_from_response(chip_text)):
+@@ -334,3 +331 @@
+-            if "(BOOTLOADER)" not in bootinfo_text or not re.search(
+-                r"\b(?:UN)?LOCKED\b|\bLOCK STATE\b", bootinfo_text
+-            ):
++            if parse_lock_state(bootinfo_text) == "unverified":
+--- a/techguy_huawei/live_service.py
++++ b/techguy_huawei/live_service.py
+@@ -13,0 +14 @@
++from .fastboot_identity import model_from_build, lock_state, product_from_response
+@@ -53,2 +54 @@
+-        match = re.search(r"\bVOG-(?:AL00|L29)\b", self.build)
+-        return match.group(0) if match else "UNKNOWN"
++        return model_from_build(self.build) or "UNKNOWN"
+@@ -103,2 +103,2 @@
+-        if identity.model == "UNKNOWN" or "kirin980" not in product.lower():
+-            raise ServiceUnavailable("The connected device has not proven a VOG / Kirin 980 identity.")
++        if identity.model == "UNKNOWN" or not product_from_response(product) or lock_state(boot) == "unverified":
++            raise ServiceUnavailable("The connected device has not supplied verified Huawei Fastboot identity.")
+@@ -126 +126 @@
+-        is_unlocked = bool(re.search(r"\(bootloader\)\s+unlocked\b", identity.bootinfo, re.I))
++        is_unlocked = lock_state(identity.bootinfo) == "unlocked"
+@@ -151,0 +152,2 @@
++        if identity.model not in {"VOG-AL00","VOG-L29"}:
++            return EngineResult(False, "Select the model-matched board package in Firmware Flash.", ActionState.MISSING_DEPENDENCY)
+@@ -178,0 +181 @@
++            size_response = self._optional_query(binary, serial, "getvar", "partition-size:oeminfo")
+@@ -192,0 +196,4 @@
++        match = re.search(r"partition-size:oeminfo:\s*(0x[0-9a-f]+|[0-9]+)",size_response,re.I)
++        expected_size = int(match.group(1),0) if match else (96*1024**2 if identity.model in {"VOG-AL00","VOG-L29"} else 0)
++        if expected_size <= 0:
++            return EngineResult(False,"Live OEMINFO partition size not reported; cannot verify complete backup.",ActionState.GUARDED)
+@@ -196,2 +203,2 @@
+-        final = evidence / f"vog-oeminfo-{token}.img"
+-        temporary = evidence / f"vog-oeminfo-{token}.partial"
++        final = evidence / f"{identity.model.lower()}-oeminfo-{token}.img"
++        temporary = evidence / f"{identity.model.lower()}-oeminfo-{token}.partial"
+@@ -207,3 +214,3 @@
+-        if temporary.stat().st_size != 96 * 1024 * 1024:
+-            return EngineResult(
+-                False, "OEMINFO read size differs from 96 MiB; partial retained for investigation.",
++        if temporary.stat().st_size != expected_size:
++            return EngineResult(
++                False, "OEMINFO read size differs from live partition geometry; partial retained for investigation.",
+@@ -221 +228 @@
+-            f"Full 96 MiB OEMINFO backup captured and SHA-256 verified: {digest.hexdigest()}. "
++            f"Full {expected_size} byte OEMINFO backup captured and SHA-256 verified: {digest.hexdigest()}. "
+@@ -241 +248,9 @@
+-                return EngineResult(False, "Board Firmware mode requires the exact AL00 board Download.xml, not an L29 ZIP.", ActionState.GUARDED)
++                if file.suffix.lower()==".xml":
++                    from .qualcomm_board import xml_root
++                    try:
++                        tree=xml_root(file)
++                        return EngineResult(True,"Board XML recognized; native Kirin board-service execution requires the matching stage transport.",
++                            ActionState.READY,{"mode":mode,"xml_root":tree.tag,"entries":len(list(tree.iter())),"preflight_only":True,"write_authorized":False})
++                    except (OSError,ValueError) as exc:
++                        return EngineResult(False,str(exc),ActionState.GUARDED)
++                return EngineResult(False, "Select the extracted model-matched board XML.", ActionState.GUARDED)
+@@ -250,5 +265,11 @@
+-            return EngineResult(
+-                False,
+-                "Selected package is not the prepared VOG-L29 C185 Base; no flashing started.",
+-                ActionState.GUARDED,
+-            )
++            if file.suffix.lower()==".zip":
++                import zipfile
++                try:
++                    with zipfile.ZipFile(file) as archive:
++                        entries=[{"name":x.filename,"size":x.file_size} for x in archive.infolist()
++                                 if x.filename.lower().endswith((".app",".xml")) and not x.is_dir()]
++                    return EngineResult(True,"Archive inventoried. Select its extracted UPDATE.APP or rawprogram XML for direct flashing.",
++                        ActionState.READY,{"mode":mode,"archive_members":entries,"preflight_only":True,"write_authorized":False})
++                except (OSError,zipfile.BadZipFile) as exc:
++                    return EngineResult(False,"Invalid firmware ZIP: "+str(exc),ActionState.GUARDED)
++            return EngineResult(False,"Select an extracted UPDATE.APP, compatible manifest or board XML.",ActionState.GUARDED)
+--- a/techguy_huawei/backend.py
++++ b/techguy_huawei/backend.py
+@@ -387,0 +388,4 @@
++        if selection.status == "verified_container_available":
++            return f"Loader available: {selection.cpu} ({len(selection.image_names)} verified containers; stage transport pending)"
++        if selection.status == "loader_variant_required":
++            return "Select exact loader variant: " + ", ".join(selection.candidate_families)
+@@ -404,2 +407,0 @@
+-        if model.upper() == "CAZ-AL10":
+-            return "msm8953"
+@@ -410,0 +413,2 @@
++            if record.get("chipset"):
++                return str(record["chipset"]).strip().lower()
+@@ -442 +446,2 @@
+-        if value and known and known != value:
++        from .fastboot_identity import canonical_chipset
++        if value and known and canonical_chipset(known) != canonical_chipset(value):
+@@ -854,0 +860 @@
++            from .fastboot_identity import canonical_chipset
+@@ -862 +868 @@
+-                     payload.get("chipset", "").lower() == self._firmware_chipset)
++                     canonical_chipset(payload.get("chipset", "")) == canonical_chipset(self._firmware_chipset))
+--- a/techguy_huawei/service_dispatch.py
++++ b/techguy_huawei/service_dispatch.py
+@@ -16 +16,2 @@
+-from .firmware_flash import FlashError, plan as prepare_generic_plan, apply as execute_generic_plan
++from .firmware_flash import FlashError, _digest, plan as prepare_generic_plan, apply as execute_generic_plan
++from .caz_al10_recovery import BASE_SHA
+@@ -92 +93 @@
+-            logger.add("Inspecting firmware, chipset and live Fastboot device...")
++            logger.add("Inspecting firmware, chipset and matching service transport...")
+@@ -95,2 +96,3 @@
+-            if request.firmware_mode == "Board Firmware" and package.name.lower() == "rawprogram_unsparse.xml":
+-                from .caz_al10_board_runtime import board_plan, board_apply
++            if request.firmware_mode == "Board Firmware" and package.suffix.lower() == ".xml" and package.name.lower().startswith("rawprogram"):
++                from . import qualcomm_package as generic_board
++                from . import caz_al10_board_runtime as reference_board
+@@ -97,0 +100,6 @@
++                is_reference = (package.is_file() and package.name.lower() == "rawprogram_unsparse.xml"
++                                and _digest(package) == "3018238303813569598a88b2ae305e60a9e6bdecbb571563b570f0769ca2d3ff")
++                if is_reference:
++                    board_plan, board_apply = reference_board.board_plan, reference_board.board_apply
++                else:
++                    board_plan, board_apply = generic_board.plan, generic_board.apply
+@@ -101 +109 @@
+-                    result = EngineResult(True, "Board programmed and read back; reset acknowledged. Verify Android boot, then perform stock Repair.",
++                    result = EngineResult(True, "Board image programming and scoped readback completed. Verify normal boot.",
+@@ -106,3 +114,10 @@
+-                    result = EngineResult(True, "CAZ-AL10 board recovery ready: 150 writes, 13 patches, backup and readback before reset.",
+-                        ActionState.READY, payload)
+-            elif request.firmware_mode == "Repair" and package.name.upper() == "UPDATE.APP" and request.firmware_model.strip().upper() == "CAZ-AL10":
++                    message = ("Package validated: " + str(len(payload["partitions"])) +
++                        " selected firmware operations. " +
++                        ("GPT-preserving repair; no automatic reset." if payload.get("same_layout") else
++                         "Reference board reconstruction; backup and readback before reset."))
++                    if not payload.get("fingerprint"):
++                        message += " " + payload.get("device_status","Connect the matching device to confirm.")
++                    result = EngineResult(True,message,ActionState.READY,payload)
++            elif (request.firmware_mode == "Repair" and package.name.upper() == "UPDATE.APP"
++                  and request.firmware_model.strip().upper() == "CAZ-AL10"
++                  and package.is_file() and package.stat().st_size == 3925603036 and _digest(package) == BASE_SHA):
+@@ -109,0 +125 @@
++                # Route by proven package identity, not by the model alone.
+--- a/qml/pages/FirmwareFlashPage.qml
++++ b/qml/pages/FirmwareFlashPage.qml
+@@ -47 +47 @@
+-                 + (root.flashPayload.board_recovery ? ")? Factory board restoration replaces firmware and userdata. Backs up selected regions, verifies GPT and boot/recovery, then resets. Excludes six device-unique partitions." : root.flashPayload.userdata_replaced ? ")? This replaces USERDATA and CACHE. Factory boot chain retained. Stops on error; no automatic reboot." : ")? Stops on error. No OEMINFO write, unlock, erase or automatic reboot.")
++                 + (root.flashPayload.same_layout ? ")? Program selected firmware on the existing layout. GPT, device-unique data and userdata excluded; backup and readback before completion. No automatic reset." : root.flashPayload.board_recovery ? ")? Factory board restoration replaces firmware and userdata. Backs up selected regions, verifies GPT and boot/recovery, then resets. Excludes six device-unique partitions." : root.flashPayload.userdata_replaced ? ")? This replaces USERDATA and CACHE. Factory boot chain retained. Stops on error; no automatic reboot." : ")? Stops on error. No OEMINFO write, unlock, erase or automatic reboot.")
+@@ -196 +196 @@
+-                            root.advancedWorkflows = !(backend.firmwareModel === "CAZ-AL10" && (modelData.title === "Repair" || modelData.title === "Board Firmware"))
++                            root.advancedWorkflows = !(modelData.title === "Repair" || modelData.title === "Board Firmware")

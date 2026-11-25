@@ -15,6 +15,7 @@ import time
 import uuid
 
 from .firmware_flash import FlashError, _digest, _exec, _unique_device
+from .fastboot_identity import acknowledged as _acknowledged
 from .qualcomm_board import build_plan, BoardPlanError, dry_run
 
 MODEL = "CAZ-AL10"
@@ -127,17 +128,6 @@ def stock_plan(package: str, model: str, chipset: str, mode: str,
     payload["fingerprint"] = sha256(json.dumps(payload,sort_keys=True).encode()).hexdigest()
     return payload
 
-
-def _acknowledged(part: str, code: int, output: str) -> bool:
-    if code or "FAILED" in output.upper():
-        return False
-    target = re.escape(part)
-    writes = re.findall(r"Writing\s+'"+target+r"'\s+OKAY\b", output, re.I)
-    sparse = re.findall(r"Sending sparse\s+'"+target+r"'\s+(\d+)/(\d+).*?OKAY\b", output, re.I)
-    if sparse:
-        total = int(sparse[0][1])
-        return total > 0 and len(writes) == total and [(int(a),int(b)) for a,b in sparse] == [(i,total) for i in range(1,total+1)]
-    return len(writes) == 1
 
 
 def stock_apply(package: str, model: str, chipset: str, mode: str, fastboot: str,

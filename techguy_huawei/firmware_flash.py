@@ -20,6 +20,8 @@ import tempfile
 import time
 import uuid
 
+from .fastboot_identity import model_from_build, lock_state, canonical_chipset, acknowledged
+
 MAGIC = bytes.fromhex("55aa5aa5")
 SCHEMA = "techguy.huawei.fastboot-package.v1"
 HARD_BLOCK = frozenset({
@@ -107,18 +109,17 @@ def _unique_device(fastboot: str) -> str:
 def _device(fastboot: str, expected_chipset: str, expected_model: str) -> tuple[str, str, str]:
     serial = _unique_device(fastboot)
     code, lock = _exec(fastboot, ["-s", serial, "oem", "get-bootinfo"])
-    if code or not re.search(r"\(bootloader\)\s+unlocked\b", lock, re.I):
+    if code or lock_state(lock) != "unlocked":
         raise FlashError("The selected Fastboot device has not proven unlocked")
     code, text = _exec(fastboot, ["-s", serial, "getvar", "product"])
     match = re.search(r"\bproduct:\s*([a-z0-9_.-]+)", text, re.I)
     if code or not match or "FAILED" in text.upper():
         raise FlashError("Could not verify chipset identity from Fastboot")
     product = match.group(1)
-    if product.casefold() != expected_chipset.casefold():
+    if canonical_chipset(product) != canonical_chipset(expected_chipset):
         raise FlashError("Selected firmware chipset does not match live Fastboot chipset")
     code, build = _exec(fastboot, ["-s", serial, "oem", "get-build-number"])
-    possible = re.search(r"\b([A-Z]{3,6}-[A-Z0-9]+)\s+\d", build, re.I) if code == 0 else None
-    current = possible.group(1).upper() if possible else ""
+    current = model_from_build(build) if code == 0 else ""
     if current and current != expected_model.upper():
         # AL00 -> L29 within the same hardware family is a deliberate
         # conversion, but never silently assume two model families are one.
@@ -289,11 +290,10 @@ def plan(
             chipset = found.group(1)
         if not model.strip():
             code, response = _exec(fastboot, ["-s", serial, "oem", "get-build-number"])
-            found = (re.search(r"\b([A-Z]{3,6}-[A-Z0-9]+)\s+\d",response,re.I)
-                     if code==0 else None)
+            found = model_from_build(response) if code == 0 else ""
             if not found:
                 raise FlashError("Model detection unavailable; select the exact model manually")
-            model = found.group(1).upper()
+            model = found
             explicitly_selected_model = True
     target_model, target_chipset, ops, excluded = _load_selection(
         source, model, chipset, mode
@@ -367,14 +367,7 @@ def apply(
             finally:
                 if image == staging:
                     staging.unlink(missing_ok=True)
-            verified = (
-                code == 0
-                and "FAILED" not in output.upper()
-                and bool(re.search(
-                    r"Writing\s+(?:sparse\s+)?'" + re.escape(operation.partition)
-                    + r"'\s+OKAY", output,
-                ))
-            )
+            verified = acknowledged(operation.partition, code, output)
             report["operations"].append({
                 "partition": operation.partition,
                 "sha256": operation.sha256, "size": operation.size,

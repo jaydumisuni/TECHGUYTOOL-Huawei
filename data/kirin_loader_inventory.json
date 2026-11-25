@@ -1,0 +1,412 @@
+{
+  "schema": "techguy.huawei.kirin-loader-inventory.v1",
+  "relative_source": ".workspace/incoming/Huawei kirin/huawei Revive/work/kirin-tool-reference/bin/Release/net8.0-windows/loaders",
+  "families": [
+    {
+      "cpu": "hisi620",
+      "files": [
+        {
+          "name": "fastboot.ktl",
+          "bytes": 1239330,
+          "sha256": "82497e59b53c55e9a3ef36cc586148a1e04e7fa2a9dfc1ca20cc1181269ededb"
+        },
+        {
+          "name": "xloader.ktl",
+          "bytes": 119522,
+          "sha256": "1d4b06caac32d987708578e20d5d40b6383028c0a98f8f71a7590ba623eab042"
+        }
+      ],
+      "transport_proven": false,
+      "format": "ktl-container"
+    },
+    {
+      "cpu": "hisi620c",
+      "files": [
+        {
+          "name": "fastboot.ktl",
+          "bytes": 1425698,
+          "sha256": "86a4fb6c1d075ffe51515c8bf84e52329c6f6fdd3660cd45e39dddd91b7b3574"
+        },
+        {
+          "name": "xloader.ktl",
+          "bytes": 122466,
+          "sha256": "68ac98fb7120b9c4e104a1147ec0698e8964e278e53f61e146d3864f40991bb2"
+        }
+      ],
+      "transport_proven": false,
+      "format": "ktl-container"
+    },
+    {
+      "cpu": "hisi65x_a",
+      "files": [
+        {
+          "name": "fastboot.ktl",
+          "bytes": 3375394,
+          "sha256": "37bfbd9cdb43105ec6659dc33499c1e8099cae7d432aec4b0cd10f139e478963"
+        },
+        {
+          "name": "xloader.ktl",
+          "bytes": 71202,
+          "sha256": "46fe3f0ed8e984e806e10eb7fa08f660e777997461612bf0231dfdf65b647d71"
+        }
+      ],
+      "transport_proven": false,
+      "format": "ktl-container"
+    },
+    {
+      "cpu": "hisi65x_b",
+      "files": [
+        {
+          "name": "fastboot.ktl",
+          "bytes": 3701026,
+          "sha256": "1ededa97dbd4e9c5dc07bd577cbea95e8896ca9a7216eafad6468e99321860bf"
+        },
+        {
+          "name": "xloader.ktl",
+          "bytes": 71266,
+          "sha256": "8c3d6d3809263c68abf4d00c61a248071aa0e177faafa476b66fce6fc10aef42"
+        }
+      ],
+      "transport_proven": false,
+      "format": "ktl-container"
+    },
+    {
+      "cpu": "hisi710",
+      "files": [
+        {
+          "name": "fastboot.ktl",
+          "bytes": 4671778,
+          "sha256": "07246beef88ce3d5c666c6827c38310e17ee68b3bcdd97bfd83a3df9bb9a233a"
+        },
+        {
+          "name": "null.ktl",
+          "bytes": 147746,
+          "sha256": "fdd28c8dc87e7c21972c339154151ddcaaf930d86957842241d5ef6a5de2c0f0"
+        },
+        {
+          "name": "uce.ktl",
+          "bytes": 41250,
+          "sha256": "4f6ec9ef831b8d322dd578ea9654acf0f6d0c8583d3b5c6408438ebc52d9d39f"
+        },
+        {
+          "name": "xloader.ktl",
+          "bytes": 147746,
+          "sha256": "ffe92096faa6cb21461125eadb7158e491bae6690b0fb110e80d437e81c36826"
+        }
+      ],
+      "transport_proven": false,
+      "format": "ktl-container"
+    },
+    {
+      "cpu": "hisi710a",
+      "files": [
+        {
+          "name": "fastboot.ktl",
+          "bytes": 4671778,
+          "sha256": "07246beef88ce3d5c666c6827c38310e17ee68b3bcdd97bfd83a3df9bb9a233a"
+        },
+        {
+          "name": "null.ktl",
+          "bytes": 147746,
+          "sha256": "afd90cf2e84fb34a48f56d35af98286f9b2432611237d2b850b2729e4a4b0ca6"
+        },
+        {
+          "name": "uce.ktl",
+          "bytes": 33858,
+          "sha256": "81c87b20f52af2c8d6520afd11940c90f0572f2fcbfeb20cbdf765196bf2ebe3"
+        },
+        {
+          "name": "xloader.ktl",
+          "bytes": 159218,
+          "sha256": "22c7c2f7e21c5b6bf7cbb9e9a82ed1095cc1d4ca0ee0592a10fb46edb0feabdb"
+        }
+      ],
+      "transport_proven": false,
+      "format": "ktl-container"
+    },
+    {
+      "cpu": "hisi810",
+      "files": [
+        {
+          "name": "fastboot.ktl",
+          "bytes": 3044642,
+          "sha256": "79299c76a9f4bb97e53c312d4de718419fc69dfea57f1e5629e061081e0cfdd6"
+        },
+        {
+          "name": "null.ktl",
+          "bytes": 290,
+          "sha256": "b09d8734453ba6100ac78fc83be19248dccba4c35f58e2be658e50d4e87332b3"
+        },
+        {
+          "name": "uce.ktl",
+          "bytes": 53538,
+          "sha256": "6d704f3ca9ee2921c51fcfbb4d576c417e25cf76b70df5e3016e289c7740c0b3"
+        },
+        {
+          "name": "xloader.ktl",
+          "bytes": 164130,
+          "sha256": "a6f034a79e395c75a094940815edb9afe54d5ca6c6639a536b61ec78232df315"
+        }
+      ],
+      "transport_proven": false,
+      "format": "ktl-container"
+    },
+    {
+      "cpu": "hisi820",
+      "files": [
+        {
+          "name": "bl2.ktl",
+          "bytes": 416034,
+          "sha256": "477dae0b1b0b16206d0bc79a8956a11f4f89ae6161a470abe9f7a2a56aff3eb3"
+        },
+        {
+          "name": "fastboot.ktl",
+          "bytes": 3384610,
+          "sha256": "b1c629c2aca6707ac6455a9347e17a14d20600ac315ed44aa15b3654bf4847fc"
+        },
+        {
+          "name": "null.ktl",
+          "bytes": 290,
+          "sha256": "300b0e88403080dfc56f2f538598f8df970ab8558c1bdbe6a87632aac7aca63d"
+        },
+        {
+          "name": "uce.ktl",
+          "bytes": 45346,
+          "sha256": "355b7b87b706a3fec94e69b890882cc4d0cbee56b02fe12a9ec190085a501eee"
+        },
+        {
+          "name": "xloader.ktl",
+          "bytes": 196898,
+          "sha256": "8f262abd86076ec47854589f8237da7a2f76595f74aa3bcf70fe36692b1d141c"
+        }
+      ],
+      "transport_proven": false,
+      "format": "ktl-container"
+    },
+    {
+      "cpu": "hisi925",
+      "files": [
+        {
+          "name": "fastboot.ktl",
+          "bytes": 745186,
+          "sha256": "9dc5ef8edf5d0c75cb963ea2fdae21953713fdf2dcd3a0599c28afcfcd3c92cf"
+        },
+        {
+          "name": "xloader.ktl",
+          "bytes": 49442,
+          "sha256": "5346f6e05c247adb1821d16865c908834e20a3349fcb1a949a3f472a7970ceec"
+        }
+      ],
+      "transport_proven": false,
+      "format": "ktl-container"
+    },
+    {
+      "cpu": "hisi935",
+      "files": [
+        {
+          "name": "fastboot.ktl",
+          "bytes": 1290530,
+          "sha256": "a30ff74ff056e1e532afb7d9e9c217d1fe051661314b1452f75e7b27f24eb15d"
+        },
+        {
+          "name": "xloader.ktl",
+          "bytes": 55394,
+          "sha256": "5eef7a0cfe08f44cb851ed8cab93763144a0235b02f8e5ffe1dacdfb378c51cd"
+        }
+      ],
+      "transport_proven": false,
+      "format": "ktl-container"
+    },
+    {
+      "cpu": "hisi950",
+      "files": [
+        {
+          "name": "fastboot.ktl",
+          "bytes": 3137826,
+          "sha256": "3b9c1af21bb02a45c8e2908354cffb44c21cb51df3d1b552eee7ad8c38abbbc6"
+        },
+        {
+          "name": "xloader.ktl",
+          "bytes": 87842,
+          "sha256": "4e3d9ac780c3872c229d471c0f9c232e5011e320ed98a81d845fa24272370c37"
+        }
+      ],
+      "transport_proven": false,
+      "format": "ktl-container"
+    },
+    {
+      "cpu": "hisi955",
+      "files": [
+        {
+          "name": "fastboot.ktl",
+          "bytes": 3105058,
+          "sha256": "934c64a5c7ce4488cf5ce4114f49d18c286d431c545cae2b79aab31cdc57d1da"
+        },
+        {
+          "name": "xloader.ktl",
+          "bytes": 218658,
+          "sha256": "18887ee40a858bf53fec8ab41045b290a33440870c56e731f4d56dcb433ba5e0"
+        }
+      ],
+      "transport_proven": false,
+      "format": "ktl-container"
+    },
+    {
+      "cpu": "hisi960",
+      "files": [
+        {
+          "name": "fastboot.ktl",
+          "bytes": 3707170,
+          "sha256": "096c535337af7a87801669fae670605471263e95ff42b7b3602bb8d7d14304c1"
+        },
+        {
+          "name": "uce.ktl",
+          "bytes": 24354,
+          "sha256": "aca20d09dacdb86225bbd264e8e4b9fc412db21c72161f7b3f702acc592ac68c"
+        },
+        {
+          "name": "xloader.ktl",
+          "bytes": 106786,
+          "sha256": "e345a40ec67e36c18dd05253336abab214714d8ad5bd048f3324fcec7d9b9c12"
+        }
+      ],
+      "transport_proven": false,
+      "format": "ktl-container"
+    },
+    {
+      "cpu": "hisi970",
+      "files": [
+        {
+          "name": "fastboot.ktl",
+          "bytes": 5986594,
+          "sha256": "4df9ca5978c55eee7da1b088df5758df940faf5406d2d28466952d62032ea12f"
+        },
+        {
+          "name": "null.ktl",
+          "bytes": 290,
+          "sha256": "9b839dd95ad20a36b0fe8049e1d2921d9b5d620fea26183b0617b556a881c6f6"
+        },
+        {
+          "name": "uce.ktl",
+          "bytes": 41250,
+          "sha256": "faf117455e934b6ec002a67532dcc87590e27973070e864a21d78f3280764f7c"
+        },
+        {
+          "name": "xloader.ktl",
+          "bytes": 139554,
+          "sha256": "2da98c562df2b83ac5020d9d4efdcb189e963e0c24017380607d6667b20fe2fc"
+        }
+      ],
+      "transport_proven": false,
+      "format": "ktl-container"
+    },
+    {
+      "cpu": "hisi980",
+      "files": [
+        {
+          "name": "fastboot.ktl",
+          "bytes": 4501794,
+          "sha256": "904fbc5469143bd24d8724678cfa309133909cb647dfaf1ae08c316b63f63daf"
+        },
+        {
+          "name": "fastbootf.ktl",
+          "bytes": 4675874,
+          "sha256": "9213f5a2b77dccd36c3102ec39323ef8f29f9cef7e46b5858a1b64cf3a3db997"
+        },
+        {
+          "name": "null.ktl",
+          "bytes": 290,
+          "sha256": "03fc03cc85067c415fd3eee688a7361ddd2d862ac1eca176ef696e7c1725c207"
+        },
+        {
+          "name": "uce.ktl",
+          "bytes": 49442,
+          "sha256": "93f9b9eb577eaf47b4afc77780a4c09fafdc5ce76f3b20db52e0c879cd3774de"
+        },
+        {
+          "name": "xloader.ktl",
+          "bytes": 164130,
+          "sha256": "b19e9fbd1b57ea8eec2c4394fe1cefd6a1679a540af60b51e6d1d945d7e03052"
+        }
+      ],
+      "transport_proven": false,
+      "format": "ktl-container"
+    },
+    {
+      "cpu": "hisi985",
+      "files": [
+        {
+          "name": "bl2.ktl",
+          "bytes": 416034,
+          "sha256": "477dae0b1b0b16206d0bc79a8956a11f4f89ae6161a470abe9f7a2a56aff3eb3"
+        },
+        {
+          "name": "fastboot.ktl",
+          "bytes": 3384610,
+          "sha256": "b1c629c2aca6707ac6455a9347e17a14d20600ac315ed44aa15b3654bf4847fc"
+        },
+        {
+          "name": "null.ktl",
+          "bytes": 290,
+          "sha256": "300b0e88403080dfc56f2f538598f8df970ab8558c1bdbe6a87632aac7aca63d"
+        },
+        {
+          "name": "uce.ktl",
+          "bytes": 45346,
+          "sha256": "355b7b87b706a3fec94e69b890882cc4d0cbee56b02fe12a9ec190085a501eee"
+        },
+        {
+          "name": "xloader.ktl",
+          "bytes": 196898,
+          "sha256": "8f262abd86076ec47854589f8237da7a2f76595f74aa3bcf70fe36692b1d141c"
+        }
+      ],
+      "transport_proven": false,
+      "format": "ktl-container"
+    },
+    {
+      "cpu": "hisi990",
+      "files": [
+        {
+          "name": "bl2.ktl",
+          "bytes": 824610,
+          "sha256": "11fb768d4f43cc19998af6c431a23affba3588e885c2170bcecd4fb8f16e2ba0"
+        },
+        {
+          "name": "fastboot.ktl",
+          "bytes": 4811042,
+          "sha256": "e7df0c7547b48bf7cf65102275e248db0ccfea5b01b8e105b72cfbeec78d25ea"
+        },
+        {
+          "name": "null.ktl",
+          "bytes": 290,
+          "sha256": "f5d4c41e43ef8b7ce5ef92c9b97c93757272d545fc4b807a0682198e58b05f2a"
+        },
+        {
+          "name": "uce.ktl",
+          "bytes": 41250,
+          "sha256": "1f72d3d85a6e2687b2e9dc8e9f5a3443bc1dcde066e6b93fc8aa6486969a15bf"
+        },
+        {
+          "name": "xloader.ktl",
+          "bytes": 196898,
+          "sha256": "797b3ebae7461763937ff188c8802aa4ae091e507782f660a3d01f3a7a748416"
+        }
+      ],
+      "transport_proven": false,
+      "format": "ktl-container"
+    },
+    {
+      "cpu": "hisik3v2",
+      "files": [
+        {
+          "name": "usbloader.ktl",
+          "bytes": 519794,
+          "sha256": "37de8babf54c90804cb2f94d5bb30a15e9f36f250e0417bffa05413f6f48e788"
+        }
+      ],
+      "transport_proven": false,
+      "format": "ktl-container"
+    }
+  ]
+}

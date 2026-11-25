@@ -1,0 +1,20 @@
+{
+  "techguy_huawei/qualcomm_package.py": "467ea462bf25159aad9ce0c552b72615d6c5a223529538df86acd2771f2cd434",
+  "techguy_huawei/qdl_runtime.py": "e62107f6557c37cdc0bb52b3466736356060ea6050291dea2b1bc6c79bb182cd",
+  "techguy_huawei/fastboot_identity.py": "d1a3f04dab4cf549e6b1cd07c1e07dfb8879daa7a7d5b5695d878fb82308ed42",
+  "techguy_huawei/qualcomm_board.py": "4d0e8dc1ab2ad889ca9bd108b741eab40e30306de8571a08b635cdee8dd54a31",
+  "techguy_huawei/caz_al10_board_runtime.py": "17e2b57c5ce89bfe80b38e37dc1f384a490064e334852cea0989ed3d772f333c",
+  "techguy_huawei/caz_al10_recovery.py": "e724c1480c166b5d1959ee032c5da14913b8214fd3cc418f0928df11ac6a38cf",
+  "techguy_huawei/firmware_flash.py": "3c7582137d6f5125143c2b8b99c016b81554374bf9fda1f378592850ba829e00",
+  "techguy_huawei/service_loader_registry.py": "e47c49ede287907f653fad33477b604dacd1d73e030bd737538e86c66a53e01e",
+  "data/kirin_loader_inventory.json": "677b42bb78f298c10b897242cba8d0246116579aa2f980afdf4afca9a03150e5",
+  "data/service_loader_profiles.json": "225146368f88d51f21bb8d8826db3eb5f36136c6ecca4e2469764498369bcb68",
+  "data/device_profiles.json": "014a3feb7821157f87492ae27ee80d359ded5b01c4ed9610a178c9ae08480640",
+  "tests/test_qualcomm_package.py": "c7e7ca04ef575c8888532a4287348dcf35aa2a91ac0011ec651062531c2a9b26",
+  "tests/test_service_loader_registry.py": "319a55d35b1f7d61fede276d2c3b3e8808e6dfcbebc4e6925f9b20ab7bc5df29",
+  "techguy_huawei/device_engine.py": "02099c66cc1c8b7799eab57b6525a25800c4390ec43f7d686612dc522883f733",
+  "techguy_huawei/live_service.py": "d981883ce5da9e3cdd14f7f99e4970d55e36b5e74682e003556924436877894c",
+  "techguy_huawei/backend.py": "72ff7b761fe776d7cc0942cc669ed11667c74e56e34ffb994c41f91fa8c73975",
+  "techguy_huawei/service_dispatch.py": "d11b6754823c84e660619ced470f15b27067ee422d80d6359d3fc9153f8d1d4f",
+  "qml/pages/FirmwareFlashPage.qml": "a54864f220cc0bedc1b8d58af2b593edfcb5f4391b7c87626f0b11bc58f51e3e"
+}

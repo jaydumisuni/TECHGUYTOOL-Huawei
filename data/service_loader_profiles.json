@@ -1,0 +1,30 @@
+{
+  "schema": "techguy.huawei.service-loader-registry.v1",
+  "profiles": [
+    {
+      "chipset": "kirin980",
+      "cpu": "hisi980",
+      "stage": "service-fastboot",
+      "transport": "HUAWEI USB COM 1.0",
+      "usb_stage_transport_proven": false,
+      "description": "Kirin 980 Xray service-Fastboot loader image set",
+      "files": [
+        {
+          "name": "xloader.img",
+          "sha256": "419abd240088c7b5cbc5a99d74402f77534328b4fd97964c45e4a942baf19d9b",
+          "bytes": 163840
+        },
+        {
+          "name": "uce.img",
+          "sha256": "6a5bf1e70eb525f16785a98ea54d937ebf5069a2fcb52b1411fbbaa559361190",
+          "bytes": 49152
+        },
+        {
+          "name": "fastboot.img",
+          "sha256": "f46cb0e80c47592a5ee2c3a82d824f8cd7914ca5e1b1eca05b1c17205cfff7b2",
+          "bytes": 4501504
+        }
+      ]
+    }
+  ]
+}

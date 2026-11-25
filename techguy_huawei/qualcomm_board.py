@@ -96,13 +96,13 @@ def partition_class(label: str) -> str:
 def build_plan(folder: Path, program: str, patch: str, programmer: str) -> dict[str, Any]:
     folder = folder.resolve()
     program_file = safe_member(folder, program)
-    patch_file = safe_member(folder, patch)
+    patch_file = safe_member(folder, patch) if patch else None
     loader = safe_member(folder, programmer)
     with loader.open("rb") as stream:
         if stream.read(4) != b"\x7fELF":
             raise BoardPlanError("This factory route requires an ELF programmer")
     root = xml_root(program_file)
-    patches = xml_root(patch_file)
+    patches = xml_root(patch_file) if patch_file else ET.Element("patches")
     if root.tag != "data" or patches.tag != "patches":
         raise BoardPlanError("Unexpected rawprogram or patch root")
     files: dict[str, Any] = {}
@@ -159,7 +159,7 @@ def build_plan(folder: Path, program: str, patch: str, programmer: str) -> dict[
         })
     plan = {
         "schema": SCHEMA, "programmer": programmer, "program": program, "patch": patch,
-        "manifest_hashes": {p.name: digest(p) for p in (loader, program_file, patch_file)},
+        "manifest_hashes": {p.name: digest(p) for p in (loader, program_file, patch_file) if p is not None},
         "files": files, "operations": operations, "patches": patch_rows,
         "summary": {
             "program_entries": len(operations),
@@ -190,7 +190,7 @@ def dry_run(qdl: Path, folder: Path, plan: dict[str, Any], storage: str = "emmc"
     if current != plan:
         raise BoardPlanError("Package changed after plan creation")
     argv = [str(qdl.resolve()), "--dry-run", "--storage=" + storage,
-            plan["programmer"], plan["program"], plan["patch"]]
+            plan["programmer"], plan["program"], *([plan["patch"]] if plan["patch"] else [])]
     proc = subprocess.run(argv, cwd=folder, capture_output=True, text=True,
                           errors="replace", timeout=timeout, check=False, shell=False)
     log = proc.stdout + "\n" + proc.stderr
