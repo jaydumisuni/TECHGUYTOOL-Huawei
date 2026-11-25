@@ -27,7 +27,7 @@ BOOT_CHAIN = frozenset({
     "lksecappbak", "primarygpt", "backupgpt",
 })
 DATA = frozenset({"userdata", "cache"})
-EXPRESSION = re.compile(r"NUM_DISK_SECTORS-[0-9]+\.")
+EXPRESSION = re.compile(r"NUM_DISK_SECTORS-[0-9]+\.?")
 MAX_XML_BYTES = 8 * 1024 * 1024
 
 

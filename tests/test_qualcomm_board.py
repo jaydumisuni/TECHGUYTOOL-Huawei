@@ -53,3 +53,9 @@ def test_reject_missing_images(tmp_path):
     (path / "oem.img").unlink()
     with pytest.raises(BoardPlanError, match="Missing"):
         build_plan(path, "raw.xml", "patch.xml", "prog.mbn")
+
+def test_legacy_patch_expression_without_period(tmp_path):
+    path = fixture(tmp_path)
+    patch = path / "patch.xml"
+    patch.write_text(patch.read_text().replace('NUM_DISK_SECTORS-1.', 'NUM_DISK_SECTORS-1'))
+    assert build_plan(path, "raw.xml", "patch.xml", "prog.mbn")["patches"][0]["start_sector"] == "NUM_DISK_SECTORS-1"
