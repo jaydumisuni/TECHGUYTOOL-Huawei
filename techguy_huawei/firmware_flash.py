@@ -196,6 +196,13 @@ def _source_relative(folder: Path, name: str) -> Path:
 def _load_selection(
     path: Path, model: str, chipset: str, mode: str,
 ) -> tuple[str, str, list[FlashOperation], list[str]]:
+    if path.suffix.lower()==".xml" and mode=="Repair":
+        from .kirin_board_package import inspect
+        vendor=inspect(path,model,chipset)
+        if not vendor["operations"]:
+            raise FlashError("No ordinary repair images in vendor package")
+        return vendor["model"],vendor["chipset"],vendor["operations"],[
+            x["section"]+":"+x["name"] for x in vendor["excluded"]]
     if mode == "Downgrade":
         raise FlashError("Downgrade is unavailable without verified anti-rollback compatibility")
     if mode not in {"Upgrade", "Full Flash", "Repair"}:
@@ -299,6 +306,23 @@ def plan(
         source, model, chipset, mode
     )
     serial, actual_chipset, actual_model = _device(fastboot, target_chipset, target_model)
+    if source.suffix.lower()==".xml":
+        if actual_model!=target_model:
+            raise FlashError("Vendor repair requires matching live model identity")
+        for op in ops:
+            code,reply=_exec(fastboot,["-s",serial,"getvar","partition-size:"+op.partition])
+            m=re.search(r"partition-size:"+re.escape(op.partition)+r"\s*:\s*(0x[0-9a-f]+)",reply,re.I)
+            if code or not m or "FAILED" in reply.upper():
+                raise FlashError("Device did not report partition geometry: "+op.partition)
+            cap=int(m.group(1),16)
+            with Path(op.source).open("rb") as image:
+                header=image.read(28)
+            expanded=op.size
+            if len(header)==28 and header[:4]==b"\x3a\xff\x26\xed":
+                expanded=struct.unpack_from("<I",header,12)[0]*struct.unpack_from("<I",header,16)[0]
+            if not 0<expanded<=cap:
+                raise FlashError("Vendor image exceeds live partition: "+op.partition)
+
     if not explicitly_selected_model and not actual_model:
         raise FlashError("Fastboot cannot identify the model; select the exact target model manually")
     # Directory naming is not package authentication: matching is based on

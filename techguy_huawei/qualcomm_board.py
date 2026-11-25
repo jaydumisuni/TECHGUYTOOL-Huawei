@@ -58,10 +58,18 @@ def xml_root(path: Path) -> ET.Element:
     if not path.is_file() or path.stat().st_size > MAX_XML_BYTES:
         raise BoardPlanError("Invalid XML size or path")
     raw = path.read_bytes()
-    if re.search(br"<!\s*(?:DOCTYPE|ENTITY)", raw, re.I):
-        raise BoardPlanError("DTD and entity declarations are not accepted")
     try:
-        return ET.fromstring(raw)
+        # Huawei Download.xml uses GB2312; decode declared legacy encodings
+        # before passing Unicode to ElementTree. Keep XML entity checks.
+        declaration = re.match(br"\s*<\?xml[^?]*encoding\s*=\s*['\"]([A-Za-z0-9_-]+)['\"]", raw, re.I)
+        encoding = declaration.group(1).decode("ascii").lower() if declaration else "utf-8"
+        if encoding not in {"utf-8","utf8","ascii","gb2312","gbk","gb18030"}:
+            raise BoardPlanError("Unsupported vendor XML encoding")
+        decoded = raw.decode("utf-8-sig" if encoding in {"utf-8","utf8"} else encoding)
+        if re.search(r"<!\s*(?:DOCTYPE|ENTITY)", decoded, re.I):
+            raise BoardPlanError("DTD and entity declarations are not accepted")
+        decoded = re.sub(r"^\s*<\?xml[^?]*\?>","",decoded,count=1)
+        return ET.fromstring(decoded)
     except (ET.ParseError, ValueError, LookupError) as exc:
         raise BoardPlanError("Invalid XML: " + path.name) from exc
 

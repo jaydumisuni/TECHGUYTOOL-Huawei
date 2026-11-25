@@ -1,0 +1,14 @@
+--- a/techguy_huawei/service_dispatch.py
++++ b/techguy_huawei/service_dispatch.py
+@@ -141 +141,10 @@
+-            elif package.suffix.lower() == ".json" or package.name.upper() == "UPDATE.APP":
++            elif request.firmware_mode=="Board Firmware" and package.suffix.lower()==".xml":
++                from .kirin_board_package import inspect
++                vendor=inspect(package,request.firmware_model,request.firmware_chipset)
++                result=EngineResult(True,
++                    "Vendor board package inspected. For an already authorized Fastboot device, select Repair for ordinary firmware images. Factory service-entry and vendor-only operations are separate.",
++                    ActionState.READY,{"model":vendor["model"],"chipset":vendor["chipset"],
++                    "mode":"Board Firmware","version":vendor["version"],"package_sha256":vendor["package_sha256"],
++                    "partitions":vendor["stages"],"excluded":vendor["excluded"],
++                    "preflight_only":True,"write_authorized":False})
++            elif package.suffix.lower() == ".json" or package.name.upper() == "UPDATE.APP" or (request.firmware_mode=="Repair" and package.suffix.lower()==".xml"):

@@ -1,0 +1,7 @@
+{
+  "techguy_huawei/kirin_board_package.py": "08e5ac9f4e9ac81c80b553b3f60b90e67f4e18e9832aa46ee62938c363ea9e60",
+  "techguy_huawei/qualcomm_board.py": "103fc3fd75c65a9585888b0c36dece1c65f223023a3243c4c8ade8c0d7684b27",
+  "techguy_huawei/firmware_flash.py": "338738ead660264a24d266ba78cb9e18cecc3c541eea60322032f03b639ac9a5",
+  "tests/test_kirin_board_package.py": "9ac7cbe00bd4b13729c46f6399d3e7701e7b7f559cfbee9837ed906690d3c455",
+  "techguy_huawei/service_dispatch.py": "ebc8d3d4ada0b322b4cd91dc856d564e72c656c3c76aa793a964d08dcaf7ee6f"
+}
