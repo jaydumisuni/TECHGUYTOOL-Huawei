@@ -1,0 +1,65 @@
+--- a/techguy_huawei/backend.py
++++ b/techguy_huawei/backend.py
+@@ -16 +16 @@
+-from .desktop_worker import HealthAuditWorker, PinoutWorker, ServiceWorker
++from .desktop_worker import HealthAuditWorker, PinoutWorker, ServiceWorker, UsbPresenceWorker
+@@ -69,0 +70,3 @@
++        from .usb_presence import PresenceTracker
++        self._usb_presence=PresenceTracker()
++        self._usb_presence_worker=None
+@@ -239,0 +243 @@
++        self._poll_usb_presence()
+@@ -244,0 +249,30 @@
++
++    def _poll_usb_presence(self):
++        if not sys.platform.startswith("win") or self._busy or self._usb_presence_worker is not None:
++            return
++        worker=UsbPresenceWorker()
++        worker.signals.finished.connect(self._on_usb_presence)
++        self._usb_presence_worker=worker
++        self._pool.start(worker)
++
++    @Slot(object)
++    def _on_usb_presence(self,report):
++        self._usb_presence_worker=None
++        # A manual action may have begun after the observation was queued.
++        # Do not let an obsolete observation change its target or log.
++        if self._busy:return
++        action=self._usb_presence.update(report)
++        if action=="scan":
++            self.runAction("read_device")
++        elif action=="clear":
++            self._device_snapshot=DeviceSnapshot()
++            self._device_details={}
++            self._device_report=""
++            self._device_partitions=[]
++            self._partition_plan={}
++            self._partition_request=None
++            self._invalidate_firmware_plan()
++            if self._auto_target_serial:self._clear_detected_target()
++            self._last_read_status=("Multiple Huawei devices detected." if report.state=="multiple_huawei_devices" else "No Huawei device detected.")
++            self.deviceChanged.emit()
++            self.serviceResultChanged.emit()
+@@ -583,0 +618,4 @@
++            self._invalidate_firmware_plan()
++            self.firmwareTargetChanged.emit()
++        if target.loader_variant and target.loader_variant in self.loaderVariantOptions and self._loader_variant!=target.loader_variant:
++            self._loader_variant=target.loader_variant
+--- a/techguy_huawei/desktop_worker.py
++++ b/techguy_huawei/desktop_worker.py
+@@ -41,0 +42,15 @@
++
++
++class UsbPresenceWorker(QRunnable):
++    """Read USB inventory off the GUI thread; never launch a repair."""
++    def __init__(self):
++        super().__init__()
++        self.signals=WorkerSignals()
++        self.setAutoDelete(False)
++
++    @Slot()
++    def run(self):
++        from .usb_presence import observe
++        try: report=observe()
++        except Exception: report=None
++        self.signals.finished.emit(report)

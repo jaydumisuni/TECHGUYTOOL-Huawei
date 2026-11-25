@@ -1,0 +1,7 @@
+{
+  "techguy_huawei/usb_presence.py": "9b25feb061bdaf1eee07ba87e050b6ab1056c38aa73b2fa5e68705fb9caab83e",
+  "techguy_huawei/detected_target.py": "2fdc8e68a6f890fd1bc6e17f02e4913a3133d7cf44cd0e4785c2dccc49e22cbf",
+  "tests/test_usb_presence.py": "37ff80067e1c00d010df714c5c616c55df2a1a827eba62b9f354ab61b3c59c5e",
+  "techguy_huawei/backend.py": "77c7afbe740e1d28a218739fd5c09b7097cfede34e7b830155c4cd77d5daf45a",
+  "techguy_huawei/desktop_worker.py": "2408698c6d8803c1f8bcbe858f019770e211f620888c22a824e594bd903833c9"
+}
