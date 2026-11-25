@@ -1,0 +1,7 @@
+{
+  "techguy_huawei/fastboot_partition_inventory.py": "1f9fef83424f7cf81614cfe4e853a8df0f58d03f92023b3ed047c21c7a650e7a",
+  "tests/test_fastboot_partition_inventory.py": "aaf139c6fd0020e8b0b40e4fb5480321eb52ec056a894df022372eb23a9c4135",
+  "techguy_huawei/service_dispatch.py": "4ea0d24a32536721006968e6e0d850f85ca4cc0871e46ab9228c6ce7e07fb029",
+  "techguy_huawei/backend.py": "15057f8310fdbfb03af012efecb0425d25b6fbf84e4f3027c70e819647e571e3",
+  "techguy_huawei/operation_log.py": "176baabf14d07c90a786be69c0fc63f5ca39032cc1bd851cbc57497f119aedaf"
+}

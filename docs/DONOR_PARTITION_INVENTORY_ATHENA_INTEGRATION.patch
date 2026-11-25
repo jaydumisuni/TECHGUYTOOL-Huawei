@@ -1,0 +1,20 @@
+--- a/techguy_huawei/service_dispatch.py
++++ b/techguy_huawei/service_dispatch.py
+@@ -270,0 +271,2 @@
++                from .fastboot_partition_inventory import enrich_inventory
++                fastboot_serial=engine.snapshot.serial if engine.snapshot.interface=="Fastboot" and result.ok else ""
+@@ -275,0 +278 @@
++                result=enrich_inventory(engine,result,fastboot_serial,read_progress)
+--- a/techguy_huawei/backend.py
++++ b/techguy_huawei/backend.py
+@@ -1189 +1189 @@
+-            self._device_partitions = [dict(row) for row in payload.get("xray",{}).get("partitions",[]) if isinstance(row,dict) and row.get("name")]
++            self._device_partitions = [dict(row) for row in payload.get("partition_inventory",payload.get("xray",{}).get("partitions",[])) if isinstance(row,dict) and row.get("name")]
+--- a/techguy_huawei/operation_log.py
++++ b/techguy_huawei/operation_log.py
+@@ -117 +117 @@
+-            value=xray.get(key)
++            value=(result.payload or {}).get("partition_inventory",xray.get(key)) if key=="partitions" else xray.get(key)
+@@ -119,0 +120,2 @@
++    elif (result.payload or {}).get("partition_inventory"):
++        lines.extend(["","PARTITION INVENTORY",json.dumps(result.payload["partition_inventory"],indent=2,ensure_ascii=False)])
