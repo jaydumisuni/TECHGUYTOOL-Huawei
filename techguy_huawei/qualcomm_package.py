@@ -52,35 +52,54 @@ def discover(rawprogram:Path):
         if len(stores)!=1:
             raise FlashError("Programmer does not declare eMMC or UFS in its filename; select a storage-specific package.")
         storage=stores[0]
-        # A selected numbered rawprogram is one explicit XML group. Do not
-        # accidentally combine alternative rawprogram_unsparse and sparse sets.
-        m=re.fullmatch(r"rawprogram(\d+)(?:_unsparse)?\.xml",rawprogram.name,re.I)
-        patch_name="patch"+m.group(1)+".xml" if m else "patch0.xml"
-        patch=folder/patch_name
-        if not patch.is_file():
-            choices=sorted(folder.glob("patch*.xml"))
-            if len(choices)==1 and not m:patch=choices[0]
-            elif not choices:patch=None
-            else:raise FlashError("Matching patch XML is ambiguous for this rawprogram.")
-        plan=build_plan(folder,rawprogram.name,patch.name if patch else "",loader.name)
-        selected=[op for op in plan["operations"] if op["filename"] and not _protected(op["label"])]
+        # Collect numbered groups from the selected naming family. Plain and
+        # unsparse variants are alternative package sets, not additive groups.
+        m=re.fullmatch(r"rawprogram(\d+)(_unsparse)?\.xml",rawprogram.name,re.I)
+        if m:
+            suffix=m.group(2) or ""
+            pattern=re.compile(r"rawprogram(\d+)"+re.escape(suffix)+r"\.xml",re.I)
+            found=[(int(match.group(1)),p) for p in folder.iterdir()
+                   if p.is_file() and (match:=pattern.fullmatch(p.name))]
+            groups=sorted(found,key=lambda pair:pair[0])
+            if len({i for i,_ in groups})!=len(groups):
+                raise FlashError("Duplicate numbered rawprogram group.")
+        else:
+            groups=[(None,rawprogram)]
+        manifests=[]
+        for index,group in groups:
+            patch=folder/("patch"+str(index if index is not None else 0)+".xml")
+            if not patch.is_file():
+                choices=sorted(folder.glob("patch*.xml"))
+                if index is None and len(choices)==1:patch=choices[0]
+                elif index is None and len(choices)>1:raise FlashError("Matching patch XML is ambiguous.")
+                else:patch=None
+            manifests.append(build_plan(folder,group.name,patch.name if patch else "",loader.name))
+        all_operations=[op for manifest in manifests for op in manifest["operations"]]
+        selected=[op for op in all_operations if op["filename"] and not _protected(op["label"])]
         if not selected:raise FlashError("No non-protected firmware image operations.")
-        # No write until target addresses can be reconciled against live GPT.
+        # Keep the historical single-manifest API for the reference package;
+        # combined operations/patches are the authoritative multi-group set.
         return {"schema":SCHEMA,"folder":str(folder),"program":rawprogram.name,
-                "patch":patch.name if patch else "","programmer":loader.name,"storage":storage,
-                "manifest":plan,"operations":selected,
-                "excluded":sorted({op["label"] for op in plan["operations"] if not op["filename"] or _protected(op["label"])}),
+                "programs":[x["program"] for x in manifests],
+                "patch":manifests[0]["patch"],"patches":[x["patch"] for x in manifests if x["patch"]],
+                "programmer":loader.name,"storage":storage,
+                "manifest":manifests[0],"manifests":manifests,
+                "all_operations":all_operations,"operations":selected,
+                "excluded":sorted({op["label"] for op in all_operations if not op["filename"] or _protected(op["label"])}),
                 "scope":"existing_layout_repair_no_gpt_patches"}
     except (BoardPlanError,OSError) as exc:
         raise FlashError(str(exc)) from exc
 
 def filtered(package:dict,path:Path):
-    root=xml_root(Path(package["folder"])/package["program"])
-    for node in list(root):
-        if not node.get("filename") or _protected(node.get("label","")):
-            root.remove(node)
+    root=ET.Element("data")
+    for name in package["programs"]:
+        source=xml_root(Path(package["folder"])/name)
+        for node in source:
+            if node.get("filename") and not _protected(node.get("label","")):
+                root.append(node)
     if len(root)!=len(package["operations"]):raise FlashError("Filtered package count changed.")
     ET.ElementTree(root).write(path,encoding="utf-8",xml_declaration=True)
+
 
 def _acks(output,operations):
     expected=[op["label"] for op in operations]
@@ -260,7 +279,7 @@ def apply(project:Path,rawprogram:Path,model:str,chipset:str,fingerprint:str,evi
         # A firmware package can contain a target GPT with a different layout.
         # We do not ignore such a mismatch. Compare supplied primary GPT when
         # its actual file format contains a complete standard GPT.
-        for op in package["manifest"]["operations"]:
+        for op in package["all_operations"]:
             if not op["filename"] or op["label"].casefold() not in {"primarygpt","gpt_main","gpt"}:continue
             lun=op["physical_partition_number"];sector=op["sector_size"]
             if lun not in layouts:continue

@@ -1,0 +1,303 @@
+--- a/techguy_huawei/backend.py
++++ b/techguy_huawei/backend.py
+@@ -81,0 +82,4 @@
++        self._operation_status = ""
++        self._read_display_active = False
++        self._device_report = ""
++        self._device_details = {}
+@@ -132,0 +137,4 @@
++        self._read_display_active = False
++        self._operation_status = ""
++        self._progress = 0
++        self.progressChanged.emit()
+@@ -137,0 +146,4 @@
++        self._operation_status = line
++        self.progressChanged.emit()
++        if self._read_display_active:
++            return
+@@ -300,0 +313,28 @@
++    def deviceReport(self) -> str:
++        return self._device_report
++
++    @Property("QVariantMap", notify=deviceChanged)
++    def deviceDetails(self) -> dict:
++        return dict(self._device_details)
++
++    @Slot()
++    def copyDeviceReport(self) -> None:
++        from PySide6.QtGui import QGuiApplication
++        if self._device_report:
++            QGuiApplication.clipboard().setText(self._device_report)
++
++    @Slot(str, result=bool)
++    def saveDeviceReport(self, destination: str) -> bool:
++        from PySide6.QtCore import QUrl
++        if not self._device_report:return False
++        path=QUrl(destination).toLocalFile()
++        if not path:return False
++        try:
++            Path(path).write_text(self._device_report,encoding="utf-8")
++            return True
++        except OSError as exc:
++            self._operation_status="Could not save report: "+str(exc)
++            self.progressChanged.emit()
++            return False
++
++    @Property(str, notify=deviceChanged)
+@@ -346,0 +387,4 @@
++
++    @Property(str, notify=progressChanged)
++    def operationStatus(self) -> str:
++        return self._operation_status
+@@ -807,0 +852,6 @@
++                self._read_display_active = True
++                self._device_report = ""
++                self._device_details = {}
++                self._device_snapshot = DeviceSnapshot()
++                self._operation_status = "Detecting device..."
++                self.progressChanged.emit()
+@@ -885,0 +936,6 @@
++            from .operation_log import device_read_lines, full_device_report
++            self._device_details = dict(payload.get("xray",{}).get("details",{}))
++            self._device_report = full_device_report(self._device_snapshot,response.result)
++            self._log_lines = device_read_lines(self._device_snapshot,response.result)
++            self.logTextChanged.emit()
++            self._read_display_active = False
+@@ -890 +946 @@
+-            found = re.fullmatch(r"Kirin\s+(\d{3,4})", platform_name, re.I)
++            found = re.fullmatch(r"(?:Kirin|hisi)\s*(\d{3,4})", platform_name, re.I)
+@@ -911,0 +968,3 @@
++        self._progress = 100 if response.result.ok else 0
++        self._operation_status = "Complete" if response.result.ok else "Operation ended"
++        self.progressChanged.emit()
+--- a/techguy_huawei/device_engine.py
++++ b/techguy_huawei/device_engine.py
+@@ -162 +162 @@
+-            if usb_report.present and usb_report.state != "adb":
++            if usb_report.present and usb_report.state not in {"adb","normal_fastboot"}:
+@@ -178 +178 @@
+-            if usb_report is None or not usb_report.present:
++            if usb_report is None or not usb_report.present or usb_report.state == "normal_fastboot":
+--- a/techguy_huawei/service_dispatch.py
++++ b/techguy_huawei/service_dispatch.py
+@@ -66 +66 @@
+-        request.action_id, progress=progress,
++        request.action_id, progress=None if request.action_id == "read_device" else progress,
+@@ -191 +191,4 @@
+-                engine.progress = logger.add
++                def read_progress(line):
++                    logger.add(line)
++                    if progress:progress(line)
++                engine.progress = read_progress
+@@ -202,0 +206,6 @@
++                from .xray_read_device import enrich
++                # A multi-device rejection is not permission to select another
++                # handset. Run deep observation only for a single session or
++                # unresolved USB presence.
++                if "Multiple Huawei devices" not in result.message:
++                    result=enrich(engine,result,request.evidence_journal.parent/"xray",read_progress)
+--- a/techguy_huawei/operation_log.py
++++ b/techguy_huawei/operation_log.py
+@@ -16,32 +16,7 @@
+-READ_FIELDS: tuple[tuple[str, str], ...] = (
+-    ("Product Name", "product_name"),
+-    ("Chipset", "platform"),
+-    ("IMEI", ""),
+-    ("Fastboot Transport Serial", "serial"),
+-    ("Android Version", "android_version"),
+-    ("Device Codename", ""),
+-    ("SKU / Model", "model"),
+-    ("Carrier / Vendor Country", "vendor_country"),
+-    ("Internal Memory Size", ""),
+-    ("RAM Size", ""),
+-    ("Secure Boot", ""),
+-    ("FRP State", "frp_state"),
+-    ("Hardware Revision", "board_id"),
+-    ("Flash ID", ""),
+-    ("Variant", ""),
+-    ("CPU ID", ""),
+-    ("Security Patch Level", "security_patch"),
+-    ("Bootloader Unlocked", "bootloader_state"),
+-    ("Boot Mode", "interface"),
+-    ("CRC Check", ""),
+-    ("DP Level", ""),
+-    ("Unlock Token", ""),
+-    ("Parallel Download", ""),
+-    ("Anti-Rollback", ""),
+-    ("Off Mode Charging", ""),
+-    ("Charger Screen Enabled", ""),
+-    ("Battery Health OK", ""),
+-    ("Battery Voltage (mV)", ""),
+-    ("Build Number", "build_number"),
+-    ("OEMINFO Main Version", "main_version"),
+-    ("Boot Info", "bootloader_state"),
++READ_FIELDS = (
++    ("Model","model"),("Product name","product_name"),("Chipset","platform"),
++    ("Interface","interface"),("Serial","serial"),("Android version","android_version"),
++    ("EMUI version","emui_version"),("Build number","build_number"),
++    ("Vendor / country","vendor_country"),("Main version","main_version"),
++    ("Security patch","security_patch"),("Board","board_id"),
++    ("Bootloader","bootloader_state"),("FRP state","frp_state"),
+@@ -49 +23,0 @@
+-
+@@ -53,18 +27,14 @@
+-        return [f"Device unavailable: {result.message}"]
+-    entries = [
+-        "Device identity report",
+-        f"Connection: {snapshot.interface or UNAVAILABLE}",
+-        "Values below are read from the connected device or explicitly marked unavailable.",
+-    ]
+-    for label, attr in READ_FIELDS:
+-        raw = str(getattr(snapshot, attr, "") or "").strip() if attr else ""
+-        if attr == "model" and raw.endswith("(model unresolved)"):
+-            raw = ""
+-        if attr == "bootloader_state" and raw == "unverified":
+-            raw = ""
+-        if attr == "platform" and raw == "Huawei Fastboot":
+-            raw = ""
+-        if label == "Bootloader Unlocked" and raw:
+-            raw = "Yes" if raw == "unlocked" else "No" if raw == "locked" else ""
+-        entries.append(f"- {label}: {raw or UNAVAILABLE}")
+-    return entries
++        return [result.message]
++    entries=[]
++    for label,attr in READ_FIELDS:
++        raw=str(getattr(snapshot,attr,"") or "").strip()
++        if not raw or raw.casefold() in {"unknown","unverified","unavailable","huawei fastboot","huawei usb","android / adb"}:
++            if attr!="interface":continue
++        if attr=="product_name" and raw==snapshot.model:continue
++        if raw:entries.append(f"{label}: {raw}")
++    xray=(result.payload or {}).get("xray",{})
++    for label,value in xray.get("details",{}).items():
++        if label not in {"IMEI","IMEI 2","MEID","Build fingerprint","Kernel","Bootloader version","Firmware version","Variant","Active slot","Device codename"} and value is not None and str(value).strip():entries.append(f"{label}: {value}")
++    if xray.get("status")!="BOUND":
++        entries.append("Detailed identity: "+("not resolved in this mode" if xray.get("status")=="UNBOUND" else "X-Ray unavailable; basic device information only"))
++    return entries or [result.message]
+@@ -133,0 +104,17 @@
++
++def full_device_report(snapshot: DeviceSnapshot, result: EngineResult) -> str:
++    import json
++    lines=device_read_lines(snapshot,result)
++    xray=(result.payload or {}).get("xray",{})
++    if xray.get("status")=="BOUND":
++        # Structured evidence is available on demand rather than dumped into
++        # the operator's main log. Keep it local; no telemetry publication.
++        for heading,key in (("OBSERVED DETAILS","details"),("IDENTITY","identity"),("STORAGE","storage"),
++                            ("PARTITION INVENTORY","partitions"),
++                            ("DEEP DIAGNOSTICS","diagnostics"),
++                            ("EVIDENCE CONFIDENCE","certification")):
++            value=xray.get(key)
++            if value:
++                lines.extend(["",heading,json.dumps(value,indent=2,ensure_ascii=False)])
++    if xray.get("bundle"):lines.extend(["","Evidence bundle: "+xray["bundle"]])
++    return "\n".join(lines)
+--- a/qml/Main.qml
++++ b/qml/Main.qml
+@@ -327,0 +328,8 @@
++                        Text {
++                            Layout.fillWidth: true
++                            text: backend.operationStatus || "Ready"
++                            color: Theme.muted
++                            font.family: Theme.fontFamily
++                            font.pixelSize: 12
++                            elide: Text.ElideRight
++                        }
+@@ -342 +350,10 @@
+-                                    width: operationProgress.visualPosition * parent.width
++                                    id: operationProgressFill
++                                    width: backend.operationBusy ? parent.width * 0.23 : operationProgress.visualPosition * parent.width
++                                    x: 0
++                                    SequentialAnimation on x {
++                                        running: backend.operationBusy
++                                        loops: Animation.Infinite
++                                        NumberAnimation { from: 0; to: Math.max(0, operationProgress.width * 0.77); duration: 1100 }
++                                        NumberAnimation { from: Math.max(0, operationProgress.width * 0.77); to: 0; duration: 1100 }
++                                        onStopped: operationProgressFill.x = 0
++                                    }
+@@ -354 +371 @@
+-                        Text { Layout.fillWidth: true; text: backend.progress + "%"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12; horizontalAlignment: Text.AlignHCenter }
++                        Text { Layout.fillWidth: true; text: backend.operationBusy ? "" : backend.progress + "%"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12; horizontalAlignment: Text.AlignHCenter }
+--- a/qml/pages/DeviceInformationPage.qml
++++ b/qml/pages/DeviceInformationPage.qml
+@@ -3,0 +4 @@
++import QtQuick.Dialogs
+@@ -8,0 +10,29 @@
++    property string reportText: backend.deviceReport
++    Dialog {
++        id: detailDialog
++        title: "X-Ray Device Details"
++        modal: true
++        anchors.centerIn: Overlay.overlay
++        width: Math.min(780, Overlay.overlay.width - 50)
++        height: Math.min(620, Overlay.overlay.height - 50)
++        standardButtons: Dialog.Close
++        contentItem: ScrollView {
++            TextArea {
++                text: root.reportText
++                readOnly: true
++                wrapMode: TextEdit.Wrap
++                font.family: "Consolas"
++                font.pixelSize: 13
++                color: Theme.text
++                selectByMouse: true
++            }
++        }
++    }
++    FileDialog {
++        id: saveReportDialog
++        title: "Save device report"
++        fileMode: FileDialog.SaveFile
++        nameFilters: ["Text report (*.txt)"]
++        defaultSuffix: "txt"
++        onAccepted: backend.saveDeviceReport(selectedFile.toString())
++    }
+@@ -52 +82 @@
+-                            {icon: "◇", label: "PRODUCT NAME", value: "—"},
++                            {icon: "◇", label: "PRODUCT NAME", value: root.display(backend.deviceProductName)},
+@@ -95,4 +125,4 @@
+-                            {icon: "▤", label: "SERIAL NUMBER", value: "—"},
+-                            {icon: "▥", label: "IMEI 1", value: "—"},
+-                            {icon: "▥", label: "IMEI 2", value: "—"},
+-                            {icon: "▥", label: "MEID", value: "—"}
++                            {icon: "▤", label: "SERIAL NUMBER", value: root.display(backend.deviceSerial)},
++                            {icon: "▥", label: "IMEI 1", value: root.display(backend.deviceDetails["IMEI"])},
++                            {icon: "▥", label: "IMEI 2", value: root.display(backend.deviceDetails["IMEI 2"])},
++                            {icon: "▥", label: "MEID", value: root.display(backend.deviceDetails["MEID"])}
+@@ -136,4 +166,4 @@
+-                            {icon: "▤", label: "BUILD NUMBER", value: "—"},
+-                            {icon: "◴", label: "EMUI VERSION", value: "—"},
+-                            {icon: "◉", label: "ANDROID VERSION", value: "—"},
+-                            {icon: "◇", label: "SECURITY PATCH", value: root.display(backend.deviceSecurity)}
++                            {icon: "▤", label: "BUILD NUMBER", value: root.display(backend.deviceBuild)},
++                            {icon: "◴", label: "EMUI VERSION", value: root.display(backend.deviceEmuiVersion)},
++                            {icon: "◉", label: "ANDROID VERSION", value: root.display(backend.deviceAndroidVersion)},
++                            {icon: "◇", label: "SECURITY PATCH", value: root.display(backend.deviceSecurityPatch)}
+@@ -177 +207 @@
+-                            {label: "BOARD ID", value: "—"},
++                            {label: "BOARD ID", value: root.display(backend.deviceBoardId)},
+@@ -179,2 +209,2 @@
+-                            {label: "BOOTLOADER STATE", value: "—"},
+-                            {label: "FRP STATE", value: root.display(backend.deviceSecurity)}
++                            {label: "BOOTLOADER STATE", value: root.display(backend.deviceBootloader)},
++                            {label: "FRP STATE", value: root.display(backend.deviceFrpState)}
+@@ -206 +236 @@
+-                        Text { Layout.fillWidth: true; text: "—"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
++                        Text { Layout.fillWidth: true; text: root.display(backend.deviceVendorCountry); color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
+@@ -220,0 +251,7 @@
++            GlowButton {
++                Layout.fillWidth: true
++                Layout.preferredHeight: 44
++                enabled: root.reportText.length > 0
++                text: "FULL DETAILS"
++                onClicked: detailDialog.open()
++            }
+@@ -224 +261 @@
+-                enabled: false
++                enabled: root.reportText.length > 0
+@@ -225,0 +263 @@
++                onClicked: backend.copyDeviceReport()
+@@ -232 +270 @@
+-                enabled: false
++                enabled: root.reportText.length > 0
+@@ -233,0 +272 @@
++                onClicked: saveReportDialog.open()

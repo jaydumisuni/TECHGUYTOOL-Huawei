@@ -1,0 +1,11 @@
+{
+  "techguy_huawei/backend.py": "bee579266fd7ff9dddbefce39fc4d82b00899257c8c4046921979b0766c1c6b4",
+  "techguy_huawei/device_engine.py": "c4c2c4974a7fc72d21ee1247c2980d8c1c5b59f73885b122248dcaaccb4a3c39",
+  "techguy_huawei/service_dispatch.py": "b30536904b6069f75fa631633a8a48b013144af28f6b24cfcc2635e7192e26b9",
+  "techguy_huawei/operation_log.py": "5b9dbf42cfa3a6c74de5bafb44c848b38cdd3a1c94935b8f0f08f04c363fbbfe",
+  "qml/Main.qml": "521a5878c82ebe054dfdc6c5f63f1960526706c99701a6be68cc20a2ee6b7d4c",
+  "qml/pages/DeviceInformationPage.qml": "5c7ad1b984660ad81669e2882f0c42bf4a5595dc2f66b4ee42a91df58d2372c5",
+  "techguy_huawei/xray_read_device.py": "eb28a6659669c1fb9251e1ec309fabc727c7dca050c4551f2e73bb5161e1f9b5",
+  "techguy_huawei/qualcomm_package.py": "5ee152d3971ba844db11e92adcde2c0aa48faffb5a513918756ee85b9b31e33b",
+  "tests/test_xray_device_report_and_groups.py": "5c3d16089e2f2e2faf2b2e118cde9364a79155e054a555ba176b12c7c8afc4da"
+}
