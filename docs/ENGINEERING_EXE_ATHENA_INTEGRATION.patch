@@ -1,0 +1,10 @@
+--- a/main.py
++++ b/main.py
+@@ -72 +72 @@
+-        if not getattr(sys, "frozen", False):
++        if not getattr(sys, "frozen", False) or getattr(sys, "_MEIPASS", None):
+--- a/techguy_huawei/xray_read_device.py
++++ b/techguy_huawei/xray_read_device.py
+@@ -38 +38 @@
+-        return [str(Path(sys.argv[0]).resolve()),"--xray-worker"],env
++        return [str(Path(sys.executable if getattr(sys, "_MEIPASS", None) else sys.argv[0]).resolve()),"--xray-worker"],env

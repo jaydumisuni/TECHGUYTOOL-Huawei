@@ -1,0 +1,16 @@
+{
+  "filename": "TECHGUYTOOL_Huawei_ENGINEERING.exe",
+  "bytes": 256467176,
+  "sha256": "46e4f568e654e44cb4a1c4370569d000195db0812ca3daabcf40e1b4fe9918c4",
+  "packager": "PyInstaller 6.22.1 onefile",
+  "production_signed": false,
+  "source_selected_tests_passed": 100,
+  "startup": "qml_root_ready",
+  "qml_errors": [],
+  "archived_loader_containers_hash_verified": 56,
+  "xray_worker_exit": 2,
+  "xray_candidates": 0,
+  "xray_stderr_bytes": 0,
+  "native_service_entry": "not implemented",
+  "unresolved_loader_variants": 27
+}
