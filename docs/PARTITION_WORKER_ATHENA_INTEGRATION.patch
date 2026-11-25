@@ -1,0 +1,217 @@
+--- a/techguy_huawei/backend.py
++++ b/techguy_huawei/backend.py
+@@ -86,0 +87,2 @@
++        self._partition_request = None
++        self._partition_plan = {}
+@@ -854,0 +857,59 @@
++    @Property("QVariantMap", notify=serviceResultChanged)
++    def partitionPlan(self) -> dict:
++        return dict(self._partition_plan)
++
++    @Slot(str, str, str, result=bool)
++    def startPartition(self, operation: str, name: str, source: str) -> bool:
++        if self._busy or not self._device_snapshot.connected or operation not in {"backup","write","restore"}:
++            return False
++        url=QUrl(source)
++        source=url.toLocalFile() if url.isLocalFile() else source
++        if operation=="restore" and not name:
++            try:
++                from .partition_service import SCHEMA
++                path=Path(source)
++                if not path.is_file() or path.stat().st_size>65536:return False
++                data=json.loads(path.read_text(encoding="utf8"))
++                if data.get("schema")!=SCHEMA:return False
++                name=str(data.get("partition",""))
++            except (OSError,ValueError,TypeError):
++                return False
++        if not name or (operation!="backup" and not source):return False
++        snap=self._device_snapshot
++        self._partition_plan={}
++        self._partition_request=ServiceRequest(
++            action_id="backup_restore",project_root=self.app_root,
++            evidence_journal=self.paths.evidence/"operations.jsonl",action_log_dir=self._action_logs_dir(),
++            partition_operation=operation,partition_name=name,partition_source=source,
++            partition_serial=snap.serial,partition_model=snap.model,partition_chipset=snap.platform)
++        self._launch_partition(self._partition_request)
++        return True
++
++    def _launch_partition(self,request):
++        self._start_action_display()
++        self.registry.begin_async("backup_restore")
++        self._busy=True
++        self.operationBusyChanged.emit()
++        self.healthChanged.emit()
++        worker=ServiceWorker(request)
++        worker.signals.progress.connect(self._on_operation_progress)
++        worker.signals.finished.connect(self._on_service_finished)
++        self._worker=worker
++        self._pool.start(worker)
++
++    @Slot(result=bool)
++    def confirmPartition(self) -> bool:
++        if self._busy or not self._partition_request or not self._partition_plan:return False
++        from dataclasses import replace
++        request=replace(self._partition_request,partition_fingerprint=self._partition_plan["fingerprint"])
++        self._partition_plan={}
++        self._partition_request=None
++        self._launch_partition(request)
++        return True
++
++    @Slot()
++    def cancelPartition(self):
++        self._partition_plan={}
++        self._partition_request=None
++        self.serviceResultChanged.emit()
++
+@@ -872,0 +934,2 @@
++                self._partition_plan = {}
++                self._partition_request = None
+@@ -926,0 +990,4 @@
++        if response.action_id=="backup_restore":
++            self._partition_plan=dict(payload.get("partition_plan",{})) if response.result.ok else {}
++            if not self._partition_plan:self._partition_request=None
++
+--- a/techguy_huawei/service_dispatch.py
++++ b/techguy_huawei/service_dispatch.py
+@@ -46,0 +47,7 @@
++    partition_operation: str = ""
++    partition_name: str = ""
++    partition_source: str = ""
++    partition_serial: str = ""
++    partition_model: str = ""
++    partition_chipset: str = ""
++    partition_fingerprint: str = ""
+@@ -90,0 +98,22 @@
++            logger.add(result.message)
++        elif request.action_id == "backup_restore" and request.partition_operation:
++            from . import partition_service as ps
++            engine=DeviceEngine(request.project_root,EvidenceJournal(request.evidence_journal))
++            binary=engine._tool("fastboot")
++            if not binary:raise FlashError("Local Fastboot runtime unavailable")
++            args=(binary,request.partition_serial,request.partition_model,request.partition_chipset,request.partition_name)
++            action=request.partition_operation
++            root=request.evidence_journal.parent/"partition-backups"
++            root.mkdir(parents=True,exist_ok=True)
++            if action=="backup":
++                payload=ps.backup(*args,Path(request.partition_source) if request.partition_source else root,logger.add)
++                result=EngineResult(True,"Partition backup completed and hashed.",ActionState.READY,payload)
++            elif action in {"write","restore"}:
++                if request.partition_fingerprint:
++                    payload=ps.apply(*args,request.partition_source,action=="restore",request.partition_fingerprint,root,logger.add)
++                    result=EngineResult(True,"Partition write and readback verified.",ActionState.READY,payload)
++                else:
++                    payload=ps.prepare(*args,request.partition_source,action=="restore")
++                    result=EngineResult(True,"Review the selected partition and confirm the write.",ActionState.READY,
++                        {"partition_plan":payload,"preflight_only":True})
++            else:raise FlashError("Unknown partition operation")
+--- a/qml/pages/PartitionManagerPage.qml
++++ b/qml/pages/PartitionManagerPage.qml
+@@ -3,0 +4 @@
++import QtQuick.Dialogs
+@@ -9,0 +11,18 @@
++    property string pendingPartition: ""
++    FileDialog {
++        id: partitionImage
++        title: "Select matching raw partition image"
++        nameFilters: ["Partition image (*.img *.bin)", "All files (*)"]
++        onAccepted: backend.startPartition("write",root.pendingPartition,selectedFile.toString())
++    }
++    FileDialog {
++        id: restoreManifest
++        title: "Select verified partition backup receipt"
++        nameFilters: ["Backup receipt (backup.json)"]
++        onAccepted: backend.startPartition("restore","",selectedFile.toString())
++    }
++    FolderDialog {
++        id: backupFolder
++        title: "Select backup destination"
++        onAccepted: backend.startPartition("backup",root.pendingPartition,selectedFolder.toString())
++    }
+@@ -37,5 +56,6 @@
+-            GlowButton { text: "▤  READ"; Layout.preferredWidth: 150; Layout.preferredHeight: 42; onClicked: backend.runAction("read_device") }
+-            Button {
+-                text: "✎  WRITE"; enabled: false; Layout.preferredWidth: 150; Layout.preferredHeight: 42
+-                background: Rectangle { radius: 7; color: "#0a1422"; border.width: 1; border.color: "#2a3d56" }
+-                contentItem: Text { text: parent.text; color: "#526277"; font.family: Theme.fontFamily; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
++            GlowButton { text: "▤  READ"; Layout.preferredWidth: 150; Layout.preferredHeight: 42; enabled: !!root.selectedPartition.name && !backend.operationBusy; onClicked: { root.pendingPartition = root.selectedPartition.name; backupFolder.open() } }
++            Button {
++                text: "✎  WRITE"; enabled: !!root.selectedPartition.name && !backend.operationBusy; onClicked: { root.pendingPartition = root.selectedPartition.name; partitionImage.open() }
++                 Layout.preferredWidth: 150; Layout.preferredHeight: 42
++                background: Rectangle { radius: 7; color: "#0a1422"; border.width: 1; border.color: "#2a3d56" }
++                contentItem: Text { text: parent.text; color: parent.enabled ? Theme.text : "#526277"; font.family: Theme.fontFamily; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+@@ -46 +66 @@
+-                contentItem: Text { text: parent.text; color: "#526277"; font.family: Theme.fontFamily; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
++                contentItem: Text { text: parent.text; color: parent.enabled ? Theme.text : "#526277"; font.family: Theme.fontFamily; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+@@ -198,8 +218,8 @@
+-                Layout.fillWidth: true; Layout.preferredHeight: 46; enabled: false; text: "⇧  BACKUP PARTITION"
+-                background: Rectangle { radius: 7; color: "#0a1422"; border.width: 1; border.color: "#2a3d56" }
+-                contentItem: Text { text: parent.text; color: "#526277"; font.family: Theme.fontFamily; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+-            }
+-            Button {
+-                Layout.fillWidth: true; Layout.preferredHeight: 46; enabled: false; text: "⇩  RESTORE PARTITION"
+-                background: Rectangle { radius: 7; color: "#0a1422"; border.width: 1; border.color: "#2a3d56" }
+-                contentItem: Text { text: parent.text; color: "#526277"; font.family: Theme.fontFamily; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
++                Layout.fillWidth: true; Layout.preferredHeight: 46; enabled: !!root.selectedPartition.name && !backend.operationBusy; text: "⇧  BACKUP PARTITION"; onClicked: { root.pendingPartition = root.selectedPartition.name; backupFolder.open() }
++                background: Rectangle { radius: 7; color: "#0a1422"; border.width: 1; border.color: "#2a3d56" }
++                contentItem: Text { text: parent.text; color: parent.enabled ? Theme.text : "#526277"; font.family: Theme.fontFamily; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
++            }
++            Button {
++                Layout.fillWidth: true; Layout.preferredHeight: 46; enabled: backend.connected && !backend.operationBusy; text: "⇩  RESTORE PARTITION"; onClicked: restoreManifest.open()
++                background: Rectangle { radius: 7; color: "#0a1422"; border.width: 1; border.color: "#2a3d56" }
++                contentItem: Text { text: parent.text; color: parent.enabled ? Theme.text : "#526277"; font.family: Theme.fontFamily; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+--- a/qml/pages/BackupRestorePage.qml
++++ b/qml/pages/BackupRestorePage.qml
+@@ -3,0 +4 @@
++import QtQuick.Dialogs
+@@ -8,0 +10,8 @@
++    signal partitionBackupRequested()
++    property string receiptPath: ""
++    FileDialog {
++        id: receiptDialog
++        title: "Select partition backup receipt"
++        nameFilters: ["Backup receipt (backup.json)"]
++        onAccepted: root.receiptPath = selectedFile.toString()
++    }
+@@ -82 +91 @@
+-                    GlowButton { Layout.fillWidth: true; Layout.preferredHeight: 38; text: "CREATE BACKUP"; onClicked: backend.runAction("backup_restore") }
++                    GlowButton { Layout.fillWidth: true; Layout.preferredHeight: 38; text: "SELECT PARTITIONS"; onClicked: root.partitionBackupRequested() }
+@@ -100 +109 @@
+-                            Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Drag & drop backup file here"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 11 }
++                            Text { anchors.horizontalCenter: parent.horizontalCenter; text: root.receiptPath ? root.receiptPath.split("/").slice(-2).join("/") : "Select a verified partition backup receipt"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 11 }
+@@ -103 +112 @@
+-                                anchors.horizontalCenter: parent.horizontalCenter; width: 145; height: 28; enabled: false; text: "SELECT BACKUP FILE"
++                                anchors.horizontalCenter: parent.horizontalCenter; width: 145; height: 28; enabled: !backend.operationBusy; text: "SELECT BACKUP FILE"; onClicked: receiptDialog.open()
+@@ -123 +132 @@
+-                        Layout.fillWidth: true; Layout.preferredHeight: 38; enabled: false; text: "RESTORE BACKUP"
++                        Layout.fillWidth: true; Layout.preferredHeight: 38; enabled: backend.connected && root.receiptPath.length > 0 && !backend.operationBusy; text: "RESTORE BACKUP"; onClicked: backend.startPartition("restore","",root.receiptPath)
+--- a/qml/Main.qml
++++ b/qml/Main.qml
+@@ -425 +425,27 @@
+-    Component { id: backupRestoreComponent; BackupRestorePage {} }
++    Component {
++        id: backupRestoreComponent
++        BackupRestorePage {
++            onPartitionBackupRequested: { app.pageIndex = 3; app.pageTitle = "Partition Manager" }
++        }
++    }
++    Dialog {
++        id: partitionConfirm
++        title: "Confirm partition repair"
++        modal: true
++        anchors.centerIn: Overlay.overlay
++        width: 440
++        standardButtons: Dialog.Ok | Dialog.Cancel
++        contentItem: Text {
++            text: "Device: " + (backend.partitionPlan.model || "") + "\nPartition: " + (backend.partitionPlan.partition || "") + "\nImage bytes: " + (backend.partitionPlan.image_size || "") + "\nThe current partition will be backed up before writing."
++            color: Theme.text
++            wrapMode: Text.Wrap
++        }
++        onAccepted: backend.confirmPartition()
++        onRejected: backend.cancelPartition()
++    }
++    Connections {
++        target: backend
++        function onServiceResultChanged() {
++            if (backend.partitionPlan.fingerprint) partitionConfirm.open()
++        }
++    }

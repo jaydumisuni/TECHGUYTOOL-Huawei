@@ -1,0 +1,9 @@
+{
+  "techguy_huawei/partition_service.py": "6bd56c57cbbb0975f41d4e9247c5fa14faed835bd574dd9e958a5c9c587cfa9d",
+  "tests/test_partition_service.py": "82bf3187b8c5439e2b316b497b745b655e595d95a9e5b6739384e0b8dc232658",
+  "techguy_huawei/backend.py": "85b37ee864cf5bc576971b79f8553c508e84a57c0da08a42f06fbb9767b0ec5f",
+  "techguy_huawei/service_dispatch.py": "75d67f368b69b8826446b0b12280f270aa66f6104640f40892f5bd4dc9c5237a",
+  "qml/pages/PartitionManagerPage.qml": "9d058a4990365440b50abbc7916ef04961cb8ea23c1bac9ee36bc23dfe8b1d5c",
+  "qml/pages/BackupRestorePage.qml": "3f496b47c73fb3f7044934a123c1afd3a84be61d7ff5e25905fd89f27a5e25b5",
+  "qml/Main.qml": "1172e7d114c0c5ce4f04476d83cb4ac07141c7ad1a1e8ac060e1b030f998854c"
+}
