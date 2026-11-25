@@ -24,6 +24,7 @@ def kirin_product(product):
 def canonical_chipset(value):
     value=value.strip().lower().replace(" ","")
     if re.fullmatch(r"hisi\d{3,4}",value):return "kirin"+value[4:]
+    if value in {"hisi710a","hisi620c"}:return "kirin"+value[4:]
     if value in {"kirink3v2","k3v2"}:return "hisik3v2"
     return value
 

@@ -85,6 +85,726 @@
       "name": "Huawei nova",
       "platform": "Qualcomm MSM8953",
       "chipset": "msm8953"
+    },
+    {
+      "model": "VTR-L09",
+      "name": "Huawei P10",
+      "platform": "Kirin 960",
+      "chipset": "kirin960",
+      "source": "https://www.ifixit.com/Device/Huawei_P10",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "VTR-L29",
+      "name": "Huawei P10",
+      "platform": "Kirin 960",
+      "chipset": "kirin960",
+      "source": "https://www.ifixit.com/Device/Huawei_P10",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "VTR-AL00",
+      "name": "Huawei P10",
+      "platform": "Kirin 960",
+      "chipset": "kirin960",
+      "source": "https://www.ifixit.com/Device/Huawei_P10",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "VTR-TL00",
+      "name": "Huawei P10",
+      "platform": "Kirin 960",
+      "chipset": "kirin960",
+      "source": "https://www.ifixit.com/Device/Huawei_P10",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "EVA-L09",
+      "name": "Huawei P9",
+      "platform": "Kirin 955",
+      "chipset": "kirin955",
+      "source": "https://www.gsmarena.com/huawei_p9-7972.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "EVA-L19",
+      "name": "Huawei P9",
+      "platform": "Kirin 955",
+      "chipset": "kirin955",
+      "source": "https://www.gsmarena.com/huawei_p9-7972.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "EVA-L29",
+      "name": "Huawei P9",
+      "platform": "Kirin 955",
+      "chipset": "kirin955",
+      "source": "https://www.gsmarena.com/huawei_p9-7972.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "EVA-AL10",
+      "name": "Huawei P9",
+      "platform": "Kirin 955",
+      "chipset": "kirin955",
+      "source": "https://www.gsmarena.com/huawei_p9-7972.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "EVA-TL00",
+      "name": "Huawei P9",
+      "platform": "Kirin 955",
+      "chipset": "kirin955",
+      "source": "https://www.gsmarena.com/huawei_p9-7972.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "EVA-AL00",
+      "name": "Huawei P9",
+      "platform": "Kirin 955",
+      "chipset": "kirin955",
+      "source": "https://www.gsmarena.com/huawei_p9-7972.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "EVA-DL00",
+      "name": "Huawei P9",
+      "platform": "Kirin 955",
+      "chipset": "kirin955",
+      "source": "https://www.gsmarena.com/huawei_p9-7972.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "ALP-L09",
+      "name": "Huawei Mate 10",
+      "platform": "Kirin 970",
+      "chipset": "kirin970",
+      "source": "https://ds.gtgroup.dev/specs/huawei/mate-10",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "ALP-L29",
+      "name": "Huawei Mate 10",
+      "platform": "Kirin 970",
+      "chipset": "kirin970",
+      "source": "https://ds.gtgroup.dev/specs/huawei/mate-10",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "ALP-AL00",
+      "name": "Huawei Mate 10",
+      "platform": "Kirin 970",
+      "chipset": "kirin970",
+      "source": "https://ds.gtgroup.dev/specs/huawei/mate-10",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "ALP-TL00",
+      "name": "Huawei Mate 10",
+      "platform": "Kirin 970",
+      "chipset": "kirin970",
+      "source": "https://ds.gtgroup.dev/specs/huawei/mate-10",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "EML-L09",
+      "name": "Huawei P20",
+      "platform": "Kirin 970",
+      "chipset": "kirin970",
+      "source": "https://www.gsmchoice.com/en/catalogue/huawei/p20/",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "EML-L09C",
+      "name": "Huawei P20",
+      "platform": "Kirin 970",
+      "chipset": "kirin970",
+      "source": "https://www.gsmchoice.com/en/catalogue/huawei/p20/",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "EML-L29",
+      "name": "Huawei P20",
+      "platform": "Kirin 970",
+      "chipset": "kirin970",
+      "source": "https://www.gsmchoice.com/en/catalogue/huawei/p20/",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "EML-AL00",
+      "name": "Huawei P20",
+      "platform": "Kirin 970",
+      "chipset": "kirin970",
+      "source": "https://www.gsmchoice.com/en/catalogue/huawei/p20/",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "HMA-L29",
+      "name": "Huawei Mate 20",
+      "platform": "Kirin 980",
+      "chipset": "kirin980",
+      "source": "https://ds.gtgroup.dev/specs/huawei/mate-20",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "HMA-L09",
+      "name": "Huawei Mate 20",
+      "platform": "Kirin 980",
+      "chipset": "kirin980",
+      "source": "https://ds.gtgroup.dev/specs/huawei/mate-20",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "HMA-LX9",
+      "name": "Huawei Mate 20",
+      "platform": "Kirin 980",
+      "chipset": "kirin980",
+      "source": "https://ds.gtgroup.dev/specs/huawei/mate-20",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "HMA-AL00",
+      "name": "Huawei Mate 20",
+      "platform": "Kirin 980",
+      "chipset": "kirin980",
+      "source": "https://ds.gtgroup.dev/specs/huawei/mate-20",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "HMA-TL00",
+      "name": "Huawei Mate 20",
+      "platform": "Kirin 980",
+      "chipset": "kirin980",
+      "source": "https://ds.gtgroup.dev/specs/huawei/mate-20",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "LYA-AL10",
+      "name": "Huawei Mate 20 Pro",
+      "platform": "Kirin 980",
+      "chipset": "kirin980",
+      "source": "https://hcu-client.com/supported-models.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "LYA-L09",
+      "name": "Huawei Mate 20 Pro",
+      "platform": "Kirin 980",
+      "chipset": "kirin980",
+      "source": "https://hcu-client.com/supported-models.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "LYA-L0C",
+      "name": "Huawei Mate 20 Pro",
+      "platform": "Kirin 980",
+      "chipset": "kirin980",
+      "source": "https://hcu-client.com/supported-models.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "LYA-LX9",
+      "name": "Huawei Mate 20 Pro",
+      "platform": "Kirin 980",
+      "chipset": "kirin980",
+      "source": "https://hcu-client.com/supported-models.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "LYA-TL00",
+      "name": "Huawei Mate 20 Pro",
+      "platform": "Kirin 980",
+      "chipset": "kirin980",
+      "source": "https://hcu-client.com/supported-models.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "EVR-AL00",
+      "name": "Huawei Mate 20 X",
+      "platform": "Kirin 980",
+      "chipset": "kirin980",
+      "source": "https://hcu-client.com/supported-models.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "EVR-AN00",
+      "name": "Huawei Mate 20 X",
+      "platform": "Kirin 980",
+      "chipset": "kirin980",
+      "source": "https://hcu-client.com/supported-models.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "EVR-L29",
+      "name": "Huawei Mate 20 X",
+      "platform": "Kirin 980",
+      "chipset": "kirin980",
+      "source": "https://hcu-client.com/supported-models.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "EVR-N29",
+      "name": "Huawei Mate 20 X",
+      "platform": "Kirin 980",
+      "chipset": "kirin980",
+      "source": "https://hcu-client.com/supported-models.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "VOG-AL00",
+      "name": "Huawei P30 Pro",
+      "platform": "Kirin 980",
+      "chipset": "kirin980",
+      "source": "https://hcu-client.com/supported-models.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "VOG-AL10",
+      "name": "Huawei P30 Pro",
+      "platform": "Kirin 980",
+      "chipset": "kirin980",
+      "source": "https://hcu-client.com/supported-models.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "VOG-L04",
+      "name": "Huawei P30 Pro",
+      "platform": "Kirin 980",
+      "chipset": "kirin980",
+      "source": "https://hcu-client.com/supported-models.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "VOG-L09",
+      "name": "Huawei P30 Pro",
+      "platform": "Kirin 980",
+      "chipset": "kirin980",
+      "source": "https://hcu-client.com/supported-models.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "VOG-TL00",
+      "name": "Huawei P30 Pro",
+      "platform": "Kirin 980",
+      "chipset": "kirin980",
+      "source": "https://hcu-client.com/supported-models.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "PCT-L29",
+      "name": "Honor View 20",
+      "platform": "Kirin 980",
+      "chipset": "kirin980",
+      "source": "https://www.gsmchoice.com/en/catalogue/honor/view20/",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "ANA-NX9",
+      "name": "Huawei P40",
+      "platform": "Kirin 990",
+      "chipset": "kirin990",
+      "source": "https://www.commoncriteriaportal.org/files/epfiles/st_huawei_p40_emui11_v1.11.pdf",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "ELS-NX9",
+      "name": "Huawei P40 Pro",
+      "platform": "Kirin 990",
+      "chipset": "kirin990",
+      "source": "https://www.commoncriteriaportal.org/files/epfiles/st_huawei_p40_emui11_v1.11.pdf",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "VNS-L31",
+      "name": "Huawei P9 Lite",
+      "platform": "Kirin 650",
+      "chipset": "kirin650",
+      "source": "https://ds.gtgroup.dev/specs/huawei/p9-lite",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "VNS-L21",
+      "name": "Huawei P9 Lite",
+      "platform": "Kirin 650",
+      "chipset": "kirin650",
+      "source": "https://ds.gtgroup.dev/specs/huawei/p9-lite",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "VNS-L22",
+      "name": "Huawei P9 Lite",
+      "platform": "Kirin 650",
+      "chipset": "kirin650",
+      "source": "https://ds.gtgroup.dev/specs/huawei/p9-lite",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "VNS-L23",
+      "name": "Huawei P9 Lite",
+      "platform": "Kirin 650",
+      "chipset": "kirin650",
+      "source": "https://ds.gtgroup.dev/specs/huawei/p9-lite",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "VNS-L53",
+      "name": "Huawei P9 Lite",
+      "platform": "Kirin 650",
+      "chipset": "kirin650",
+      "source": "https://ds.gtgroup.dev/specs/huawei/p9-lite",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "VNS-AL00",
+      "name": "Huawei P9 Lite",
+      "platform": "Kirin 650",
+      "chipset": "kirin650",
+      "source": "https://ds.gtgroup.dev/specs/huawei/p9-lite",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "VNS-L62",
+      "name": "Huawei P9 Lite",
+      "platform": "Kirin 650",
+      "chipset": "kirin650",
+      "source": "https://ds.gtgroup.dev/specs/huawei/p9-lite",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "VNS-L52",
+      "name": "Huawei P9 Lite",
+      "platform": "Kirin 650",
+      "chipset": "kirin650",
+      "source": "https://ds.gtgroup.dev/specs/huawei/p9-lite",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "VNS-DL00",
+      "name": "Huawei P9 Lite",
+      "platform": "Kirin 650",
+      "chipset": "kirin650",
+      "source": "https://ds.gtgroup.dev/specs/huawei/p9-lite",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "VNS-TL00",
+      "name": "Huawei P9 Lite",
+      "platform": "Kirin 650",
+      "chipset": "kirin650",
+      "source": "https://ds.gtgroup.dev/specs/huawei/p9-lite",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "ALE-L21",
+      "name": "Huawei P8 Lite",
+      "platform": "Kirin 620",
+      "chipset": "kirin620",
+      "source": "https://www.gsmchoice.com/en/catalogue/huawei/p8lite/",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "POT-LX1",
+      "name": "Huawei P smart 2019",
+      "platform": "Kirin 710",
+      "chipset": "kirin710",
+      "source": "https://ds.gtgroup.dev/specs/huawei/p-smart-2019",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "POT-LX1AF",
+      "name": "Huawei P smart 2019",
+      "platform": "Kirin 710",
+      "chipset": "kirin710",
+      "source": "https://ds.gtgroup.dev/specs/huawei/p-smart-2019",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "POT-LX2J",
+      "name": "Huawei P smart 2019",
+      "platform": "Kirin 710",
+      "chipset": "kirin710",
+      "source": "https://ds.gtgroup.dev/specs/huawei/p-smart-2019",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "POT-LX1RUA",
+      "name": "Huawei P smart 2019",
+      "platform": "Kirin 710",
+      "chipset": "kirin710",
+      "source": "https://ds.gtgroup.dev/specs/huawei/p-smart-2019",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "POT-LX3",
+      "name": "Huawei P smart 2019",
+      "platform": "Kirin 710",
+      "chipset": "kirin710",
+      "source": "https://ds.gtgroup.dev/specs/huawei/p-smart-2019",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "POT-LX1A",
+      "name": "Huawei P smart 2019",
+      "platform": "Kirin 710",
+      "chipset": "kirin710",
+      "source": "https://ds.gtgroup.dev/specs/huawei/p-smart-2019",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "MAR-LX1",
+      "name": "Huawei P30 Lite",
+      "platform": "Kirin 710",
+      "chipset": "kirin710",
+      "source": "https://hcu-client.com/supported-models.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "MAR-LX1A",
+      "name": "Huawei P30 Lite",
+      "platform": "Kirin 710",
+      "chipset": "kirin710",
+      "source": "https://hcu-client.com/supported-models.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "MAR-LX1M",
+      "name": "Huawei P30 Lite",
+      "platform": "Kirin 710",
+      "chipset": "kirin710",
+      "source": "https://hcu-client.com/supported-models.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "MAR-LX21",
+      "name": "Huawei P30 Lite",
+      "platform": "Kirin 710",
+      "chipset": "kirin710",
+      "source": "https://hcu-client.com/supported-models.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "MAR-LX21A",
+      "name": "Huawei P30 Lite",
+      "platform": "Kirin 710",
+      "chipset": "kirin710",
+      "source": "https://hcu-client.com/supported-models.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "MAR-LX2J",
+      "name": "Huawei P30 Lite",
+      "platform": "Kirin 710",
+      "chipset": "kirin710",
+      "source": "https://hcu-client.com/supported-models.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "MAR-LX3",
+      "name": "Huawei P30 Lite",
+      "platform": "Kirin 710",
+      "chipset": "kirin710",
+      "source": "https://hcu-client.com/supported-models.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "MAR-LX3A",
+      "name": "Huawei P30 Lite",
+      "platform": "Kirin 710",
+      "chipset": "kirin710",
+      "source": "https://hcu-client.com/supported-models.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "MAR-L29",
+      "name": "Huawei P30 Lite",
+      "platform": "Kirin 710",
+      "chipset": "kirin710",
+      "source": "https://hcu-client.com/supported-models.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "PPA-LX1",
+      "name": "Huawei P smart 2021",
+      "platform": "Kirin 710A",
+      "chipset": "kirin710a",
+      "source": "https://www.gsmarena.com/huawei_p_smart_2021-10475.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "PPA-LX2",
+      "name": "Huawei P smart 2021",
+      "platform": "Kirin 710A",
+      "chipset": "kirin710a",
+      "source": "https://www.gsmarena.com/huawei_p_smart_2021-10475.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "SPN-AL00",
+      "name": "Huawei nova 5i Pro",
+      "platform": "Kirin 810",
+      "chipset": "kirin810",
+      "source": "https://ds.gtgroup.dev/specs/huawei/nova-5i-pro",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "SPN-TL00",
+      "name": "Huawei nova 5i Pro",
+      "platform": "Kirin 810",
+      "chipset": "kirin810",
+      "source": "https://ds.gtgroup.dev/specs/huawei/nova-5i-pro",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "BMH-AN10",
+      "name": "Honor 30",
+      "platform": "Kirin 985",
+      "chipset": "kirin985",
+      "source": "https://ds.gtgroup.dev/specs/honor/30",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "BMH-AN20",
+      "name": "Honor 30",
+      "platform": "Kirin 985",
+      "chipset": "kirin985",
+      "source": "https://ds.gtgroup.dev/specs/honor/30",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "JEF-NX9",
+      "name": "Huawei nova 7 5G",
+      "platform": "Kirin 985",
+      "chipset": "kirin985",
+      "source": "https://uae.sharafdg.com/product/huawei-nova-7-256gb-space-silver-5g-dual-sim-smartphone/",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "PLK-TL01H",
+      "name": "Honor 7",
+      "platform": "Kirin 935",
+      "chipset": "kirin935",
+      "source": "https://hcu-client.com/supported-models.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "CDY-AN00",
+      "name": "Huawei nova 7 SE",
+      "platform": "Kirin 820",
+      "chipset": "kirin820",
+      "source": "https://www.gsmarena.com/huawei_nova_7_se-10205.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "CDY-NX9B",
+      "name": "Huawei nova 7 SE",
+      "platform": "Kirin 820",
+      "chipset": "kirin820",
+      "source": "https://www.gsmarena.com/huawei_nova_7_se-10205.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "CDY-TN00",
+      "name": "Huawei nova 7 SE",
+      "platform": "Kirin 820",
+      "chipset": "kirin820",
+      "source": "https://www.gsmarena.com/huawei_nova_7_se-10205.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "CDY-AN20",
+      "name": "Huawei nova 7 SE",
+      "platform": "Kirin 820",
+      "chipset": "kirin820",
+      "source": "https://www.gsmarena.com/huawei_nova_7_se-10205.php",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "FRD-L09",
+      "name": "Honor 8",
+      "platform": "Kirin 950",
+      "chipset": "kirin950",
+      "source": "https://www.gsmchoice.com/en/catalogue/honor/8dualsim/",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "FRD-L19",
+      "name": "Honor 8",
+      "platform": "Kirin 950",
+      "chipset": "kirin950",
+      "source": "https://www.gsmchoice.com/en/catalogue/honor/8dualsim/",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "FRD-TL00",
+      "name": "Honor 8",
+      "platform": "Kirin 950",
+      "chipset": "kirin950",
+      "source": "https://www.gsmchoice.com/en/catalogue/honor/8dualsim/",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "FRD-AL00",
+      "name": "Honor 8",
+      "platform": "Kirin 950",
+      "chipset": "kirin950",
+      "source": "https://www.gsmchoice.com/en/catalogue/honor/8dualsim/",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "FRD-AL10",
+      "name": "Honor 8",
+      "platform": "Kirin 950",
+      "chipset": "kirin950",
+      "source": "https://www.gsmchoice.com/en/catalogue/honor/8dualsim/",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "MT7-L09",
+      "name": "Huawei Ascend Mate7",
+      "platform": "Kirin 925",
+      "chipset": "kirin925",
+      "source": "https://ds.gtgroup.dev/specs/huawei/ascend-mate7",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "MT7-TL10",
+      "name": "Huawei Ascend Mate7",
+      "platform": "Kirin 925",
+      "chipset": "kirin925",
+      "source": "https://ds.gtgroup.dev/specs/huawei/ascend-mate7",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "MT7-TL00",
+      "name": "Huawei Ascend Mate7",
+      "platform": "Kirin 925",
+      "chipset": "kirin925",
+      "source": "https://ds.gtgroup.dev/specs/huawei/ascend-mate7",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "MT7-CL00",
+      "name": "Huawei Ascend Mate7",
+      "platform": "Kirin 925",
+      "chipset": "kirin925",
+      "source": "https://ds.gtgroup.dev/specs/huawei/ascend-mate7",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "MT7-UL00",
+      "name": "Huawei Ascend Mate7",
+      "platform": "Kirin 925",
+      "chipset": "kirin925",
+      "source": "https://ds.gtgroup.dev/specs/huawei/ascend-mate7",
+      "provenance": "published_hardware_specification"
+    },
+    {
+      "model": "P6-U06",
+      "name": "Huawei Ascend P6",
+      "platform": "Kirin K3V2",
+      "chipset": "hisik3v2",
+      "source": "https://ds.gtgroup.dev/specs/huawei/ascend-p6",
+      "provenance": "published_hardware_specification"
     }
   ]
 }

@@ -1,0 +1,5 @@
+{
+  "data/device_profiles.json": "1ce03a055c7d2c58e349eacdc9a9ddfc1b6abc9bd3cd7c5653902aad95c9692c",
+  "techguy_huawei/fastboot_identity.py": "0f1f8cb41631e131bfcd51cd714cb5b6197ba09c06da18e09626afa6536c1694",
+  "tests/test_model_catalogue_expansion.py": "baf8db47e4f264ea708710d62642f2c0d38e53792c04e691e54e626c455b2d7a"
+}
