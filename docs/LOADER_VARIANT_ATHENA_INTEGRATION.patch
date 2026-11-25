@@ -1,0 +1,81 @@
+--- a/techguy_huawei/backend.py
++++ b/techguy_huawei/backend.py
+@@ -96,0 +97 @@
++        self._loader_variant = ""
+@@ -488,0 +490,26 @@
++    def loaderVariant(self) -> str:
++        return self._loader_variant
++
++    @Property("QStringList", notify=firmwareTargetChanged)
++    def loaderVariantOptions(self):
++        base = resolve_loader(self.app_root, self._firmware_chipset)
++        return list(base.candidate_families) if base.status == "loader_variant_required" else []
++
++    def _selected_loader(self):
++        from .service_loader_registry import resolve_variant
++        return resolve_variant(self.app_root, self._firmware_chipset, self._loader_variant)
++
++    @Slot(str, result=bool)
++    def setLoaderVariant(self, value: str) -> bool:
++        if self._busy:
++            return False
++        value = value.strip().lower()
++        if value and value not in self.loaderVariantOptions:
++            return False
++        if value != self._loader_variant:
++            self._loader_variant = value
++            self._invalidate_firmware_plan()
++            self.firmwareTargetChanged.emit()
++        return True
++
++    @Property(str, notify=firmwareTargetChanged)
+@@ -490 +517 @@
+-        return json.dumps(resolve_loader(self.app_root, self._firmware_chipset).to_dict())
++        return json.dumps(self._selected_loader().to_dict())
+@@ -494 +521 @@
+-        selection = resolve_loader(self.app_root, self._firmware_chipset)
++        selection = self._selected_loader()
+@@ -537,0 +565 @@
++        previous_model = self._firmware_model
+@@ -538,0 +567 @@
++        self._loader_variant = ""
+@@ -542 +571 @@
+-        elif not self._firmware_chipset_manually_selected:
++        elif previous_model or not value or not self._firmware_chipset_manually_selected:
+@@ -543,0 +573 @@
++            self._firmware_chipset_manually_selected = False
+@@ -553,0 +584,6 @@
++        # An explicit loader choice must not replace the hardware chipset.
++        cpu = value.replace("kirin","hisi",1) if value.startswith("kirin") else value
++        if cpu in self.loaderVariantOptions:
++            self.setLoaderVariant(cpu)
++            return
++        self._loader_variant = ""
+@@ -1098,0 +1135 @@
++                    self._loader_variant = ""
+--- a/qml/components/DeviceSearchHeader.qml
++++ b/qml/components/DeviceSearchHeader.qml
+@@ -101 +101 @@
+-        return options.slice(0, 48)
++        return options
+@@ -335,0 +336,11 @@
++    }
++
++    ComboBox {
++        objectName: "deviceLoaderVariant"
++        Layout.fillWidth: true
++        Layout.preferredHeight: 30
++        visible: root.interactiveTarget && backend.loaderVariantOptions.length > 0
++        enabled: !backend.operationBusy
++        model: ["Select exact loader variant"].concat(backend.loaderVariantOptions)
++        currentIndex: Math.max(0, backend.loaderVariantOptions.indexOf(backend.loaderVariant) + 1)
++        onActivated: backend.setLoaderVariant(index === 0 ? "" : backend.loaderVariantOptions[index - 1])
+--- a/tests/support/verify_device_target_selector.py
++++ b/tests/support/verify_device_target_selector.py
+@@ -139 +139,5 @@
+-assert backend.firmwareModel=="XYZ-L99" and backend.firmwareChipset=="kirin980"
++assert backend.firmwareModel=="XYZ-L99" and backend.firmwareChipset==""
++backend.setFirmwareModel("")
++backend.setFirmwareChipset("kirin980")
++backend.setFirmwareModel("XYZ-L99")
++assert backend.firmwareChipset=="kirin980"

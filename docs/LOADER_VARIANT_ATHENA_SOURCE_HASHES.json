@@ -1,0 +1,7 @@
+{
+  "techguy_huawei/service_loader_registry.py": "154c2cb17a9fb634d1a7a7198c319c87fa5f3ba45c8e584faa321ff603264d7d",
+  "tests/test_loader_variant_selection.py": "e158573b9141fe39509f3cf4e8c1ae4aebddc61996f6a3460ca83fa1796fe529",
+  "techguy_huawei/backend.py": "d3ec7bfecac7584f6e87a123fdcffa432419f44792b011fe1b6af4225cfc3ef3",
+  "qml/components/DeviceSearchHeader.qml": "f7bc603d890be8fc08f763531219467a55e83b15522cb635c7d0b4b88409d81c",
+  "tests/support/verify_device_target_selector.py": "1c94bd604186f3b6c23c65d529e5b534da49e0731e7ab129519e90b8a486e25b"
+}

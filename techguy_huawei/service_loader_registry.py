@@ -7,7 +7,7 @@ transport is certified on the attached phone. Firmware flash in an already
 unlocked Fastboot session does not need a new service loader.
 """
 
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, replace
 from hashlib import sha256
 from pathlib import Path
 from .fastboot_identity import canonical_chipset
@@ -158,3 +158,14 @@ def resolve_loader(app_root: Path, chipset: str) -> LoaderSelection:
         transport_proven=profile.get("usb_stage_transport_proven") is True,
         reason="Exact chipset images selected and hash-verified; not transmitted to device",
     )
+
+def resolve_variant(app_root: Path, chipset: str, variant: str = "") -> LoaderSelection:
+    """Resolve selected inventory metadata without changing hardware identity."""
+    base = resolve_loader(app_root, chipset)
+    if not variant:
+        return base
+    if base.status != "loader_variant_required" or variant not in base.candidate_families:
+        return LoaderSelection(base.chipset, "invalid_loader_variant",
+                               reason="Variant does not belong to selected chipset")
+    chosen = resolve_loader(app_root, variant)
+    return replace(chosen, chipset=base.chipset, candidate_families=base.candidate_families)
