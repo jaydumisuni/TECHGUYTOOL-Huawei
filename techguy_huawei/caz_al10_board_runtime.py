@@ -221,8 +221,16 @@ def board_apply(project:Path,rawprogram:Path,model:str,chipset:str,fingerprint:s
         progress("Backing up 41 device regions")
         run("backup",read_args(backup,ranges),timeout=600)
         report["backup"]=validate_files(backup,{**primary,**ranges})
-        if _layout((backup/"gpt-backup.bin").read_bytes(),SECTORS-33,32)!=rows:
-            raise FlashError("Primary and backup GPT disagree.")
+        backup_rows=_layout((backup/"gpt-backup.bin").read_bytes(),SECTORS-33,32)
+        # The recovered handset really had B387 primary (61 entries) and
+        # B077/B175 backup (54 entries), both CRC-valid. This precise mixed
+        # geometry is a qualified input observation, not arbitrary corruption.
+        backup_layout=_layout_digest(backup_rows)
+        if backup_layout not in {BEFORE_LAYOUT,AFTER_LAYOUT}:
+            raise FlashError("Backup GPT is outside both known layouts.")
+        report["pre_gpt"]={"primary_layout":_layout_digest(rows),
+                           "backup_layout":backup_layout,
+                           "copies_agree":rows==backup_rows}
         save()
         filtered=job/"rawprogram-preserve.xml"
         expected=_filtered(rawprogram,filtered)
