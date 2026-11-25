@@ -151,6 +151,8 @@ def project_scan(snapshot:DeviceSnapshot,base:EngineResult,report:dict)->tuple[D
                      "identity":identity,"storage":storage,
                      "partitions":[{"transport":o.get("transport"),**part} for o in observations if o.get("connected") for part in o.get("partitions",[])],
                      "diagnostics":diagnostics,"certification":c.get("certification",{}),
+                     "firmware":c.get("firmware",{}),"profile_match":c.get("profile_match",{}),
+                     "challenges":c.get("challenges",[]),
                      "write_allowed":False}
     return snapshot,EngineResult(True,f"Connected: {snapshot.model} via {snapshot.interface}.",ActionState.READY,payload)
 

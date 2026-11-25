@@ -1,0 +1,11 @@
+{
+  "techguy_huawei/qualcomm_layout.py": "3174af09ce7c2c8fa31a1c538a2838a33c936c8ba6cecb877eb6c49540dd1e77",
+  "techguy_huawei/qualcomm_package.py": "87441f6aa1d35bd4c0cc31dfd7f65c13944ded39b2f276630cd6ceaff02d991a",
+  "techguy_huawei/service_loader_registry.py": "0210e7dcb83c7f180e5ef6ed3dd034b04d91425419649454f2183250c5ecb371",
+  "techguy_huawei/fastboot_identity.py": "97ccd8246d46570ca66cdf6bfc597414f546aa34197e15484a2bd7c27692d6c3",
+  "techguy_huawei/xray_read_device.py": "385c387b7e33474863bc2fdd8c53482c3b854408fa5798b705c0044ac8cbf874",
+  "tests/test_connected_adapters.py": "9b829fbdaa05bc3429497a4e1db3f7b9c162a2bc733fbf0b43626fc52a8bd6fa",
+  "techguy_huawei/backend.py": "48e69d90d3f65091da1a94f59799db38205dd2ed74f6edf6e78514f7fa479dc6",
+  "techguy_huawei/operation_log.py": "86ea0d5e06b9344160662248ea13c5d1c0d832bd10d7d3ce9faee36084ccf82e",
+  "qml/components/DeviceSearchHeader.qml": "91072406597481c06e2095f674c6d729c23c50fef48024d5401f8ada8fc0a545"
+}

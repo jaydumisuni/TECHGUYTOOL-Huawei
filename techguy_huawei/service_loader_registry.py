@@ -10,6 +10,7 @@ unlocked Fastboot session does not need a new service loader.
 from dataclasses import dataclass, asdict
 from hashlib import sha256
 from pathlib import Path
+from .fastboot_identity import canonical_chipset
 import json
 import re
 
@@ -49,7 +50,8 @@ def _inventory_candidate(app_root: Path, selected: str) -> LoaderSelection:
         data=json.loads((app_root/"data"/"kirin_loader_inventory.json").read_text(encoding="utf8"))
         if data.get("schema")!="techguy.huawei.kirin-loader-inventory.v1":
             raise ValueError("schema")
-        source=(app_root/data["relative_source"]).resolve()
+        installed=app_root/"runtime"/"kirin-loaders"
+        source=(installed if installed.is_dir() else app_root/data["relative_source"]).resolve()
         if app_root.resolve() not in source.parents:
             raise ValueError("source escapes project")
         families={row["cpu"]:row for row in data["families"]}
@@ -88,7 +90,7 @@ def _inventory_candidate(app_root: Path, selected: str) -> LoaderSelection:
 
 
 def resolve_loader(app_root: Path, chipset: str) -> LoaderSelection:
-    selected = chipset.strip().lower().replace(" ", "")
+    selected = canonical_chipset(chipset)
     if not selected:
         return LoaderSelection("", "awaiting_chipset", reason="Select/detect a chipset")
     if not re.fullmatch(r"[a-z0-9][a-z0-9_.-]{2,63}", selected):

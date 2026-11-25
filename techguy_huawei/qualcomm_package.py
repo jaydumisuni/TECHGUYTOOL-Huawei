@@ -276,17 +276,16 @@ def apply(project:Path,rawprogram:Path,model:str,chipset:str,fingerprint:str,evi
             if _gpt(backup.read_bytes(),sector,start,n-1)!=layout:raise FlashError("Primary and backup GPT disagree; use an explicit repartitioning recovery recipe.")
             layouts[lun]=layout
         _geometry(package,layouts)
-        # A firmware package can contain a target GPT with a different layout.
-        # We do not ignore such a mismatch. Compare supplied primary GPT when
-        # its actual file format contains a complete standard GPT.
-        for op in package["all_operations"]:
-            if not op["filename"] or op["label"].casefold() not in {"primarygpt","gpt_main","gpt"}:continue
-            lun=op["physical_partition_number"];sector=op["sector_size"]
-            if lun not in layouts:continue
-            f=Path(package["folder"])/op["filename"]
-            if f.stat().st_size>1024*1024:raise FlashError("Unrecognized package GPT image size.")
-            target=_gpt(f.read_bytes(),sector,0,1)
-            if target["rows"]!=layouts[lun]["rows"]:raise FlashError("Package requests a different GPT layout; use explicit repartitioning recipe.")
+        # Vendor GPT images may be templates with dynamic capacity and
+        # invalid CRC before patching. Replay only bounded GPT patches offline
+        # against observed capacity, then compare both resulting tables.
+        from .qualcomm_layout import preview, compare
+        targets=preview(package,{lun:layout["disk_sectors"] for lun,layout in layouts.items()})
+        report["vendor_layout_preview"]={str(lun):compare(layouts[lun],target["layout"])
+                                          for lun,target in targets.items()}
+        save()
+        if any(not row["same_layout"] for row in report["vendor_layout_preview"].values()):
+            raise FlashError("Vendor GPT changes the existing layout; full reconstruction requires its explicitly reviewed plan.")
         ops=package["operations"]
         total=sum(op["sectors"]*op["sector_size"] for op in ops)
         peak=max(op["sectors"]*op["sector_size"] for op in ops)
