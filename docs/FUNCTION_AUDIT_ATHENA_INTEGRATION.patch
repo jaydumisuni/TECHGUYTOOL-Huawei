@@ -1,0 +1,203 @@
+--- a/techguy_huawei/backend.py
++++ b/techguy_huawei/backend.py
+@@ -231,0 +232,28 @@
++    @Slot(result="QVariantList")
++    def operationHistory(self):
++        from .operation_history import records
++        return records(self._action_logs_dir())
++
++    @Slot(str,result=str)
++    def readOperationLog(self,path):
++        from .operation_history import read_log
++        try:return read_log(self._action_logs_dir(),path)
++        except (OSError,ValueError) as exc:return str(exc)
++
++    @Slot(str,result=bool)
++    def openOperationLog(self,path):
++        from .operation_history import read_log
++        try:
++            read_log(self._action_logs_dir(),path)
++            return bool(QDesktopServices.openUrl(QUrl.fromLocalFile(path)))
++        except (OSError,ValueError):return False
++
++    @Slot(str,"QVariantList",result=bool)
++    def exportOperationHistory(self,path,rows):
++        from .operation_history import export
++        try:
++            url=QUrl(path)
++            export(self._action_logs_dir(),url.toLocalFile() if url.isLocalFile() else path,rows)
++            return True
++        except (OSError,ValueError,TypeError):return False
++
+--- a/techguy_huawei/service_dispatch.py
++++ b/techguy_huawei/service_dispatch.py
+@@ -27 +27 @@
+-SERVICE_OPERATIONS = DEVICE_OPERATIONS | {"flash_firmware", "terminal_read", "terminal_write"}
++SERVICE_OPERATIONS = DEVICE_OPERATIONS | {"flash_firmware", "terminal_read", "terminal_write", "fix_drivers"}
+@@ -81,0 +82,7 @@
++        elif request.action_id == "fix_drivers":
++            from .driver_inventory import scan
++            logger.add("Scanning local Windows driver interfaces...")
++            result=scan()
++            for row in (result.payload or {}).get("interfaces",[]):
++                logger.add(f"{row.get('name','USB interface')}: {row.get('status','Unknown')} / {row.get('problem','')}")
++            logger.add(result.message)
+--- a/qml/Main.qml
++++ b/qml/Main.qml
+@@ -207 +207 @@
+-                        onClicked: terminalDialog.show()
++                        onClicked: { if (!backend.operationBusy) backend.runAction("open_terminal"); terminalDialog.show() }
+@@ -414,0 +415,2 @@
++            onFirmwareRequested: { app.pageIndex = 2; app.pageTitle = "Firmware Flash" }
++            onBackupRequested: { app.pageIndex = 4; app.pageTitle = "Backup & Restore" }
+--- a/qml/pages/OperationHistoryPage.qml
++++ b/qml/pages/OperationHistoryPage.qml
+@@ -3,0 +4 @@
++import QtQuick.Dialogs
+@@ -8,0 +10,23 @@
++    property var rows: []
++    property var selected: ({})
++    property string selectedLog: ""
++    function refresh() { rows = backend.operationHistory() }
++    readonly property var filtered: rows.filter(function(row) {
++        var query = searchField.text.toLowerCase()
++        return (!query || JSON.stringify(row).toLowerCase().indexOf(query) >= 0)
++            && (operationFilter.currentIndex === 0 || row.operation === operationFilter.currentText)
++            && (resultFilter.currentIndex === 0 || row.result === resultFilter.currentText)
++            && (dateFilter.currentIndex === 0 || row.date === dateFilter.currentText)
++    })
++    Component.onCompleted: refresh()
++    Connections { target: backend; function onActionLogSaved() { root.refresh() } }
++    FileDialog {
++        id: exportDialog
++        fileMode: FileDialog.SaveFile
++        nameFilters: ["History JSON (*.json)"]
++        defaultSuffix: "json"
++        onAccepted: {
++            if (!backend.exportOperationHistory(selectedFile.toString(),root.filtered))
++                root.selectedLog = "Export failed. Choose a new destination file."
++        }
++    }
+@@ -23,4 +47,4 @@
+-            Rectangle {
+-                Layout.fillWidth: true; Layout.preferredHeight: 36; radius: 5
+-                color: "#081322"; border.width: 1; border.color: "#304862"
+-                Text { anchors.left: parent.left; anchors.leftMargin: 10; anchors.verticalCenter: parent.verticalCenter; text: "⌕  Search operations..."; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
++            TextField {
++                id: searchField
++                Layout.fillWidth: true; Layout.preferredHeight: 36
++                placeholderText: "Search operations..."
+@@ -28,3 +52,3 @@
+-            ComboBox { Layout.preferredWidth: 118; Layout.preferredHeight: 36; model: ["All Operations"] }
+-            ComboBox { Layout.preferredWidth: 105; Layout.preferredHeight: 36; model: ["All Results"] }
+-            ComboBox { Layout.preferredWidth: 105; Layout.preferredHeight: 36; model: ["All Dates"] }
++            ComboBox { id: operationFilter; Layout.preferredWidth: 118; Layout.preferredHeight: 36; model: ["All Operations"].concat(Array.from(new Set(root.rows.map(function(r){return r.operation}))).sort()) }
++            ComboBox { id: resultFilter; Layout.preferredWidth: 105; Layout.preferredHeight: 36; model: ["All Results"].concat(Array.from(new Set(root.rows.map(function(r){return r.result}))).sort()) }
++            ComboBox { id: dateFilter; Layout.preferredWidth: 105; Layout.preferredHeight: 36; model: ["All Dates"].concat(Array.from(new Set(root.rows.map(function(r){return r.date}))).sort().reverse()) }
+@@ -32 +56 @@
+-                Layout.preferredWidth: 82; Layout.preferredHeight: 36; enabled: false; text: "EXPORT"
++                Layout.preferredWidth: 82; Layout.preferredHeight: 36; enabled: root.filtered.length > 0; text: "EXPORT"; onClicked: exportDialog.open()
+@@ -37 +61 @@
+-                Layout.preferredWidth: 100; Layout.preferredHeight: 36; enabled: false; text: "CLEAR HISTORY"
++                Layout.preferredWidth: 100; Layout.preferredHeight: 36; text: "RESET FILTER"; onClicked: { searchField.text = ""; operationFilter.currentIndex = 0; resultFilter.currentIndex = 0; dateFilter.currentIndex = 0; root.selected = ({}); root.selectedLog = "" }
+@@ -65,5 +89,21 @@
+-                    Column {
+-                        anchors.centerIn: parent
+-                        spacing: 7
+-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "No persisted operation rows are loaded in this UI session."; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
+-                        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Live evidence remains available in the operation log and Huawei audit journal."; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
++                    ListView {
++                        id: historyList
++                        objectName: "operationHistoryList"
++                        anchors.fill: parent; clip: true; model: root.filtered
++                        delegate: Rectangle {
++                            required property var modelData
++                            required property int index
++                            width: historyList.width; height: 32
++                            color: root.selected.path === modelData.path ? "#234764" : index % 2 ? "#102033" : "#0a1829"
++                            RowLayout {
++                                anchors.fill: parent; anchors.margins: 8
++                                Text { text: (modelData.time || "").slice(11,19); color: Theme.text; Layout.preferredWidth: 92; font.pixelSize: 11 }
++                                Text { text: modelData.model || "Not recorded"; color: Theme.text; Layout.preferredWidth: 165; font.pixelSize: 11; elide: Text.ElideRight }
++                                Text { text: modelData.operation; color: Theme.text; Layout.fillWidth: true; font.pixelSize: 11; elide: Text.ElideRight }
++                                Text { text: modelData.result; color: Theme.text; Layout.preferredWidth: 85; font.pixelSize: 11; elide: Text.ElideRight }
++                                Text { text: modelData.elapsed || "?"; color: Theme.muted; Layout.preferredWidth: 85; font.pixelSize: 11 }
++                                Text { text: "See report"; color: Theme.muted; Layout.preferredWidth: 100; font.pixelSize: 11 }
++                            }
++                            MouseArea { anchors.fill: parent; onClicked: { root.selected = modelData; root.selectedLog = backend.readOperationLog(modelData.path) } }
++                        }
++                        ScrollBar.vertical: ScrollBar {}
+@@ -70,0 +111 @@
++                    Text { anchors.centerIn: parent; visible: historyList.count === 0; text: "No matching operation reports."; color: Theme.muted }
+@@ -86 +127 @@
+-                        Layout.preferredWidth: 95; Layout.preferredHeight: 30; enabled: false; text: "OPEN LOG"
++                        Layout.preferredWidth: 95; Layout.preferredHeight: 30; enabled: !!root.selected.path; text: "OPEN LOG"; onClicked: backend.openOperationLog(root.selected.path)
+@@ -102 +143 @@
+-                        Text { text: "—"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
++                        Text { text: root.selected.run || "?"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
+@@ -104 +145 @@
+-                        Text { text: "—"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
++                        Text { text: root.selected.time || "?"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
+@@ -106 +147 @@
+-                        Text { text: backend.connected ? backend.deviceModel : "—"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
++                        Text { text: root.selected.model || "?"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
+@@ -108 +149 @@
+-                        Text { text: "—"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
++                        Text { text: root.selected.operation || "?"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
+@@ -110 +151 @@
+-                        Text { text: "—"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
++                        Text { text: root.selected.result || "?"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
+@@ -120 +161 @@
+-                            Text { text: backend.connected ? backend.deviceInterface : "—"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
++                            Text { text: root.selected.interface || "?"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
+@@ -122 +163 @@
+-                            Text { text: backend.connected ? backend.devicePlatform : "—"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
++                            Text { text: root.selected.platform || "?"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
+@@ -124 +165 @@
+-                            Text { text: "—"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
++                            Text { text: root.selected.message || "?"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
+@@ -129 +170 @@
+-                                text: backend.logText.length ? backend.logText : "No operation evidence recorded in this session."
++                                text: root.selectedLog || "Select an operation to view its report."
+--- a/qml/pages/ServiceCenterPage.qml
++++ b/qml/pages/ServiceCenterPage.qml
+@@ -30,0 +31,2 @@
++    signal firmwareRequested()
++    signal backupRequested()
+@@ -128 +130 @@
+-            OperationTile { Layout.fillWidth: true; Layout.fillHeight: true; objectName: "operationFlashFirmware"; enabled: backend.operationBusy !== true; text: "Flash Firmware"; subtitle: "Flash stock or custom firmware."; glyph: "▣"; iconName: "flash-firmware"; active: root.invokedAction === "flash_firmware"; onClicked: root.invokeOperation("flash_firmware", "FLASH FIRMWARE") }
++            OperationTile { Layout.fillWidth: true; Layout.fillHeight: true; objectName: "operationFlashFirmware"; enabled: backend.operationBusy !== true; text: "Flash Firmware"; subtitle: "Flash stock or custom firmware."; glyph: "▣"; iconName: "flash-firmware"; active: root.invokedAction === "flash_firmware"; onClicked: root.firmwareRequested() }
+@@ -130 +132 @@
+-            OperationTile { Layout.fillWidth: true; Layout.fillHeight: true; objectName: "operationBackupRestore"; enabled: backend.operationBusy !== true; text: "Backup / Restore"; subtitle: "Backup or restore device partitions."; glyph: "☁"; iconName: "backup"; active: root.invokedAction === "backup_restore"; onClicked: root.invokeOperation("backup_restore", "BACKUP / RESTORE") }
++            OperationTile { Layout.fillWidth: true; Layout.fillHeight: true; objectName: "operationBackupRestore"; enabled: backend.operationBusy !== true; text: "Backup / Restore"; subtitle: "Backup or restore device partitions."; glyph: "☁"; iconName: "backup"; active: root.invokedAction === "backup_restore"; onClicked: root.backupRequested() }
+--- a/qml/dialogs/DriverDialog.qml
++++ b/qml/dialogs/DriverDialog.qml
+@@ -9,0 +10,16 @@
++    property var scanResult: ({})
++    function refreshDriverResult() {
++        try { scanResult = JSON.parse(backend.serviceResultJson("fix_drivers")) }
++        catch (e) { scanResult = ({}) }
++    }
++    function interfaceStatus(name) {
++        var rows = (scanResult.payload || {}).interfaces || []
++        var tokens = name === "Huawei USB COM 1.0" ? /USB COM|USB SER/i :
++                     name === "Huawei Android USB" ? /ADB|Android USB/i :
++                     name === "Huawei Fastboot" ? /Fastboot|Bootloader/i : /QDLoader|9008/i
++        var hits = rows.filter(function(row){return tokens.test(row.name || "")})
++        return hits.length ? hits.map(function(row){return row.status || "Unknown"}).join(", ") :
++               scanResult.ok ? "Not present" : "Check required"
++    }
++    Connections { target: backend; function onServiceResultChanged() { root.refreshDriverResult() } }
++    onOpened: refreshDriverResult()
+@@ -49 +65 @@
+-                    Text { text: "Check required"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
++                    Text { text: root.interfaceStatus(modelData.name); color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
+@@ -53 +69 @@
+-        CheckBox { text: "Remove conflicting driver versions"; font.family: Theme.fontFamily; font.pixelSize: 13 }
++        Text { text: "Driver repair requires matching signed packages."; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 13 }
+@@ -58 +74 @@
+-            Text { text: "Connect a device before running driver repair"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12; Layout.fillWidth: true }
++            Text { text: root.scanResult.message || "Scan locally for connected driver interfaces"; wrapMode: Text.WordWrap; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12; Layout.fillWidth: true }
+@@ -64 +80 @@
+-            GlowButton { text: "SCAN & FIX DRIVERS"; Layout.preferredWidth: 250; onClicked: backend.runAction("fix_drivers") }
++            GlowButton { text: "SCAN DRIVERS"; enabled: !backend.operationBusy; Layout.preferredWidth: 250; onClicked: backend.runAction("fix_drivers") }

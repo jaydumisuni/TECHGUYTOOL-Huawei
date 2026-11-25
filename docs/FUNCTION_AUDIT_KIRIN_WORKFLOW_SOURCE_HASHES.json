@@ -1,0 +1,16 @@
+{
+  "qml/Main.qml": "af0d7eb479ddb624fc79bf927dbd638e16e3b1a01886c2b62be42a74323b3c19",
+  "qml/dialogs/DriverDialog.qml": "86d2b78825a6a5a72911a33e143487c0626d9f1fa6f7d228c1e643ae6efafa41",
+  "qml/dialogs/TestpointDialog.qml": "b716b35e0bfd2956b50e7154b8675fab3b400a12b1bcf0ae5507f241012d1bb1",
+  "qml/pages/OperationHistoryPage.qml": "3dd13bbd372f219ab6fb6cedca3842371365d8fe083af4a8fe6cefe669c0b0ff",
+  "qml/pages/ServiceCenterPage.qml": "61e9f38cfe64d31735b8bb855b55aaf0a23045758d49e7e861187d1f1b696f34",
+  "techguy_huawei/backend.py": "1bfd828658124638576954bc69fb70770e374796bfe2b3a67c69d12eb234f182",
+  "techguy_huawei/desktop_worker.py": "438cca9748b8145aa7f618675991a5880bf506a165d98e461860a2cab075fc69",
+  "techguy_huawei/driver_inventory.py": "2f78baae45ca9bb54e9bac653d3395cb9e858898256fea676631ccfae739c3e7",
+  "techguy_huawei/kirin_repair_session.py": "18526230019ca7749e4e4a19fe7f86dbc173d2deb7b7d29ffd32206b7ab17be2",
+  "techguy_huawei/operation_history.py": "872e7cc899d14ce3e809db9a747c93d9d0f0143b17515e004198c0d7d2c224a8",
+  "techguy_huawei/service_dispatch.py": "dc2c0189cd1b1afda4be17bb7f0ef9d02f01e9a365ff2c95103b01db94675022",
+  "tests/test_firmware_flash_ui_contract.py": "3f3b6b67b9f1d023d70b54168a6ae5eb77c0446d2dc600c72a598c1e3c9ac590",
+  "tests/test_function_audit.py": "eea4b18f52173f3eae0685ea2a213ac1628e50b64b7241b863e2d25b3fbc7a03",
+  "tests/test_kirin_repair_session.py": "72a0f9c3cf2aa20ee0baec2cc0843ff45cf73b2632c1f2cd73acdae32032b0fa"
+}
