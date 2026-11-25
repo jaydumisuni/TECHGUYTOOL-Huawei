@@ -1,0 +1,294 @@
+--- a/qml/Main.qml
++++ b/qml/Main.qml
+@@ -479 +479 @@
+-            text: "Device: " + (backend.partitionPlan.model || "") + "\nPartition: " + (backend.partitionPlan.partition || "") + "\nImage bytes: " + (backend.partitionPlan.image_size || "") + "\nThe current partition will be backed up before writing."
++            text: "Device: " + (backend.partitionPlan.model || "") + "\nPartition: " + (backend.partitionPlan.partition || "") + (backend.partitionPlan.operation === "erase" ? "\nERASE: This removes partition contents and may prevent boot until repaired. The current partition will be backed up first." : "\nImage bytes: " + (backend.partitionPlan.image_size || "") + "\nThe current partition will be backed up before writing.")
+--- a/qml/dialogs/DriverDialog.qml
++++ b/qml/dialogs/DriverDialog.qml
+@@ -69 +69 @@
+-        Text { text: "Driver repair requires matching signed packages."; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 13 }
++        Text { text: "Uses existing Windows drivers; missing packages require signed drivers."; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 13 }
+@@ -74 +74 @@
+-            Text { text: root.scanResult.message || "Scan locally for connected driver interfaces"; wrapMode: Text.WordWrap; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12; Layout.fillWidth: true }
++            Text { text: root.scanResult.message || "Check and rediscover connected driver interfaces"; wrapMode: Text.WordWrap; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12; Layout.fillWidth: true }
+@@ -80 +80 @@
+-            GlowButton { text: "SCAN DRIVERS"; enabled: !backend.operationBusy; Layout.preferredWidth: 250; onClicked: backend.runAction("fix_drivers") }
++            GlowButton { text: "FIX DRIVERS"; enabled: !backend.operationBusy; Layout.preferredWidth: 250; onClicked: backend.runAction("fix_drivers") }
+--- a/qml/pages/PartitionManagerPage.qml
++++ b/qml/pages/PartitionManagerPage.qml
+@@ -64 +64 @@
+-                text: "♲  ERASE"; enabled: false; Layout.preferredWidth: 150; Layout.preferredHeight: 42
++                text: "♲  ERASE"; enabled: !!root.selectedPartition.name && !backend.operationBusy; onClicked: backend.startPartition("erase",root.selectedPartition.name,""); Layout.preferredWidth: 150; Layout.preferredHeight: 42
+--- a/techguy_huawei/backend.py
++++ b/techguy_huawei/backend.py
+@@ -1027 +1027 @@
+-        if self._busy or not self._device_snapshot.connected or operation not in {"backup","write","restore"}:
++        if self._busy or not self._device_snapshot.connected or operation not in {"backup","write","restore","erase"}:
+@@ -1041 +1041 @@
+-        if not name or (operation!="backup" and not source):return False
++        if not name or (operation in {"write","restore"} and not source):return False
+@@ -1118 +1118 @@
+-                service_expected_serial=self._device_snapshot.serial if self._device_snapshot.interface=="Fastboot" and (not self._firmware_model or self._device_snapshot.model==self._firmware_model) else "",
++                service_expected_serial=self._device_snapshot.serial if action_id!="read_device" and self._device_snapshot.interface=="Fastboot" else "",
+--- a/techguy_huawei/contract_models.py
++++ b/techguy_huawei/contract_models.py
+@@ -4 +4,2 @@
+-from datetime import UTC, datetime
++from datetime import timezone, datetime
++UTC = timezone.utc
+--- a/techguy_huawei/contract_support.py
++++ b/techguy_huawei/contract_support.py
+@@ -7 +7,2 @@
+-from datetime import UTC, datetime
++from datetime import timezone, datetime
++UTC = timezone.utc
+--- a/techguy_huawei/contract_validation.py
++++ b/techguy_huawei/contract_validation.py
+@@ -5 +5,2 @@
+-from datetime import UTC
++from datetime import timezone
++UTC = timezone.utc
+--- a/techguy_huawei/driver_inventory.py
++++ b/techguy_huawei/driver_inventory.py
+@@ -30,0 +31,20 @@
++
++def repair(runner=subprocess.run):
++    """Ask Windows to rediscover hardware using its existing driver store."""
++    before=scan(runner)
++    if not before.ok:return before
++    if not any(str(row.get("status","")).upper()!="OK" or str(row.get("problem","")) not in {"","CM_PROB_NONE","0"} for row in before.payload["interfaces"]):
++        return EngineResult(True,"No present driver fault detected.",ActionState.READY,{**before.payload,"repair_attempted":False})
++    exe=shutil.which("pnputil.exe")
++    if not exe:
++        return EngineResult(False,"Windows PnP repair utility unavailable.",ActionState.MISSING_DEPENDENCY,before.payload)
++    try:
++        proc=runner([exe,"/scan-devices"],shell=False,capture_output=True,text=True,timeout=60,creationflags=getattr(subprocess,"CREATE_NO_WINDOW",0))
++    except (OSError,subprocess.SubprocessError) as exc:
++        return EngineResult(False,"Driver rediscovery failed: "+str(exc),ActionState.FAILED,before.payload)
++    after=scan(runner)
++    rows=(after.payload or {}).get("interfaces",[])
++    clear=bool(rows) and after.ok and all(str(row.get("status","")).upper()=="OK" and str(row.get("problem","")) in {"","CM_PROB_NONE","0"} for row in rows)
++    ok=proc.returncode==0 and clear
++    message="Windows driver rediscovery completed; present interfaces report healthy." if ok else "Driver fault not resolved by Windows rediscovery. A matching signed driver package or administrator authorization may be required."
++    return EngineResult(ok,message,ActionState.READY if ok else ActionState.FAILED,{"interfaces":rows,"before":before.payload["interfaces"],"scan_only":False,"repair_attempted":True,"rediscovery_exit":proc.returncode})
+--- a/techguy_huawei/firmware_flash.py
++++ b/techguy_huawei/firmware_flash.py
+@@ -59,0 +60 @@
++    segments: tuple[tuple[int,int,int], ...] = ()
+@@ -90,0 +92,15 @@
++
++
++def _segments_digest(source: Path, segments, output=None):
++    digest=sha256()
++    with source.open("rb") as stream:
++        for _,offset,size in segments:
++            stream.seek(offset)
++            remaining=size
++            while remaining:
++                chunk=stream.read(min(8*1024**2,remaining))
++                if not chunk:raise FlashError("Firmware source ended unexpectedly")
++                digest.update(chunk)
++                if output is not None:output.write(chunk)
++                remaining-=len(chunk)
++    return digest.hexdigest()
+@@ -230,0 +247,19 @@
++            indices = raw.get("indices")
++            if indices is not None:
++                if index is not None or not isinstance(indices,list) or not 2<=len(indices)<=128 or any(type(i) is not int for i in indices) or len(set(indices))!=len(indices):
++                    raise FlashError("Invalid explicit multipart APP mapping")
++                by_index={entry[1]:entry for entry in _app_entries(image)}
++                name=str(raw.get("name","")).upper()
++                if not name or any(i not in by_index or by_index[i][0]!=name for i in indices):
++                    raise FlashError("Multipart APP index/name mismatch")
++                segments=tuple((i,by_index[i][2],by_index[i][3]) for i in indices)
++                if set(indices)!={entry[1] for entry in by_index.values() if entry[0]==name}:
++                    raise FlashError("Multipart APP mapping omits a matching entry")
++                length=sum(item[2] for item in segments)
++                expected=str(raw.get("sha256","")).lower()
++                if not 0<length<=MAX_PAYLOAD or raw.get("size")!=length or not re.fullmatch(r"[0-9a-f]{64}",expected):
++                    raise FlashError("Multipart APP requires explicit merged size and SHA256")
++                if _segments_digest(image,segments)!=expected:
++                    raise FlashError("Multipart APP merged SHA256 mismatch")
++                operations.append(FlashOperation(partition,str(image),None,0,length,expected,segments=segments))
++                continue
+@@ -370 +405,2 @@
+-            if _digest(source,offset=operation.data_offset,size=operation.size) != operation.sha256:
++            actual_digest=_segments_digest(source,operation.segments) if operation.segments else _digest(source,offset=operation.data_offset,size=operation.size)
++            if actual_digest != operation.sha256:
+@@ -373 +409,11 @@
+-            if operation.data_offset or operation.size != source.stat().st_size:
++            if operation.segments:
++                try:
++                    with staging.open("xb") as w:
++                        staged_digest=_segments_digest(source,operation.segments,w)
++                    if staged_digest!=operation.sha256 or staging.stat().st_size!=operation.size:
++                        raise FlashError("Multipart staging integrity mismatch")
++                except BaseException:
++                    staging.unlink(missing_ok=True)
++                    raise
++                image=staging
++            elif operation.data_offset or operation.size != source.stat().st_size:
+--- a/techguy_huawei/live_service.py
++++ b/techguy_huawei/live_service.py
+@@ -62 +62 @@
+-    def __init__(self, engine: DeviceEngine) -> None:
++    def __init__(self, engine: DeviceEngine, expected_serial: str = "") -> None:
+@@ -63,0 +64,2 @@
++        self.expected_serial = expected_serial
++        self._session_serial = expected_serial
+@@ -75 +77,5 @@
+-        return fastboot, rows[0].split()[0]
++        serial=rows[0].split()[0]
++        if self._session_serial and serial!=self._session_serial:
++            raise ServiceUnavailable("The connected Fastboot device changed during the service session.")
++        self._session_serial=serial
++        return fastboot, serial
+--- a/techguy_huawei/partition_service.py
++++ b/techguy_huawei/partition_service.py
+@@ -13 +13 @@
+-    if not re.fullmatch(r"(?:boot|recovery|recovery_ramdisk|erecovery_ramdisk|ramdisk|kernel|system|vendor|product|cust|odm|super|dtbo|vbmeta|vendor_boot|init_boot)(?:_[ab])?",name):
++    if not re.fullmatch(r"(?:cache|boot|recovery|recovery_ramdisk|erecovery_ramdisk|ramdisk|kernel|system|vendor|product|cust|odm|super|dtbo|vbmeta|vendor_boot|init_boot)(?:_[ab])?",name):
+@@ -94,0 +95,50 @@
++
++def prepare_erase(binary,serial,model,chip,part):
++    part=_partition(part)
++    size=_target(binary,serial,model,chip,part)
++    plan={"operation":"erase","model":model.upper(),"chipset":chip,"serial_sha256":_hash(serial),
++          "partition":part,"size":size,"no_reboot":True}
++    plan["fingerprint"]=_hash(json.dumps(plan,sort_keys=True))
++    return plan
++
++def apply_erase(binary,serial,model,chip,part,fingerprint,evidence,progress):
++    plan=prepare_erase(binary,serial,model,chip,part)
++    if not fingerprint or plan["fingerprint"]!=fingerprint:
++        raise f.FlashError("Erase plan changed; confirm again")
++    root=Path(evidence);root.mkdir(parents=True,exist_ok=True)
++    if shutil.disk_usage(root).free<2*plan["size"]+1024**2:
++        raise f.FlashError("Insufficient backup/readback storage")
++    before=backup(binary,serial,model,chip,part,root,progress)
++    if prepare_erase(binary,serial,model,chip,part)!=plan:
++        raise f.FlashError("Device or geometry changed after backup")
++    job=Path(before["backup_path"]).parent;receipt=job/"erase-receipt.json"
++    result={"status":"RUNNING","plan":plan,"backup":before,"no_reboot":True}
++    _save(receipt,result)
++    try:
++        progress("Erasing selected ordinary repair partition "+part)
++        code,out=f._exec(binary,["-s",serial,"erase",part],timeout=7200)
++        if code or "FAILED" in out.upper() or not re.search(r"Erasing\s+'"+re.escape(part)+r"'\s+OKAY",out,re.I):
++            raise f.FlashError("Erase was not acknowledged")
++        result["erase_acknowledged"]=True
++        _save(receipt,result)
++        if _target(binary,serial,model,chip,part)!=plan["size"]:
++            raise f.FlashError("Partition geometry changed")
++        dest=job/"erase-readback.partial"
++        code,out=f._exec(binary,["-s",serial,"fetch",part,str(dest)],timeout=7200)
++        if code or "FAILED" in out.upper() or not dest.is_file() or dest.stat().st_size!=plan["size"]:
++            raise f.FlashError("Erase acknowledged but readback unavailable")
++        if f._unique_device(binary)!=serial:raise f.FlashError("Device changed during readback")
++        fill=None;uniform=True
++        with dest.open("rb") as fh:
++            for chunk in iter(lambda:fh.read(1024*1024),b""):
++                if fill is None:fill=chunk[0]
++                if fill not in (0,255) or chunk!=bytes([fill])*len(chunk):
++                    uniform=False;break
++        result.update(status="READBACK_VERIFIED" if uniform else "ERASE_ACK_READBACK_INCONCLUSIVE",
++                      readback_verified=uniform,readback_sha256=f._digest(dest))
++        _save(receipt,result)
++        if uniform:dest.unlink()
++    except Exception as exc:
++        result.update(status="STOPPED_ON_ERROR",error=str(exc));_save(receipt,result);raise
++    return {"partition":part,"backup_path":before["backup_path"],"evidence_path":str(receipt),
++            "erase_acknowledged":True,"readback_verified":uniform,"no_reboot":True}
+--- a/techguy_huawei/service_dispatch.py
++++ b/techguy_huawei/service_dispatch.py
+@@ -86,3 +86,3 @@
+-            from .driver_inventory import scan
+-            logger.add("Scanning local Windows driver interfaces...")
+-            result=scan()
++            from .driver_inventory import repair
++            logger.add("Checking and rediscovering local Windows driver interfaces...")
++            result=repair()
+@@ -120,0 +121,10 @@
++            elif action=="erase":
++                if request.partition_fingerprint:
++                    payload=ps.apply_erase(*args,request.partition_fingerprint,root,logger.add)
++                    result=EngineResult(payload["readback_verified"],
++                        "Partition erase acknowledged; readback verified." if payload["readback_verified"] else "Erase acknowledged; readback inconclusive.",
++                        ActionState.READY if payload["readback_verified"] else ActionState.FAILED,payload)
++                else:
++                    payload=ps.prepare_erase(*args)
++                    result=EngineResult(True,"Review the selected partition and confirm erase.",ActionState.READY,
++                        {"partition_plan":payload,"preflight_only":True})
+@@ -247 +257 @@
+-                service = LiveHuaweiService(engine)
++                service = LiveHuaweiService(engine, expected_serial=request.service_expected_serial)
+@@ -252 +262 @@
+-            service = LiveHuaweiService(engine)
++            service = LiveHuaweiService(engine, expected_serial=request.service_expected_serial)
+--- a/tests/test_device_selector_interaction.py
++++ b/tests/test_device_selector_interaction.py
+@@ -15,0 +16,7 @@
++    import os,sys,subprocess
++    if os.environ.get("TTG_ISOLATED_QT_SELECTOR")!="1":
++        env=dict(os.environ,TTG_ISOLATED_QT_SELECTOR="1",QT_QPA_PLATFORM="offscreen",QT_QUICK_CONTROLS_STYLE="Basic")
++        proc=subprocess.run([sys.executable,"-m","pytest","-q",str(Path(__file__).resolve())],env=env,capture_output=True,text=True,timeout=45)
++        assert proc.returncode==0,proc.stdout+proc.stderr
++        return
++
+@@ -111 +118,17 @@
+-    assert backend.firmwareModel=="XYZ-L99" and backend.firmwareChipset=="kirin980"
++    assert backend.firmwareModel=="XYZ-L99" and backend.firmwareChipset==""
++    backend.setFirmwareModel("")
++    backend.setFirmwareChipset("kirin980")
++    backend.setFirmwareModel("XYZ-L99")
++    assert backend.firmwareChipset=="kirin980"
++    from PySide6.QtCore import QMetaObject
++    dialog=win.findChild(QObject,"registerDialog")
++    QMetaObject.invokeMethod(dialog,"open")
++    QTest.qWait(150);app.processEvents()
++    content=dialog.property("contentItem")
++    buttons=[child for child in content.findChildren(QQuickItem) if "GlowButton" in child.metaObject().className() and child.property("text") in {"CANCEL","REGISTER DEVICE"}]
++    assert len(buttons)==2
++    for button in buttons:
++        y=button.mapToItem(content,QPointF(0,0)).y()
++        assert y>=0 and y+button.height()<=content.height()+1
++    dialog.setProperty("visible",False)
++    win.close()
+--- a/tests/test_repository_contracts.py
++++ b/tests/test_repository_contracts.py
+@@ -44,2 +44,2 @@
+-    assert re.search(r"\bwidth:\s*1586\b", main)
+-    assert re.search(r"\bheight:\s*992\b", main)
++    assert re.search(r"\bcompactWidth:\s*1586\b", main)
++    assert re.search(r"\bcompactHeight:\s*992\b", main)
+--- a/tests/test_ui_closeout.py
++++ b/tests/test_ui_closeout.py
+@@ -62,2 +62,3 @@
+-    assert "NO APPROVED TESTPOINT REFERENCE" in source
+-    assert "similar Huawei/Honor model" in source
++    assert "No approved local reference" in source
++    assert "Exact-model reference only" in source
++    assert "function openForOperation" in source
+@@ -66,2 +67,2 @@
+-    assert "onTestpointRequested: testpointDialog.open()" in main
+-    assert "TestpointDialog { id: testpointDialog" in main
++    assert "onTestpointRequested: testpointDialog.openManual()" in main
++    assert "TestpointDialog {" in main and "id: testpointDialog" in main
+@@ -79 +80,2 @@
+-    assert '"Fastboot", "Upgrade Mode", "Rescue"' in service
++    assert "DeviceSearchHeader" in service
++    assert "backend.runAction" in service
+@@ -83 +85 @@
+-    mascot = ROOT / "assets" / "brand" / "techguy_mascot.png"
++    mascot = ROOT / "assets" / "brand" / "sidebar_mascot_plate.png"
+@@ -89,3 +91,3 @@
+-    assert "assets/brand/techguy_mascot.png" in qrc
+-    assert 'source: "../assets/brand/techguy_mascot.png"' in main
+-    assert "techguy_mascot.png" not in glass
++    assert "assets/brand/sidebar_mascot_plate.png" in qrc
++    assert 'source: "../assets/brand/sidebar_mascot_plate.png"' in main
++    assert "sidebar_mascot_plate.png" not in glass
+@@ -99 +101,2 @@
+-    assert "height: 440" in register
++    assert "height: 405" in register
++    # Actual action-row bounds are verified by the isolated Qt interaction test.

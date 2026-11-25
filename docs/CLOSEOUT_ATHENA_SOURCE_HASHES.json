@@ -1,0 +1,20 @@
+{
+  "tests/test_closeout_ordinary_repairs.py": "bea0475281f7eeca8495da7395253dc8b3de049f3915b76d232aa074d2da9e9a",
+  "tests/test_multipart_app_manifest.py": "b309be9acf759d7d131a740d50c5571f471e9934acf5ae8f6a715b73052b01c5",
+  "tests/test_shared_live_session.py": "0002a16f5d5cb679acdf579740a03bd44dd6aed9441badad8e0b4746b2ce0d66",
+  "qml/Main.qml": "a2af8df90eabbfc977a8a346ee94855fdfc7dc3bdd8acad5d7f1dfe9bf24d56d",
+  "qml/dialogs/DriverDialog.qml": "3c469bc68b8ca85bc0337e0cf8fb33694d2200d9c5cda1a0d26be7794bc07b0a",
+  "qml/pages/PartitionManagerPage.qml": "e9fc8fb48ce7712dffe617d3230feacd59048efd2dc157dc4d882978b08d5a2c",
+  "techguy_huawei/backend.py": "3d3bd93c821a7d1cb80d1d20af909464e16585865abf3895f612d8a9a99da822",
+  "techguy_huawei/contract_models.py": "104c18ac2811b9256d7971f11d3347b8c2c1148dd9a3e88baef4b25849f917e9",
+  "techguy_huawei/contract_support.py": "412d8382fdfdf3c26bfc10262e7fc85b1685bc263f963ec159aad9bc50c7d36e",
+  "techguy_huawei/contract_validation.py": "2ac2bf35207253adc5f63961332316a11dd6cdd89f86d30603c8ce0f2fb091a2",
+  "techguy_huawei/driver_inventory.py": "24a005ec2c6679fd9a86dc29ecc11009aa5862327bb1ff7078289adf533f42de",
+  "techguy_huawei/firmware_flash.py": "e694f69581cd2cca6d1e456786dcf8489b11c93a7edbf01fd733a873db95268f",
+  "techguy_huawei/live_service.py": "526a5231b2e7913b28d6fd731a957f45bef8ac5ba2a71357b97e212ce307cbae",
+  "techguy_huawei/partition_service.py": "767083c5907d1ef0c0b8e6aa33b1d241f0284238ed51040419c3a58fd726f016",
+  "techguy_huawei/service_dispatch.py": "295ce8e187870d95ac5970a04454cd1db15f8ac562d71e4f68a300aab5ba419c",
+  "tests/test_device_selector_interaction.py": "ad64c1ebe1807b06046228b5946ae19166b48a408a187c2d96caeebab5379937",
+  "tests/test_repository_contracts.py": "3af94a3e6c77a986a8e141c5ce71ffde8b13b48409a3943e51d5d9aabec4f287",
+  "tests/test_ui_closeout.py": "51887063d67fa69b2d9904b48e85e01d3cf0885e36bb716018b9fe886d592735"
+}
