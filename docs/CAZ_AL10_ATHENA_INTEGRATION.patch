@@ -1,0 +1,54 @@
+--- a/techguy_huawei/service_dispatch.py
++++ b/techguy_huawei/service_dispatch.py
+@@ -95 +95,31 @@
+-            if package.suffix.lower() == ".json" or package.name.upper() == "UPDATE.APP":
++            if request.firmware_mode == "Board Firmware" and package.name.lower() == "rawprogram_unsparse.xml":
++                from .caz_al10_board_runtime import board_plan, board_apply
++                evidence = request.evidence_journal.parent / "firmware-flash"
++                if request.firmware_apply:
++                    output = board_apply(request.project_root, package, request.firmware_model,
++                        request.firmware_chipset, request.firmware_plan_hash, evidence, logger.add)
++                    result = EngineResult(True, "Board programmed and read back; reset acknowledged. Verify Android boot, then perform stock Repair.",
++                        ActionState.READY, {**output,"preflight_only":False,"write_authorized":True})
++                else:
++                    payload = board_plan(request.project_root, package, request.firmware_model,
++                        request.firmware_chipset, evidence)
++                    result = EngineResult(True, "CAZ-AL10 board recovery ready: 150 writes, 13 patches, backup and readback before reset.",
++                        ActionState.READY, payload)
++            elif request.firmware_mode == "Repair" and package.name.upper() == "UPDATE.APP" and request.firmware_model.strip().upper() == "CAZ-AL10":
++                from .caz_al10_recovery import stock_plan, stock_apply
++                fastboot = engine._tool("fastboot")
++                if not fastboot:
++                    result = EngineResult(False, "Approved Fastboot executable unavailable.", ActionState.MISSING_DEPENDENCY)
++                elif request.firmware_apply:
++                    output = stock_apply(request.firmware_path, request.firmware_model,
++                        request.firmware_chipset, request.firmware_mode, fastboot,
++                        request.firmware_plan_hash, request.evidence_journal.parent / "firmware-flash", logger.add)
++                    result = EngineResult(True, "CAZ-AL10 stock writes complete; reboot and verify Android/network. Factory boot chain retained.",
++                        ActionState.READY, {**output,"preflight_only":False,"write_authorized":True})
++                else:
++                    payload = stock_plan(request.firmware_path, request.firmware_model,
++                        request.firmware_chipset, request.firmware_mode, fastboot,
++                        request.evidence_journal.parent / "firmware-flash")
++                    result = EngineResult(True, "CAZ-AL10 B175 all/cn recovery ready: eight verified images, including userdata. Confirm replacement.",
++                        ActionState.READY, payload)
++            elif package.suffix.lower() == ".json" or package.name.upper() == "UPDATE.APP":
+--- a/qml/pages/FirmwareFlashPage.qml
++++ b/qml/pages/FirmwareFlashPage.qml
+@@ -47 +47 @@
+-                 + ")? Stops on error. No OEMINFO write, unlock, erase or automatic reboot."
++                 + (root.flashPayload.board_recovery ? ")? Factory board restoration replaces firmware and userdata. Backs up selected regions, verifies GPT and boot/recovery, then resets. Excludes six device-unique partitions." : root.flashPayload.userdata_replaced ? ")? This replaces USERDATA and CACHE. Factory boot chain retained. Stops on error; no automatic reboot." : ")? Stops on error. No OEMINFO write, unlock, erase or automatic reboot.")
+@@ -53 +53 @@
+-        nameFilters: ["Huawei direct flash manifest / UPDATE.APP (*.json *.APP *.app)", "Archive (preflight only) (*.zip)", "All files (*)"]
++        nameFilters: ["Huawei firmware / board XML (*.json *.APP *.app *.xml)", "Archive (preflight only) (*.zip)", "All files (*)"]
+@@ -196 +196 @@
+-                            root.advancedWorkflows = true
++                            root.advancedWorkflows = !(backend.firmwareModel === "CAZ-AL10" && (modelData.title === "Repair" || modelData.title === "Board Firmware"))
+@@ -246 +246 @@
+-                text: backend.firmwarePlanReady ? "CONFIRM DIRECT FASTBOOT FLASH" : "VERIFY SELECTED FIRMWARE"
++                text: backend.firmwarePlanReady ? (root.flashPayload.board_recovery ? "CONFIRM BOARD RECOVERY" : "CONFIRM DIRECT FASTBOOT FLASH") : "VERIFY SELECTED FIRMWARE"
+--- a/techguy_huawei/backend.py
++++ b/techguy_huawei/backend.py
+@@ -403,0 +404,2 @@
++        if model.upper() == "CAZ-AL10":
++            return "msm8953"
