@@ -57,6 +57,7 @@ class FlashOperation:
     size: int
     sha256: str
     risk: str = "system"
+    segments: tuple[tuple[int,int,int], ...] = ()
 
 
 @dataclass(frozen=True)
@@ -88,6 +89,21 @@ def _digest(path: Path, *, offset: int = 0, size: int | None = None) -> str:
             h.update(b)
             left -= len(b)
     return h.hexdigest()
+
+
+def _segments_digest(source: Path, segments, output=None):
+    digest=sha256()
+    with source.open("rb") as stream:
+        for _,offset,size in segments:
+            stream.seek(offset)
+            remaining=size
+            while remaining:
+                chunk=stream.read(min(8*1024**2,remaining))
+                if not chunk:raise FlashError("Firmware source ended unexpectedly")
+                digest.update(chunk)
+                if output is not None:output.write(chunk)
+                remaining-=len(chunk)
+    return digest.hexdigest()
 
 
 def _exec(fastboot: str, args: list[str], timeout: int = 12) -> tuple[int, str]:
@@ -228,6 +244,25 @@ def _load_selection(
                 raise FlashError("Protected partition prohibited from generic firmware mode: " + partition)
             image = _source_relative(path.parent, str(raw.get("file", "")))
             index = raw.get("index")
+            indices = raw.get("indices")
+            if indices is not None:
+                if index is not None or not isinstance(indices,list) or not 2<=len(indices)<=128 or any(type(i) is not int for i in indices) or len(set(indices))!=len(indices):
+                    raise FlashError("Invalid explicit multipart APP mapping")
+                by_index={entry[1]:entry for entry in _app_entries(image)}
+                name=str(raw.get("name","")).upper()
+                if not name or any(i not in by_index or by_index[i][0]!=name for i in indices):
+                    raise FlashError("Multipart APP index/name mismatch")
+                segments=tuple((i,by_index[i][2],by_index[i][3]) for i in indices)
+                if set(indices)!={entry[1] for entry in by_index.values() if entry[0]==name}:
+                    raise FlashError("Multipart APP mapping omits a matching entry")
+                length=sum(item[2] for item in segments)
+                expected=str(raw.get("sha256","")).lower()
+                if not 0<length<=MAX_PAYLOAD or raw.get("size")!=length or not re.fullmatch(r"[0-9a-f]{64}",expected):
+                    raise FlashError("Multipart APP requires explicit merged size and SHA256")
+                if _segments_digest(image,segments)!=expected:
+                    raise FlashError("Multipart APP merged SHA256 mismatch")
+                operations.append(FlashOperation(partition,str(image),None,0,length,expected,segments=segments))
+                continue
             if index is None:
                 off, length = 0, image.stat().st_size
             else:
@@ -367,10 +402,21 @@ def apply(
                 raise FlashError("Device detached or changed during firmware installation")
             progress(f"Flashing {i}/{len(current.operations)}: {operation.partition}")
             source = Path(operation.source)
-            if _digest(source,offset=operation.data_offset,size=operation.size) != operation.sha256:
+            actual_digest=_segments_digest(source,operation.segments) if operation.segments else _digest(source,offset=operation.data_offset,size=operation.size)
+            if actual_digest != operation.sha256:
                 raise FlashError("Firmware source changed since preflight")
             staging = evidence_dir / f".staging-{uuid.uuid4().hex}.img"
-            if operation.data_offset or operation.size != source.stat().st_size:
+            if operation.segments:
+                try:
+                    with staging.open("xb") as w:
+                        staged_digest=_segments_digest(source,operation.segments,w)
+                    if staged_digest!=operation.sha256 or staging.stat().st_size!=operation.size:
+                        raise FlashError("Multipart staging integrity mismatch")
+                except BaseException:
+                    staging.unlink(missing_ok=True)
+                    raise
+                image=staging
+            elif operation.data_offset or operation.size != source.stat().st_size:
                 with source.open("rb") as f, staging.open("xb") as w:
                     f.seek(operation.data_offset)
                     remaining = operation.size

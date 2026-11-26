@@ -35,7 +35,7 @@ def _runtime(project:Path)->tuple[list[str],dict]:
     env=os.environ.copy()
     bundled_source(project)
     if getattr(sys,"frozen",False):
-        return [str(Path(sys.argv[0]).resolve()),"--xray-worker"],env
+        return [str(Path(sys.executable if getattr(sys, "_MEIPASS", None) else sys.argv[0]).resolve()),"--xray-worker"],env
     interpreter=Path(sys.executable)
     if interpreter.name.lower()=="pythonw.exe":
         interpreter=interpreter.with_name("python.exe")

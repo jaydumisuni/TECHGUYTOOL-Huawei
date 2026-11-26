@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import timezone, datetime
+UTC = timezone.utc
 from typing import Any, Mapping
 
 from .contract_support import parse_timestamp

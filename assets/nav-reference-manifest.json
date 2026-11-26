@@ -1,0 +1,68 @@
+[
+  {
+    "source": "gear popup.png",
+    "crop_xyxy": [
+      40,
+      133,
+      82,
+      175
+    ],
+    "file": "service-center-reference.png",
+    "sha256": "673a5645107843716b22ad77082f3770e8c090c4498ab25a2064cda3148ee0d3"
+  },
+  {
+    "source": "gear popup.png",
+    "crop_xyxy": [
+      40,
+      201,
+      82,
+      243
+    ],
+    "file": "device-information-reference.png",
+    "sha256": "f48c1d8e44d902d80832713b245d5460adf5f676f292834367f3123fd578a031"
+  },
+  {
+    "source": "gear popup.png",
+    "crop_xyxy": [
+      40,
+      271,
+      82,
+      313
+    ],
+    "file": "firmware-flash-reference.png",
+    "sha256": "c045aa7c0dabeaf9cd20e6b8d607045bb9a57e4a38852cc52763b09ca981a32c"
+  },
+  {
+    "source": "gear popup.png",
+    "crop_xyxy": [
+      40,
+      335,
+      82,
+      377
+    ],
+    "file": "partition-manager-reference.png",
+    "sha256": "6919a24075afc9daf48d77dd4d22df15933e93b62bd6b4b8ee38387275f71361"
+  },
+  {
+    "source": "gear popup.png",
+    "crop_xyxy": [
+      40,
+      402,
+      82,
+      444
+    ],
+    "file": "backup-restore-reference.png",
+    "sha256": "a229543ceb802cf17b795f3764a0c7b303011d964f461489cfa9785e58b33b0e"
+  },
+  {
+    "source": "gear popup.png",
+    "crop_xyxy": [
+      40,
+      471,
+      82,
+      513
+    ],
+    "file": "operation-history-reference.png",
+    "sha256": "290bf2669302e5d63450222153d19a9565dd4ca4331543879a78ecfdd55b0572"
+  }
+]

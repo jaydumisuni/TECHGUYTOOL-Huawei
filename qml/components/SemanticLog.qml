@@ -29,7 +29,7 @@ TextArea {
         var result = []
         for (var i = 0; i < lines.length; ++i)
             result.push(formatLine(lines[i]))
-        return result.join("<br>")
+        return result.join("<br><br>")
     }
 
     text: formatted(rawText)
@@ -40,6 +40,7 @@ TextArea {
     selectionColor: "#245782"
     selectedTextColor: Theme.text
     font.family: "Consolas"
-    font.pixelSize: 12
+    // Calibrated against the approximately 29px line pitch in the approved log.
+    font.pixelSize: 13
     background: Rectangle { color: "transparent" }
 }

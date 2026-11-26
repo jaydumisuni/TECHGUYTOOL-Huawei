@@ -28,5 +28,14 @@
   },
   "runtimeSmoke": {
     "args": []
+  },
+  "capabilities": {
+    "sharedSupport": {
+      "androidPlatformTools": {
+        "enabled": true,
+        "sourcePath": "dependencies/android/cache/platform-tools",
+        "version": "37.0.1"
+      }
+    }
   }
 }

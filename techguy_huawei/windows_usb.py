@@ -1,0 +1,165 @@
+from __future__ import annotations
+
+import json
+import os
+import shutil
+import subprocess
+from dataclasses import replace
+from typing import Callable
+
+from .usb_discovery import UsbDiscoveryReport, UsbObservation, discover_huawei_usb
+from .windows_usb_descriptor import (
+    UsbDescriptorError,
+    UsbRawDescriptor,
+    collect_windows_usb_descriptor,
+)
+
+POWERSHELL_DISCOVERY_SCRIPT = r'''
+$get = {
+    param($properties, $keyName)
+    if ($properties.ContainsKey($keyName)) { return $properties[$keyName] }
+    return $null
+}
+$propertyKeys = @(
+    'DEVPKEY_Device_HardwareIds',
+    'DEVPKEY_Device_CompatibleIds',
+    'DEVPKEY_Device_DeviceDesc',
+    'DEVPKEY_Device_BusReportedDeviceDesc',
+    'DEVPKEY_Device_Manufacturer',
+    'DEVPKEY_Device_ContainerId',
+    'DEVPKEY_Device_Parent'
+)
+$devices = Get-PnpDevice -PresentOnly | Where-Object {
+    $_.InstanceId -match 'VID_12D1' -or
+    $_.FriendlyName -match 'Huawei|HUAWEI' -or
+    $_.Class -eq 'WPD'
+}
+$items = @()
+foreach ($device in $devices) {
+    # One PnP property call per device. Preserve the exact evidence field set.
+    $properties = @{}
+    foreach ($property in @(Get-PnpDeviceProperty -InstanceId $device.InstanceId -KeyName $propertyKeys -ErrorAction SilentlyContinue)) {
+        $properties[[string]$property.KeyName] = $property.Data
+    }
+    $hardwareIds = & $get $properties 'DEVPKEY_Device_HardwareIds'
+    $compatibleIds = & $get $properties 'DEVPKEY_Device_CompatibleIds'
+    $items += [ordered]@{
+        instance_id = [string]$device.InstanceId
+        class_name = [string]$device.Class
+        friendly_name = [string]$device.FriendlyName
+        device_desc = [string](& $get $properties 'DEVPKEY_Device_DeviceDesc')
+        bus_reported_desc = [string](& $get $properties 'DEVPKEY_Device_BusReportedDeviceDesc')
+        manufacturer = [string](& $get $properties 'DEVPKEY_Device_Manufacturer')
+        hardware_ids = @($hardwareIds)
+        compatible_ids = @($compatibleIds)
+        container_id = [string](& $get $properties 'DEVPKEY_Device_ContainerId')
+        parent_instance_id = [string](& $get $properties 'DEVPKEY_Device_Parent')
+    }
+}
+ConvertTo-Json -InputObject @($items) -Depth 5 -Compress
+'''
+
+
+class UsbDiscoveryError(RuntimeError):
+    def __init__(self, code: str, message: str) -> None:
+        self.code = code
+        self.message = message
+        super().__init__(code, message)
+
+    def __str__(self) -> str:
+        return f"{self.code}: {self.message}"
+
+
+def collect_windows_usb_observations(
+    *,
+    runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
+    powershell: str | None = None,
+) -> list[UsbObservation]:
+    executable = powershell or shutil.which("powershell.exe") or shutil.which("powershell")
+    if not executable:
+        raise UsbDiscoveryError("USB_DISCOVERY_UNAVAILABLE", "PowerShell is unavailable")
+    command = [
+        executable,
+        "-NoProfile",
+        "-NonInteractive",
+        "-Command",
+        POWERSHELL_DISCOVERY_SCRIPT,
+    ]
+    try:
+        completed = runner(
+            command,
+            shell=False,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=15,
+            creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise UsbDiscoveryError("USB_DISCOVERY_UNAVAILABLE", str(exc)) from exc
+    if completed.returncode != 0:
+        detail = (completed.stderr or completed.stdout or "PowerShell discovery failed").strip()
+        raise UsbDiscoveryError("USB_DISCOVERY_UNAVAILABLE", detail)
+    try:
+        payload = json.loads((completed.stdout or "").lstrip("\ufeff").strip() or "[]")
+    except json.JSONDecodeError as exc:
+        raise UsbDiscoveryError("USB_DISCOVERY_INVALID", str(exc)) from exc
+    if not isinstance(payload, list):
+        raise UsbDiscoveryError("USB_DISCOVERY_INVALID", "collector JSON root must be an array")
+    observations: list[UsbObservation] = []
+    for item in payload:
+        if not isinstance(item, dict):
+            raise UsbDiscoveryError("USB_DISCOVERY_INVALID", "collector item must be an object")
+        observations.append(UsbObservation.from_mapping(item))
+    return observations
+
+
+def discover_windows_huawei_usb(
+    *,
+    runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
+    powershell: str | None = None,
+    descriptor_reader: Callable[[str], UsbRawDescriptor] | None = None,
+) -> UsbDiscoveryReport:
+    observations = collect_windows_usb_observations(runner=runner, powershell=powershell)
+    report = discover_huawei_usb(observations)
+    if report.state != "normal_android_charge_only":
+        return report
+
+    root_instances = sorted(
+        {
+            item.instance_id
+            for item in observations
+            if item.instance_id.upper().startswith("USB\\VID_12D1&PID_")
+            and "&MI_" not in item.instance_id.upper()
+        }
+    )
+    if len(root_instances) != 1:
+        return _descriptor_unconfirmed(report)
+
+    reader = descriptor_reader
+    if reader is None:
+        reader = lambda instance_id: collect_windows_usb_descriptor(
+            instance_id, powershell=powershell
+        )
+    try:
+        descriptor = reader(root_instances[0])
+    except UsbDescriptorError:
+        return _descriptor_unconfirmed(report)
+
+    if (
+        descriptor.vid != report.vid
+        or descriptor.pid != report.pid
+        or not descriptor.mass_storage_only
+    ):
+        return _descriptor_unconfirmed(report)
+    return report
+
+
+def _descriptor_unconfirmed(report: UsbDiscoveryReport) -> UsbDiscoveryReport:
+    return replace(
+        report,
+        state="unknown_huawei",
+        transport="windows_pnp_usb",
+        decision_code="HUAWEI_USB_STATE_UNKNOWN",
+        next_action="collect_more_read_only_identity_evidence",
+    )

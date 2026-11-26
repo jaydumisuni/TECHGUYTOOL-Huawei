@@ -7,11 +7,28 @@ import "../components"
 Dialog {
     id: root
     objectName: "driverDialog"
-    width: 520
-    height: 440
+    property var scanResult: ({})
+    function refreshDriverResult() {
+        try { scanResult = JSON.parse(backend.serviceResultJson("fix_drivers")) }
+        catch (e) { scanResult = ({}) }
+    }
+    function interfaceStatus(name) {
+        var rows = (scanResult.payload || {}).interfaces || []
+        var tokens = name === "Huawei USB COM 1.0" ? /USB COM|USB SER/i :
+                     name === "Huawei Android USB" ? /ADB|Android USB/i :
+                     name === "Huawei Fastboot" ? /Fastboot|Bootloader/i : /QDLoader|9008/i
+        var hits = rows.filter(function(row){return tokens.test(row.name || "")})
+        return hits.length ? hits.map(function(row){return row.status || "Unknown"}).join(", ") :
+               scanResult.ok ? "Not present" : "Check required"
+    }
+    Connections { target: backend; function onServiceResultChanged() { root.refreshDriverResult() } }
+    onOpened: refreshDriverResult()
+    width: 538
+    height: 455
     modal: true
     focus: true
-    anchors.centerIn: parent
+    x: parent ? Math.round((parent.width - width) / 2) : 0
+    y: parent ? Math.round((parent.height - height) / 2) : 0
     padding: 0
     closePolicy: Popup.CloseOnEscape
     background: GlassPanel { panelOpacity: 0.98; borderColor: "#5784a8" }
@@ -27,10 +44,10 @@ Dialog {
         }
         Repeater {
             model: [
-                {name: "Huawei USB COM 1.0", glyph: "♧"},
-                {name: "Huawei Android USB", glyph: "♙"},
-                {name: "Huawei Fastboot", glyph: ">_"},
-                {name: "Qualcomm HS-USB QDLoader", glyph: "⌕"}
+                {name: "Huawei USB COM 1.0", icon: "usb", glyph: "♧"},
+                {name: "Huawei Android USB", icon: "driver", glyph: "♙"},
+                {name: "Huawei Fastboot", icon: "terminal", glyph: ">_"},
+                {name: "Qualcomm HS-USB QDLoader", icon: "connection", glyph: "⌕"}
             ]
             Rectangle {
                 Layout.fillWidth: true
@@ -43,24 +60,24 @@ Dialog {
                     anchors.fill: parent
                     anchors.leftMargin: 15
                     anchors.rightMargin: 15
-                    Text { text: modelData.glyph; color: "#8cb5ff"; font.family: "Segoe UI Symbol"; font.pixelSize: 21; Layout.preferredWidth: 33; horizontalAlignment: Text.AlignHCenter }
+                    Image { source: Qt.resolvedUrl("../../assets/ui-icons/" + modelData.icon + ".svg"); Layout.preferredWidth: 33; Layout.preferredHeight: 30; fillMode: Image.PreserveAspectFit }
                     Text { text: modelData.name; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 14; Layout.fillWidth: true }
-                    Text { text: "Check required"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
+                    Text { text: root.interfaceStatus(modelData.name); color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
                 }
             }
         }
-        CheckBox { text: "Remove conflicting driver versions"; font.family: Theme.fontFamily; font.pixelSize: 13 }
+        Text { text: "Uses existing Windows drivers; missing packages require signed drivers."; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 13 }
         Rectangle { Layout.fillWidth: true; height: 1; color: "#20364d" }
         RowLayout {
             Layout.fillWidth: true
             Text { text: "ⓘ"; color: Theme.muted; font.pixelSize: 20 }
-            Text { text: "Connect a device before running driver repair"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12; Layout.fillWidth: true }
+            Text { text: root.scanResult.message || "Check and rediscover connected driver interfaces"; wrapMode: Text.WordWrap; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12; Layout.fillWidth: true }
         }
         RowLayout {
             Layout.fillWidth: true
             Item { Layout.fillWidth: true }
             GlowButton { primary: false; text: "CANCEL"; Layout.preferredWidth: 175; onClicked: root.close() }
-            GlowButton { text: "SCAN & FIX DRIVERS"; Layout.preferredWidth: 250; onClicked: backend.runAction("fix_drivers") }
+            GlowButton { text: "FIX DRIVERS"; enabled: !backend.operationBusy; Layout.preferredWidth: 250; onClicked: backend.runAction("fix_drivers") }
         }
     }
 }

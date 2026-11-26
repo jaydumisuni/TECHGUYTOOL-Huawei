@@ -39,6 +39,11 @@ if (-not $SkipInstall) {
     python -m pip install -e ".[test]" "nuitka==2.6.8" ordered_set zstandard
 }
 
+# Stage the existing local component assets before tests and packaging.
+python tools\stage_local_runtime.py
+if ($LASTEXITCODE -ne 0) { throw "Local runtime staging failed." }
+$env:PYTHONPATH = (Join-Path $Root "runtime\xray\src") + ";" + $env:PYTHONPATH
+
 # Prove the checked-out source before creating any build/generated files.
 python -m pytest
 if ($LASTEXITCODE -ne 0) { throw "Tests failed." }

@@ -10,7 +10,7 @@ SCHEMA="techguy.huawei.partition-backup.v1"
 def _hash(value):return hashlib.sha256(value.encode()).hexdigest()
 def _partition(name):
     if not f.PARTITION_NAME.fullmatch(name):raise f.FlashError("Invalid partition name")
-    if not re.fullmatch(r"(?:boot|recovery|recovery_ramdisk|erecovery_ramdisk|ramdisk|kernel|system|vendor|product|cust|odm|super|dtbo|vbmeta|vendor_boot|init_boot)(?:_[ab])?",name):
+    if not re.fullmatch(r"(?:cache|boot|recovery|recovery_ramdisk|erecovery_ramdisk|ramdisk|kernel|system|vendor|product|cust|odm|super|dtbo|vbmeta|vendor_boot|init_boot)(?:_[ab])?",name):
         raise f.FlashError("Use the applicable dedicated service function for this partition")
     return name
 def _target(binary,serial,model,chip,part):
@@ -92,3 +92,53 @@ def apply(binary,serial,model,chip,part,source,restore,fingerprint,evidence,prog
     except Exception as exc:
         result.update(status="STOPPED_ON_ERROR",error=str(exc));_save(receipt,result);raise
     return {"partition":part,"backup_path":before["backup_path"],"evidence_path":str(receipt),"readback_verified":True,"no_reboot":True}
+
+def prepare_erase(binary,serial,model,chip,part):
+    part=_partition(part)
+    size=_target(binary,serial,model,chip,part)
+    plan={"operation":"erase","model":model.upper(),"chipset":chip,"serial_sha256":_hash(serial),
+          "partition":part,"size":size,"no_reboot":True}
+    plan["fingerprint"]=_hash(json.dumps(plan,sort_keys=True))
+    return plan
+
+def apply_erase(binary,serial,model,chip,part,fingerprint,evidence,progress):
+    plan=prepare_erase(binary,serial,model,chip,part)
+    if not fingerprint or plan["fingerprint"]!=fingerprint:
+        raise f.FlashError("Erase plan changed; confirm again")
+    root=Path(evidence);root.mkdir(parents=True,exist_ok=True)
+    if shutil.disk_usage(root).free<2*plan["size"]+1024**2:
+        raise f.FlashError("Insufficient backup/readback storage")
+    before=backup(binary,serial,model,chip,part,root,progress)
+    if prepare_erase(binary,serial,model,chip,part)!=plan:
+        raise f.FlashError("Device or geometry changed after backup")
+    job=Path(before["backup_path"]).parent;receipt=job/"erase-receipt.json"
+    result={"status":"RUNNING","plan":plan,"backup":before,"no_reboot":True}
+    _save(receipt,result)
+    try:
+        progress("Erasing selected ordinary repair partition "+part)
+        code,out=f._exec(binary,["-s",serial,"erase",part],timeout=7200)
+        if code or "FAILED" in out.upper() or not re.search(r"Erasing\s+'"+re.escape(part)+r"'\s+OKAY",out,re.I):
+            raise f.FlashError("Erase was not acknowledged")
+        result["erase_acknowledged"]=True
+        _save(receipt,result)
+        if _target(binary,serial,model,chip,part)!=plan["size"]:
+            raise f.FlashError("Partition geometry changed")
+        dest=job/"erase-readback.partial"
+        code,out=f._exec(binary,["-s",serial,"fetch",part,str(dest)],timeout=7200)
+        if code or "FAILED" in out.upper() or not dest.is_file() or dest.stat().st_size!=plan["size"]:
+            raise f.FlashError("Erase acknowledged but readback unavailable")
+        if f._unique_device(binary)!=serial:raise f.FlashError("Device changed during readback")
+        fill=None;uniform=True
+        with dest.open("rb") as fh:
+            for chunk in iter(lambda:fh.read(1024*1024),b""):
+                if fill is None:fill=chunk[0]
+                if fill not in (0,255) or chunk!=bytes([fill])*len(chunk):
+                    uniform=False;break
+        result.update(status="READBACK_VERIFIED" if uniform else "ERASE_ACK_READBACK_INCONCLUSIVE",
+                      readback_verified=uniform,readback_sha256=f._digest(dest))
+        _save(receipt,result)
+        if uniform:dest.unlink()
+    except Exception as exc:
+        result.update(status="STOPPED_ON_ERROR",error=str(exc));_save(receipt,result);raise
+    return {"partition":part,"backup_path":before["backup_path"],"evidence_path":str(receipt),
+            "erase_acknowledged":True,"readback_verified":uniform,"no_reboot":True}

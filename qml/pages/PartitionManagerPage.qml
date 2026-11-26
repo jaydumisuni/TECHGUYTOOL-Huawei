@@ -1,86 +1,69 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import QtQuick.Dialogs
 import ".."
 import "../components"
 
 GlassPanel {
     id: root
+    property var selectedPartition: ({})
+    property string pendingPartition: ""
+    FileDialog {
+        id: partitionImage
+        title: "Select matching raw partition image"
+        nameFilters: ["Partition image (*.img *.bin)", "All files (*)"]
+        onAccepted: backend.startPartition("write",root.pendingPartition,selectedFile.toString())
+    }
+    FileDialog {
+        id: restoreManifest
+        title: "Select verified partition backup receipt"
+        nameFilters: ["Backup receipt (backup.json)"]
+        onAccepted: backend.startPartition("restore","",selectedFile.toString())
+    }
+    FolderDialog {
+        id: backupFolder
+        title: "Select backup destination"
+        onAccepted: backend.startPartition("backup",root.pendingPartition,selectedFolder.toString())
+    }
+    function shown(value) {
+        return value === undefined || value === null || value === "" ? "Not reported" : String(value)
+    }
+    function partitionSize(row) {
+        var n = Number(row.size_bytes || 0)
+        if (n <= 0) return "Not reported"
+        return n >= 1073741824 ? (n / 1073741824).toFixed(2) + " GiB" : (n / 1048576).toFixed(2) + " MiB"
+    }
+    Connections {
+        target: backend
+        function onDeviceChanged() { root.selectedPartition = ({}) }
+    }
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 14
-        spacing: 10
-
-        Text {
-            text: "PARTITION MANAGER"
-            color: Theme.text
-            font.family: Theme.fontFamily
-            font.pixelSize: 21
-            font.weight: Font.Medium
+        anchors.margins: 18
+        spacing: 8
+        DeviceSearchHeader {
+            pageTitle: "PARTITION MANAGER"
+            placeholder: "Search Huawei / Honor model..."
+            hint: "Switch to Chipset to browse Kirin platform families"
         }
-
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: 14
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 42
-                radius: 7
-                color: "#081322"
-                border.width: 1
-                border.color: "#3c5676"
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.leftMargin: 12
-                    anchors.rightMargin: 12
-                    Text { text: "⌕"; color: "#9cb7d7"; font.pixelSize: 22 }
-                    Text { Layout.fillWidth: true; text: "Search Huawei / Honor model..."; color: "#8798ad"; font.family: Theme.fontFamily; font.pixelSize: 13 }
-                    Text { text: "⌄"; color: Theme.text; font.pixelSize: 17 }
-                }
-            }
-            Rectangle {
-                Layout.preferredWidth: 266
-                Layout.preferredHeight: 36
-                radius: 6
-                color: "#0b1727"
-                border.width: 1
-                border.color: "#3b5270"
-                Row {
-                    anchors.fill: parent
-                    Rectangle {
-                        width: parent.width / 2; height: parent.height; radius: 6
-                        gradient: Gradient {
-                            orientation: Gradient.Horizontal
-                            GradientStop { position: 0; color: "#5a33ad" }
-                            GradientStop { position: 1; color: "#10598f" }
-                        }
-                        Text { anchors.centerIn: parent; text: "MODEL"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12 }
-                    }
-                    Rectangle {
-                        width: parent.width / 2; height: parent.height; color: "transparent"
-                        Text { anchors.centerIn: parent; text: "CHIPSET"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
-                    }
-                }
-            }
-        }
-
-        Text { text: "Switch to Chipset to browse Kirin platform families"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 11 }
 
         RowLayout {
             Layout.fillWidth: true
             spacing: 12
             GlowButton { text: "↻  REFRESH"; Layout.preferredWidth: 150; Layout.preferredHeight: 42; onClicked: backend.runAction("read_device") }
-            GlowButton { text: "▤  READ"; Layout.preferredWidth: 150; Layout.preferredHeight: 42; onClicked: backend.runAction("read_device") }
+            GlowButton { text: "▤  READ"; Layout.preferredWidth: 150; Layout.preferredHeight: 42; enabled: !!root.selectedPartition.name && !backend.operationBusy; onClicked: { root.pendingPartition = root.selectedPartition.name; backupFolder.open() } }
             Button {
-                text: "✎  WRITE"; enabled: false; Layout.preferredWidth: 150; Layout.preferredHeight: 42
+                text: "✎  WRITE"; enabled: !!root.selectedPartition.name && !backend.operationBusy; onClicked: { root.pendingPartition = root.selectedPartition.name; partitionImage.open() }
+                 Layout.preferredWidth: 150; Layout.preferredHeight: 42
                 background: Rectangle { radius: 7; color: "#0a1422"; border.width: 1; border.color: "#2a3d56" }
-                contentItem: Text { text: parent.text; color: "#526277"; font.family: Theme.fontFamily; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                contentItem: Text { text: parent.text; color: parent.enabled ? Theme.text : "#526277"; font.family: Theme.fontFamily; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
             }
             Button {
-                text: "♲  ERASE"; enabled: false; Layout.preferredWidth: 150; Layout.preferredHeight: 42
+                text: "♲  ERASE"; enabled: !!root.selectedPartition.name && !backend.operationBusy; onClicked: backend.startPartition("erase",root.selectedPartition.name,""); Layout.preferredWidth: 150; Layout.preferredHeight: 42
                 background: Rectangle { radius: 7; color: "#0a1422"; border.width: 1; border.color: "#2a3d56" }
-                contentItem: Text { text: parent.text; color: "#526277"; font.family: Theme.fontFamily; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                contentItem: Text { text: parent.text; color: parent.enabled ? Theme.text : "#526277"; font.family: Theme.fontFamily; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
             }
             Item { Layout.fillWidth: true }
         }
@@ -102,32 +85,57 @@ GlassPanel {
                     RowLayout {
                         anchors.fill: parent; anchors.leftMargin: 10; anchors.rightMargin: 10
                         Text { text: "□"; color: Theme.muted; font.pixelSize: 15; Layout.preferredWidth: 28 }
-                        Text { text: "PARTITION"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 10; Layout.preferredWidth: 185 }
-                        Text { text: "LUN"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 10; Layout.preferredWidth: 65 }
-                        Text { text: "START"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 10; Layout.fillWidth: true }
-                        Text { text: "SIZE"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 10; Layout.preferredWidth: 105 }
-                        Text { text: "STATUS"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 10; Layout.preferredWidth: 85 }
+                        Text { text: "PARTITION"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12; Layout.preferredWidth: 185 }
+                        Text { text: "LUN"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12; Layout.preferredWidth: 65 }
+                        Text { text: "START"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12; Layout.fillWidth: true }
+                        Text { text: "SIZE"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12; Layout.preferredWidth: 105 }
+                        Text { text: "STATUS"; color: Theme.text; font.family: Theme.fontFamily; font.pixelSize: 12; Layout.preferredWidth: 85 }
                     }
                 }
                 Item {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    ListView {
+                        id: partitionList
+                        objectName: "livePartitionInventory"
+                        anchors.fill: parent
+                        clip: true
+                        model: backend.devicePartitions
+                        currentIndex: -1
+                        delegate: Rectangle {
+                            required property var modelData
+                            required property int index
+                            width: partitionList.width
+                            height: 32
+                            color: partitionList.currentIndex === index ? "#234764" : index % 2 === 0 ? "#0a1829" : "#102033"
+                            RowLayout {
+                                anchors.fill: parent
+                                anchors.leftMargin: 10
+                                anchors.rightMargin: 10
+                                Text { text: ""; Layout.preferredWidth: 28 }
+                                Text { text: root.shown(modelData.name); color: Theme.text; font.pixelSize: 12; Layout.preferredWidth: 185; elide: Text.ElideRight }
+                                Text { text: root.shown(modelData.lun); color: Theme.muted; font.pixelSize: 12; Layout.preferredWidth: 65; elide: Text.ElideRight }
+                                Text { text: root.shown(modelData.start_offset_bytes); color: Theme.muted; font.pixelSize: 12; Layout.fillWidth: true; elide: Text.ElideRight }
+                                Text { text: root.partitionSize(modelData); color: Theme.text; font.pixelSize: 12; Layout.preferredWidth: 105 }
+                                Text { text: modelData.read_only ? "Read-only" : "Observed"; color: Theme.muted; font.pixelSize: 12; Layout.preferredWidth: 85 }
+                            }
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: { partitionList.currentIndex = index; root.selectedPartition = modelData }
+                            }
+                        }
+                        ScrollBar.vertical: ScrollBar {}
+                    }
                     Column {
                         anchors.centerIn: parent
+                        visible: partitionList.count === 0
                         spacing: 8
                         Text {
                             anchors.horizontalCenter: parent.horizontalCenter
-                            text: backend.connected ? "No certified partition inventory has been returned yet." : "Connect and read a device to begin partition discovery."
+                            text: backend.connected ? "No partition inventory reported in this mode." : "Connect and read a device to begin partition discovery."
                             color: Theme.text
                             font.family: Theme.fontFamily
                             font.pixelSize: 13
-                        }
-                        Text {
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            text: "Partition rows appear only from verified read evidence."
-                            color: Theme.muted
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 11
                         }
                     }
                 }
@@ -153,15 +161,15 @@ GlassPanel {
                         Layout.fillHeight: true
                         ColumnLayout {
                             Layout.fillWidth: true
-                            Text { text: "Partition        —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 11 }
-                            Text { text: "LUN              —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 11 }
-                            Text { text: "Start            —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 11 }
+                            Text { text: "Partition: " + root.shown(root.selectedPartition.name); color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
+                            Text { text: "LUN: " + root.shown(root.selectedPartition.lun); color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
+                            Text { text: "Start: " + root.shown(root.selectedPartition.start_offset_bytes); color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
                         }
                         ColumnLayout {
                             Layout.fillWidth: true
-                            Text { text: "Size             —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 11 }
-                            Text { text: "File System      —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 11 }
-                            Text { text: "Type             —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 11 }
+                            Text { text: "Size: " + root.partitionSize(root.selectedPartition); color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
+                            Text { text: "File System: " + root.shown(root.selectedPartition.filesystem); color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
+                            Text { text: "Type: " + root.shown(root.selectedPartition.risk); color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
                         }
                     }
                 }
@@ -189,15 +197,15 @@ GlassPanel {
                                 anchors.centerIn: parent
                                 width: 58; height: 58; radius: 29
                                 color: "#0b1727"
-                                Text { anchors.centerIn: parent; text: "—\nUsed"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 10; horizontalAlignment: Text.AlignHCenter }
+                                Text { anchors.centerIn: parent; text: "—\nUsed"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12; horizontalAlignment: Text.AlignHCenter }
                             }
                         }
                     }
                     ColumnLayout {
                         Layout.fillWidth: true
-                        Text { text: "■  Used      —"; color: "#b06cff"; font.family: Theme.fontFamily; font.pixelSize: 10 }
-                        Text { text: "■  Free       —"; color: "#4ba9ff"; font.family: Theme.fontFamily; font.pixelSize: 10 }
-                        Text { text: "■  Total      —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 10 }
+                        Text { text: "■  Used      —"; color: "#b06cff"; font.family: Theme.fontFamily; font.pixelSize: 12 }
+                        Text { text: "■  Free       —"; color: "#4ba9ff"; font.family: Theme.fontFamily; font.pixelSize: 12 }
+                        Text { text: "■  Total      —"; color: Theme.muted; font.family: Theme.fontFamily; font.pixelSize: 12 }
                     }
                 }
             }
@@ -207,14 +215,14 @@ GlassPanel {
             Layout.fillWidth: true
             spacing: 14
             Button {
-                Layout.fillWidth: true; Layout.preferredHeight: 46; enabled: false; text: "⇧  BACKUP PARTITION"
+                Layout.fillWidth: true; Layout.preferredHeight: 46; enabled: !!root.selectedPartition.name && !backend.operationBusy; text: "⇧  BACKUP PARTITION"; onClicked: { root.pendingPartition = root.selectedPartition.name; backupFolder.open() }
                 background: Rectangle { radius: 7; color: "#0a1422"; border.width: 1; border.color: "#2a3d56" }
-                contentItem: Text { text: parent.text; color: "#526277"; font.family: Theme.fontFamily; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                contentItem: Text { text: parent.text; color: parent.enabled ? Theme.text : "#526277"; font.family: Theme.fontFamily; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
             }
             Button {
-                Layout.fillWidth: true; Layout.preferredHeight: 46; enabled: false; text: "⇩  RESTORE PARTITION"
+                Layout.fillWidth: true; Layout.preferredHeight: 46; enabled: backend.connected && !backend.operationBusy; text: "⇩  RESTORE PARTITION"; onClicked: restoreManifest.open()
                 background: Rectangle { radius: 7; color: "#0a1422"; border.width: 1; border.color: "#2a3d56" }
-                contentItem: Text { text: parent.text; color: "#526277"; font.family: Theme.fontFamily; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                contentItem: Text { text: parent.text; color: parent.enabled ? Theme.text : "#526277"; font.family: Theme.fontFamily; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
             }
         }
     }

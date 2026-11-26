@@ -1,0 +1,12 @@
+{
+  "source": "references/gear popup.png",
+  "crop": [
+    0,
+    0,
+    650,
+    95
+  ],
+  "purpose": "static header logo and title artwork, no buttons / status / controls",
+  "feather": "rightmost 95 px and bottommost 15 px",
+  "hash": "ad3fe29d9e674a88fb3a5b309282e6b38e487fffbce753625ef009e6188955e5"
+}

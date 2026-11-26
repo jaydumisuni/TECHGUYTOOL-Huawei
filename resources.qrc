@@ -1,7 +1,5 @@
 <RCC>
   <qresource prefix="/">
-    <file alias="qml/Main.qml">qml/Main.qml</file>
-    <file alias="qml/Theme.qml">qml/Theme.qml</file>
     <file alias="qml/components/GlassPanel.qml">qml/components/GlassPanel.qml</file>
     <file alias="qml/components/GlowButton.qml">qml/components/GlowButton.qml</file>
     <file alias="qml/components/NavItem.qml">qml/components/NavItem.qml</file>
@@ -16,16 +14,30 @@
     <file alias="qml/dialogs/SettingsMenu.qml">qml/dialogs/SettingsMenu.qml</file>
     <file alias="qml/dialogs/TerminalDialog.qml">qml/dialogs/TerminalDialog.qml</file>
     <file alias="qml/dialogs/TestpointDialog.qml">qml/dialogs/TestpointDialog.qml</file>
-    <file alias="qml/pages/ServiceCenterPage.qml">qml/pages/ServiceCenterPage.qml</file>
+    <file alias="qml/Main.qml">qml/Main.qml</file>
+    <file alias="qml/pages/BackupRestorePage.qml">qml/pages/BackupRestorePage.qml</file>
     <file alias="qml/pages/DeviceInformationPage.qml">qml/pages/DeviceInformationPage.qml</file>
     <file alias="qml/pages/FirmwareFlashPage.qml">qml/pages/FirmwareFlashPage.qml</file>
-    <file alias="qml/pages/PartitionManagerPage.qml">qml/pages/PartitionManagerPage.qml</file>
-    <file alias="qml/pages/BackupRestorePage.qml">qml/pages/BackupRestorePage.qml</file>
     <file alias="qml/pages/OperationHistoryPage.qml">qml/pages/OperationHistoryPage.qml</file>
+    <file alias="qml/pages/PartitionManagerPage.qml">qml/pages/PartitionManagerPage.qml</file>
+    <file alias="qml/pages/ServiceCenterPage.qml">qml/pages/ServiceCenterPage.qml</file>
     <file alias="qml/qmldir">qml/qmldir</file>
+    <file alias="qml/Theme.qml">qml/Theme.qml</file>
+    <file alias="assets/brand/techguy_huawei.ico">assets/brand/techguy_huawei.ico</file>
     <file alias="assets/brand/techguy_logo.svg">assets/brand/techguy_logo.svg</file>
-    <file alias="assets/brand/techguy_mascot.svg">assets/brand/techguy_mascot.svg</file>
     <file alias="assets/brand/techguy_mascot.png">assets/brand/techguy_mascot.png</file>
+    <file alias="assets/brand/techguy_mascot.svg">assets/brand/techguy_mascot.svg</file>
     <file alias="assets/brand/techguy_mascot_masked.svg">assets/brand/techguy_mascot_masked.svg</file>
+    <file alias="qml/components/DeviceSearchHeader.qml">qml/components/DeviceSearchHeader.qml</file>
+    <file alias="qml/components/FlashWorkflowPanel.qml">qml/components/FlashWorkflowPanel.qml</file>
+    <file alias="qml/dialogs/AuditLogsDialog.qml">qml/dialogs/AuditLogsDialog.qml</file>
+    <file alias="qml/dialogs/PinoutImageViewer.qml">qml/dialogs/PinoutImageViewer.qml</file>
+    <file alias="assets/brand/header_brand_plate.png">assets/brand/header_brand_plate.png</file>
+    <file alias="assets/brand/sidebar_mascot_plate.png">assets/brand/sidebar_mascot_plate.png</file>
+    <file alias="assets/brand/techguy_header.png">assets/brand/techguy_header.png</file>
+    <file alias="assets/ui-icons/phone.svg">assets/ui-icons/phone.svg</file>
+    <file alias="assets/ui-icons/search.svg">assets/ui-icons/search.svg</file>
+    <file alias="assets/ui-icons/security.svg">assets/ui-icons/security.svg</file>
+    <file alias="assets/ui-icons/settings.svg">assets/ui-icons/settings.svg</file>
   </qresource>
 </RCC>

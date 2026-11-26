@@ -5,6 +5,7 @@ import ".."
 Button {
     id: root
     property string glyph: "□"
+    property string iconName: ""
     property bool selected: false
     signal selectedClicked()
     height: 68
@@ -69,14 +70,28 @@ Button {
         anchors.fill: parent
         anchors.leftMargin: 25
         spacing: 19
-        Text {
+        Item {
             width: 33
-            text: root.glyph
-            color: root.selected ? "#57c8ff" : "#d5dce4"
-            font.family: "Segoe UI Symbol"
-            font.pixelSize: 28
-            horizontalAlignment: Text.AlignHCenter
+            height: 34
             anchors.verticalCenter: parent.verticalCenter
+            Image {
+                anchors.centerIn: parent
+                width: 42; height: 42
+                source: root.iconName ? Qt.resolvedUrl("../../assets/ui-icons/" + root.iconName + (root.selected ? "-reference-active" : "-reference") + ".png") : ""
+                fillMode: Image.PreserveAspectFit
+                smooth: true
+                visible: root.iconName !== ""
+            }
+            Text {
+                anchors.fill: parent
+                visible: root.iconName === ""
+                text: root.glyph
+                color: root.selected ? "#57c8ff" : "#d5dce4"
+                font.family: "Segoe UI Symbol"
+                font.pixelSize: 28
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
         }
         Text {
             text: root.text

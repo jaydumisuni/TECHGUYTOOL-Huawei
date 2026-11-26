@@ -1,0 +1,24 @@
+[
+  {
+    "file": "operation-regular-edge.png",
+    "bbox": [
+      606,
+      375,
+      853,
+      478
+    ],
+    "source": "gear popup.png",
+    "sha256": "de3deb2342115ed455c23feb458f450ccb20757d13531ce031d00527f59c0aaa"
+  },
+  {
+    "file": "operation-active-edge.png",
+    "bbox": [
+      349,
+      375,
+      596,
+      478
+    ],
+    "source": "gear popup.png",
+    "sha256": "916f3455571ff257ce9ba3e5a8a9b865a0b0aa98ad772ed440181765b4e6f6c4"
+  }
+]

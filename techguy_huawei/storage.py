@@ -27,7 +27,7 @@ class AppPaths:
             root = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state")) / "thetechguy" / "huawei"
         paths = cls(
             root=root,
-            logs=root / "logs",
+            logs=root / "Logs",
             evidence=root / "evidence",
             backups=root / "backups",
             firmware=root / "firmware",

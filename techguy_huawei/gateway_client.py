@@ -124,6 +124,71 @@ class GatewayClient:
             )
         )
 
+    @staticmethod
+    def usb_discovery_endpoint_payload(report: Mapping[str, Any]) -> dict[str, Any]:
+        allowed = (
+            "present",
+            "state",
+            "transport",
+            "vid",
+            "pid",
+            "fingerprint_sha256",
+            "model",
+            "interfaces",
+            "decision_code",
+            "next_action",
+            "screen_required",
+            "device_modification",
+            "write_authority",
+        )
+        payload = {key: report[key] for key in allowed if key in report}
+        allowed_interfaces = {
+            "Huawei USB",
+            "USB Mass Storage",
+            "MTP",
+            "ADB",
+            "Fastboot",
+            "Recovery",
+            "PCUI",
+            "DBAdapter",
+            "HUAWEI USB COM 1.0",
+        }
+        interfaces = payload.get("interfaces")
+        if isinstance(interfaces, (list, tuple)):
+            payload["interfaces"] = sorted(
+                {str(value) for value in interfaces if str(value) in allowed_interfaces}
+            )
+        else:
+            payload["interfaces"] = []
+        fingerprint = str(payload.get("fingerprint_sha256", ""))
+        if len(fingerprint) != 64 or any(char not in "0123456789abcdefABCDEF" for char in fingerprint):
+            raise ValueError("USB discovery fingerprint must be a SHA-256 hex digest")
+        if payload.get("present") is not True:
+            raise ValueError("USB discovery publication requires a present Huawei device")
+        if not str(payload.get("state", "")).strip():
+            raise ValueError("USB discovery publication requires a state")
+        if payload.get("device_modification") != "none":
+            raise ValueError("USB discovery publication cannot carry device modification authority")
+        if payload.get("write_authority") != "none":
+            raise ValueError("USB discovery publication cannot carry write authority")
+        return payload
+
+    def record_usb_discovery(self, report: Mapping[str, Any]) -> dict[str, Any]:
+        payload = self.usb_discovery_endpoint_payload(report)
+        fingerprint = str(payload["fingerprint_sha256"])
+        session = self.open_physical_session(fingerprint)
+        session_id = str(session.get("session_id", "")).strip()
+        if not session_id:
+            raise GatewayClientError(
+                "PROTOCOL_ERROR", "gateway physical session is missing session_id"
+            )
+        return self.record_endpoint(
+            session_id,
+            f"huawei-usb:{fingerprint[:16]}",
+            str(payload["state"]),
+            "windows_pnp_usb",
+            payload,
+        )
     def open_operation(
         self, physical_session_id: str, request_sha256: str
     ) -> dict[str, Any]:

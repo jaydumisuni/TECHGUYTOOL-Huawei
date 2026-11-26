@@ -2,10 +2,18 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
-from enum import StrEnum
+try:
+    from enum import StrEnum
+except ImportError:  # ATHENA's installed PySide6 Python 3.10 runtime
+    from enum import Enum
+
+    class StrEnum(str, Enum):
+        def __str__(self) -> str:
+            return self.value
 from pathlib import Path
 from typing import Callable, Mapping
 import json
+import os
 import subprocess
 
 
@@ -62,6 +70,27 @@ class ActionRegistry:
                 detail = "Handler registered."
             self._health[action_id] = ActionHealth.initial(action_id, state, detail)
 
+    def begin_async(self, action_id: str) -> None:
+        """Mark an async operation running on the UI thread without invoking its handler."""
+        health = self._health.get(action_id)
+        if health is None or action_id not in self._handlers:
+            raise KeyError(f"Undeclared action: {action_id}")
+        health.invocations += 1
+        health.state = ActionState.RUNNING
+        health.detail = "Service worker running."
+        health.checked_at = datetime.now(timezone.utc).isoformat()
+
+    def complete_async(self, action_id: str, result: object) -> None:
+        """Apply the worker result only on the UI thread."""
+        health = self._health[action_id]
+        if health.state is not ActionState.RUNNING:
+            raise RuntimeError("Operation completion without a running action")
+        state = getattr(result, "health_state", ActionState.FAILED)
+        health.state = ActionState(state) if state in set(ActionState) else ActionState.FAILED
+        health.detail = getattr(result, "message", "Worker completed with no message.")
+        health.checked_at = datetime.now(timezone.utc).isoformat()
+        if health.state is ActionState.FAILED:
+            health.failures += 1
     def invoke(self, action_id: str) -> object:
         health = self._health.get(action_id)
         if health is None:
@@ -115,6 +144,8 @@ class ActionRegistry:
             capture_output=True,
             text=True,
             timeout=10,
+            # The secondary health-audit entry point must also be console-free.
+            creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0,
         )
         if completed.returncode != 0:
             return {"ok": False, "error": completed.stderr.strip() or "Rust health audit failed."}

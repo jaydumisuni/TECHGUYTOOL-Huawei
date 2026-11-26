@@ -33,6 +33,11 @@ def observed_target(snapshot, payload, lookup):
     }
     if exact in families.get(catalog,set()):
         return ObservedTarget(model,catalog,False,exact)
+    # An explicit newer silicon suffix refines a generic catalogue family.
+    # Do not infer an exact variant from an unqualified numeric chipset.
+    refinements={"kirin620":"kirin620c","kirin710":"kirin710a"}
+    if catalog in refinements and chip==refinements[catalog]:
+        return ObservedTarget(model,catalog,False,exact)
     if chip and catalog and chip!=catalog:
         return ObservedTarget(model,chip,True)
     return ObservedTarget(model,chip or catalog)

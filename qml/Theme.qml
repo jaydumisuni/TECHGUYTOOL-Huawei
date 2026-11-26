@@ -3,7 +3,7 @@ import QtQuick 2.15
 
 QtObject {
     readonly property color background: "#050913"
-    readonly property color panel: "#0a1423"
+    readonly property color panel: "#07111f"
     readonly property color panel2: "#0d1a2b"
     readonly property color border: "#466a8c"
     readonly property color borderSoft: "#29435e"
@@ -15,5 +15,5 @@ QtObject {
     readonly property color green: "#41d565"
     readonly property color red: "#ff5a6d"
     readonly property color amber: "#ffc56b"
-    readonly property string fontFamily: "Segoe UI"
+    readonly property string fontFamily: "Lato"
 }

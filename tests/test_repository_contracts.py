@@ -41,8 +41,8 @@ def test_no_shell_execution_or_destructive_fastboot_commands() -> None:
 
 def test_reference_geometry_and_brand_assets_exist() -> None:
     main = (ROOT / "qml" / "Main.qml").read_text(encoding="utf-8")
-    assert re.search(r"\bwidth:\s*1586\b", main)
-    assert re.search(r"\bheight:\s*992\b", main)
+    assert re.search(r"\bcompactWidth:\s*1586\b", main)
+    assert re.search(r"\bcompactHeight:\s*992\b", main)
     for relative in ("assets/brand/techguy_logo.svg", "assets/brand/techguy_mascot.svg", "assets/brand/techguy_logo.svg"):
         path = ROOT / relative
         assert path.is_file() and path.stat().st_size > 0

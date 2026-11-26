@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import hashlib
 import json
-from datetime import UTC
+from datetime import timezone
+UTC = timezone.utc
 from typing import Any, Mapping, Sequence
 
 from .contract_fields import validate_field
