@@ -1,0 +1,13 @@
+{
+  "filename": "TECHGUYTOOL_Huawei_ENGINEERING.exe",
+  "bytes": 256431978,
+  "sha256": "3da2e83d0a35907fb829fa64f9755010722214483dc3b86325797e8c79a45622",
+  "startup": "qml_root_ready",
+  "qml_errors": 0,
+  "xray_exit": 2,
+  "xray_candidates": 0,
+  "loader_hashes_verified": 56,
+  "application_tests_passed": 326,
+  "historical_source_freeze": "not passed",
+  "production_signed": false
+}
